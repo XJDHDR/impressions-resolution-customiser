@@ -1,9 +1,10 @@
 ﻿
 
-using common_and_non_UI_code;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -50,7 +51,7 @@ namespace zeus_and_poseidon
 			}
 			else if (_resWidthPreTests % 2 != 0)
 			{
-				MessageBox.Show("The desired Horizontal Resolution is not divisible by 2. Please type in a number which is a power of 2.");
+				MessageBox.Show("The desired Horizontal Resolution is not divisible by 2. Please type in a number which is.");
 			}
 			else if (_resHeightPreTests < 2)
 			{
@@ -62,12 +63,36 @@ namespace zeus_and_poseidon
 			}
 			else if (_resHeightPreTests % 2 != 0)
 			{
-				MessageBox.Show("The desired Vertical Resolution is not divisible by 2. Please type in a number which is a power of 2.");
+				MessageBox.Show("The desired Vertical Resolution is not divisible by 2. Please type in a number which is.");
 			}
 			else
 			{
-				Zeus_HexEditing.HexEditZeusExe(_zeusExePath, Convert.ToUInt16(_resWidthPreTests), Convert.ToUInt16(_resHeightPreTests));
+				bool _fixAnimations = ApplyAnimationFix.IsChecked ?? false;
+				bool _fixWindowed = ApplyWindowFix.IsChecked ?? false;
+				bool _resizeImages  = ResizeImages.IsChecked ?? false;
+				Zeus_HexEditing.ProcessZeusExe(_zeusExePath, Convert.ToUInt16(_resWidthPreTests), Convert.ToUInt16(_resHeightPreTests), _fixAnimations, _fixWindowed, _resizeImages);
 			}
+		}
+
+		private void SelectExe_Click(object sender, RoutedEventArgs e)
+		{
+			OpenFileDialog openFileDialog = new OpenFileDialog
+			{
+				CheckFileExists = true,
+				CheckPathExists = true,
+				Filter = "Zeus.exe|Zeus.exe|All files (*.*)|*.*",
+				//InitialDirectory = "./",
+				Title = "Please select the Zeus.exe you want to patch."
+			};
+			if (openFileDialog.ShowDialog() == true)
+			{
+				_zeusExePath = openFileDialog.FileName;
+			}
+		}
+
+		private void HelpMe_Click(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }
