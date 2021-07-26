@@ -74,7 +74,7 @@ namespace zeus_and_poseidon
 					bool _fixAnimations = ApplyAnimationFix.IsChecked ?? false;
 					bool _fixWindowed = ApplyWindowFix.IsChecked ?? false;
 					bool _resizeImages  = ResizeImages.IsChecked ?? false;
-					Zeus_HexEditing.ProcessZeusExe(_zeusExePath, Convert.ToUInt16(_resWidthPreTests), Convert.ToUInt16(_resHeightPreTests), _fixAnimations, _fixWindowed, _resizeImages);
+					Zeus_MakeChanges.ProcessZeusExe(_zeusExePath, Convert.ToUInt16(_resWidthPreTests), Convert.ToUInt16(_resHeightPreTests), _fixAnimations, _fixWindowed, _resizeImages);
 				}
 				_exeCreationBusy = false;
 			}
