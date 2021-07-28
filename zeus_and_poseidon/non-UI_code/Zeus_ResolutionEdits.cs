@@ -1,14 +1,17 @@
-﻿using Soft160.Data.Cryptography;
+﻿// This code is part of the Impressions Resolution Customiser project
+//
+// The license for it may be found here:
+// https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
+//
+
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using static zeus_and_poseidon.Zeus_MakeChanges;
 
 namespace zeus_and_poseidon
 {
+	/// <summary>
+	/// Holds code used to set the resolution that the game must run at and resize various elements of the game to account for the new resolution.
+	/// </summary>
 	class Zeus_ResolutionEdits
 	{
 		internal static void _hexEditExeResVals(ushort _resWidth, ushort _resHeight, ExeLangAndDistrib _exeLangAndDistrib, ref byte[] _zeusExeData)
@@ -80,8 +83,8 @@ namespace zeus_and_poseidon
 				//         off the screen without any problem. Thus, I'll use this fact to get a little bit more space for the city view.
 				// 
 				// Finally, we also need to round our final figure down to the nearest integer.
-				byte _resHeightMult = (byte)Math.Floor((_resHeight - 30) / 15.0 + 1);   // .0s are required. Otherwise,
-				byte _resWidthMult  = (byte)Math.Floor((_resWidth - 182 + 2) / 60.0);	// compiler error CS0121 occurrs.
+				byte _resHeightMult = (byte)Math.Floor((_resHeight - 30) / 15f + 1);	// fs are required. Otherwise,
+				byte _resWidthMult  = (byte)Math.Floor((_resWidth - 182 + 2) / 60f);	// compiler error CS0121 occurrs.
 				_zeusExeData[_resHexOffsetTable._viewportHeightMult] = _resHeightMult;
 				_zeusExeData[_resHexOffsetTable._viewportWidthMult]  = _resWidthMult;
 
@@ -149,22 +152,23 @@ namespace zeus_and_poseidon
 					_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + i] = _zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + i - 3];
 				}
 				// Next, convert a "push 0" instruction into a "push 0x1B0" instruction.
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump]	 = 0x68;
+				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump]		= 0x68;
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 1] = 0xB0;
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 2] = 0x01;
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 3] = 0x00;
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 4] = 0x00;
-				// Next, we must replace a function call with a jump to our inserted code.
+				// Next, we must replace a function call with a jump to our inserted new code.
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 12] = 0xE9;
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 13] = 0x23;
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 14] = 0x04;
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 15] = 0x0C;
-				// In the shifted code, there were a number of jump commands to other offsets. We need to patch these commands to point to the new correct locations.
+				// In the shifted code, there were a number of jump commands to other offsets. The shift means that these jumps no longer point to the correct place.
+				// We need to patch these commands to point to the new correct locations.
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump +  85] -= 3;
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump +  90] -= 3;
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 108] -= 3;
 				// Finally, insert our new code into an empty portion of the EXE
-				_patchInFirstNewCode(_resHexOffsetTable, ref _zeusExeData);
+				_extendSidebarRedStripeNewCode(_resHexOffsetTable, ref _zeusExeData);
 				
 				// The second piece of new code fills both of the gaps noted above with a blue background similar to the already existing ones.
 				// ---------------------------------------
@@ -178,7 +182,7 @@ namespace zeus_and_poseidon
 			}
 		}
 
-		private static void _patchInFirstNewCode(ResHexOffsetTable _resHexOffsetTable, ref byte[] _zeusExeData)
+		private static void _extendSidebarRedStripeNewCode(ResHexOffsetTable _resHexOffsetTable, ref byte[] _zeusExeData)
 		{
 			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode]		 = 0xA3;
 			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 1]  = 0xF4;

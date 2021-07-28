@@ -1,13 +1,19 @@
-﻿using Soft160.Data.Cryptography;
+﻿// This code is part of the Impressions Resolution Customiser project
+//
+// The license for it may be found here:
+// https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
+//
+
+using Soft160.Data.Cryptography;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows;
 
 namespace zeus_and_poseidon
 {
+	/// <summary>
+	/// Base class used to interact with the code patching classes, figure out what version of the game is being patched and prepare the environment before patching.
+	/// </summary>
 	class Zeus_MakeChanges
 	{
 		internal static void ProcessZeusExe(string ZeusExeLocation, ushort ResWidth, ushort ResHeight, bool FixAnimations, bool FixWindowed, bool ResizeImages)
@@ -15,10 +21,10 @@ namespace zeus_and_poseidon
 			if (!File.Exists(ZeusExeLocation))
 			{
 				// User didn't select a folder using the selection button.
-				if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "base_files/Zeus.exe"))
+				if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"base_files\Zeus.exe"))
 				{
 					// Check if the user has placed the Zeus data files in the "base_files" folder.
-					ZeusExeLocation = AppDomain.CurrentDomain.BaseDirectory + "base_files/Zeus.exe";
+					ZeusExeLocation = AppDomain.CurrentDomain.BaseDirectory + @"base_files\Zeus.exe";
 				}
 				else if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Zeus.exe"))
 				{
@@ -69,11 +75,11 @@ namespace zeus_and_poseidon
 
 				if (FixAnimations)
 				{
-					_hexEditExeAnims(_exeLangAndDistrib, ref _zeusExeData);
+					Zeus_SlowAnimFixes._hexEditExeAnims(_exeLangAndDistrib, ref _zeusExeData);
 				}
 				if (FixWindowed)
 				{
-					_hexEditWindowFix(_exeLangAndDistrib, ref _zeusExeData);
+					Zeus_WindowFix._hexEditWindowFix(_exeLangAndDistrib, ref _zeusExeData);
 				}
 				if (ResizeImages)
 				{
@@ -85,6 +91,17 @@ namespace zeus_and_poseidon
 			}
 		}
 
+		/// <summary>
+		/// Copies the contents of Zeus.exe into a byte array for editing then calculates a CRC32 hash for the contents of that array. 
+		/// After that, compares that CRC to a list of known CRCs to determine 
+		/// </summary>
+		/// <param name="_zeusExeLocation">String that defines the location of Zeus.exe</param>
+		/// <param name="_zeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
+		/// <param name="exeLangAndDistrib">Enum that defines what version of the Zeus.exe was detected.</param>
+		/// <returns>
+		/// True if the CRC for the selected Zeus.exe matches one that this program knows about and knows the offsets that need to be patched.
+		/// False if the EXE is not recognised.
+		/// </returns>
 		private static bool _getAndCheckExeChecksum(string _zeusExeLocation, out byte[] _zeusExeData, out ExeLangAndDistrib exeLangAndDistrib)
 		{
 			_zeusExeData = File.ReadAllBytes(_zeusExeLocation);
@@ -105,61 +122,6 @@ namespace zeus_and_poseidon
 					};
 					MessageBox.Show(string.Join(Environment.NewLine, _messageLines));
 					exeLangAndDistrib = ExeLangAndDistrib.Not_Recognised;
-					return false;
-			}
-		}
-
-		private static void _hexEditExeAnims(ExeLangAndDistrib _exeLangAndDistrib, ref byte[] _zeusExeData)
-		{
-			if (_fillAnimHexOffsetTable(_exeLangAndDistrib, out int[] _animHexOffsetTable))
-			{
-				for (byte i = 0; i < _animHexOffsetTable.Length; i++)
-				{
-					_zeusExeData[_animHexOffsetTable[i]] = 0x00;
-				}
-			}
-		}
-
-		private static void _hexEditWindowFix(ExeLangAndDistrib _exeLangAndDistrib, ref byte[] _zeusExeData)
-		{
-			// At this address, the original code had a conditional jump (jl) that activates if the value stored in the EAX register is less than the value stored in the ECX.
-			// This patch changes this byte into an unconditional jump.
-			// I have no idea what the values represent, what code runs if the condition is false (EAX is greater than ECX) or why the widescreen mods cause
-			// EAX to be greater than ECX. All I know is that it makes Windowed mode work.
-			if (_identifyWinFixOffset(_exeLangAndDistrib, out int _winFixOffset))
-			{
-				_zeusExeData[_winFixOffset] = 0xEB;
-			}
-		}
-
-		private static bool _fillAnimHexOffsetTable(ExeLangAndDistrib _exeLangAndDistrib, out int[] _animHexOffsetTable)
-		{
-			switch ((byte)_exeLangAndDistrib)
-			{
-				case 1:         // English GOG version
-					_animHexOffsetTable = new int[] { 0x30407, 0xB395D, 0xB3992, 0xB5642, 0xB5AED, 0xB5DE5, 0xB65FF, 0xB69B7, 0xB91D6, 0xB9AB2, 0xB9AFB, 0xB9B7C,
-						0xB9DB1, 0xBA007, 0xBAC20, 0xBAC31, 0xBAC42, 0xBAC53, 0xBB1F4, 0xBB381, 0xBB3E5, 0xBB40B, 0xBB431, 0xBB457, 0xBB47D, 0xBB4A3, 0xBB4C9,
-						0xBB4EC, 0xBB50F, 0xBB532, 0xBB593, 0xBB5AD, 0xBB5C7, 0xBB5E4, 0xBB656, 0xBD331, 0xBD349, 0xBD3B2, 0xBDC62, 0xBDC7F, 0xBDC9C, 0xBDCB9,
-						0xBDD2F, 0xBDDD7, 0xBDE5A, 0xBDE9F, 0xBDEE4, 0xBDF29, 0xBDF6E, 0xBDFB3, 0xBDFF8, 0xBE03D, 0xBE082, 0xBE0C7, 0xBFC43, 0xBFDF8, 0xBFF47,
-						0xC26D1, 0xC2740, 0xC28E3, 0xC2904, 0xC2BD8, 0xC3A78, 0xC8415, 0xC84FC, 0xC9DEC, 0xC9E80, 0xCB1D7, 0xCB1F0, 0xCB23F };
-					return true;
-
-				default:        // Unrecognised EXE
-					_animHexOffsetTable = new int[1];
-					return false;
-			}
-		}
-
-		private static bool _identifyWinFixOffset(ExeLangAndDistrib _exeLangAndDistrib, out int _winFixOffset)
-		{
-			switch ((byte)_exeLangAndDistrib)
-			{
-				case 1:         // English GOG version
-					_winFixOffset = 0x212606;
-					return true;
-
-				default:        // Unrecognised EXE
-					_winFixOffset = 0;
 					return false;
 			}
 		}

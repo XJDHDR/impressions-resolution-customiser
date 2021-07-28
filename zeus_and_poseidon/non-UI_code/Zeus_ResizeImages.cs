@@ -1,63 +1,116 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// This code is part of the Impressions Resolution Customiser project
+//
+// The license for it may be found here:
+// https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
+//
+
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
+using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Windows;
 
 namespace zeus_and_poseidon
 {
+	/// <summary>
+	/// Code used to resize the background images and maps that the game uses to fit new resolutions.
+	/// </summary>
 	class Zeus_ResizeImages
 	{
 		internal static void CreateResizedImages(string ZeusExeLocation, ushort _resWidth, ushort _resHeight, string PatchedFilesFolder)
 		{
-			string _zeusDataFolderLocation = ZeusExeLocation.Remove(8) + @"DATA\";
-			_fillImageArrays(_zeusDataFolderLocation, out string[] _imagesToResize);
+			string _zeusDataFolderLocation = ZeusExeLocation.Remove(ZeusExeLocation.Length - 8) + @"DATA\";
+			_fillImageArrays(out string[] _imagesToResize);
 			_resizeCentredImages(_zeusDataFolderLocation, _imagesToResize, _resWidth, _resHeight, PatchedFilesFolder);
 		}
 
 		private static void _resizeCentredImages(string _zeusDataFolderLocation, string[] _centredImages, ushort _resWidth, ushort _resHeight, string _patchedFilesFolder)
 		{
-			Parallel.For(0, _centredImages.Length, _i =>
+			ImageCodecInfo _jpegCodecInfo = null;
+			ImageCodecInfo[] _allImageCodecs = ImageCodecInfo.GetImageEncoders();
+			for (int _j = 0; _j < _allImageCodecs.Length; _j++)
 			{
-				using (Bitmap _oldImage = new Bitmap(_centredImages[_i]))
+				if (_allImageCodecs[_j].MimeType == "image/jpeg")
 				{
-					int _newWidth = _resWidth > _oldImage.Width ? _resWidth : _oldImage.Width;
-					int _newHeight = _resHeight > _oldImage.Height ? _resHeight : _oldImage.Height;
+					_jpegCodecInfo = _allImageCodecs[_j];
+					break;
+				}
+			}
 
-					using (Bitmap _newImage = new Bitmap(_newWidth, _newHeight))
+			if (_jpegCodecInfo != null)
+			{
+				EncoderParameters _encoderParameters = new EncoderParameters(1);
+				_encoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 85L);
+
+				Directory.CreateDirectory(_patchedFilesFolder + @"\DATA");
+
+				//Parallel.For(0, _centredImages.Length, _i =>
+				for (byte _i = 0; _i < _centredImages.Length; _i++)
+				{
+					if (File.Exists(_zeusDataFolderLocation + _centredImages[_i]))
 					{
-						using (Graphics _newImageGraphics = Graphics.FromImage(_newImage))
+						using (Bitmap _oldImage = new Bitmap(_zeusDataFolderLocation + _centredImages[_i]))
 						{
-							if (Regex.IsMatch(_centredImages[_i], "_Map(OfGreece)*[0-9][0-9].jpg$", RegexOptions.CultureInvariant & RegexOptions.IgnoreCase))
+							bool _currentImageIsMap = false;
+							ushort _newImageWidth;
+							ushort _newImageHeight;
+							if (Regex.IsMatch(_centredImages[_i], "_Map(OfGreece)*[0-9][0-9].jpg$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
 							{
-								// This file is one of the maps. Must be placed in the top-left corner of the new image.
-
+								// Map images need to have the new images sized to fit the game's viewport.
+								_currentImageIsMap = true;
+								_newImageWidth = (ushort)(_resWidth - 180);
+								_newImageHeight = (ushort)(_resHeight - 30);
 							}
 							else
 							{
-								// A non-map image. Must be placed in the centre of the new image.
-								using (Brush _fillColour = new SolidBrush(Color.Black))
-								{
-									_newImageGraphics.FillRectangle(_fillColour, 0, 0, _newWidth, _newHeight);
-								}
-								int _oldImgTopLeftCornerPosX = _resWidth > _oldImage.Width ? (_resWidth - _oldImage.Width) / 2 : 0;
-								int _oldImgTopLeftCornerPosY = _resHeight > _oldImage.Height ? (_resHeight - _oldImage.Height) / 2 : 0;
+								_newImageWidth = _resWidth;
+								_newImageHeight = _resHeight;
+							}
 
-								_newImageGraphics.DrawImage(_oldImage, new Rectangle(_oldImgTopLeftCornerPosX, _oldImgTopLeftCornerPosY, 
-									_oldImage.Width, _oldImage.Height));
+							using (Bitmap _newImage = new Bitmap(_newImageWidth, _newImageHeight))
+							{
+								using (Graphics _newImageGraphics = Graphics.FromImage(_newImage))
+								{
+									// Note to self: Don't simplify the DrawImage calls. Specifying the old image's width and height is required
+									// to work around a bug/quirk where the image's DPI is scaled to the screen's before insertion:
+									// https://stackoverflow.com/a/41189062
+									if (_currentImageIsMap)
+									{
+										// This file is one of the maps. Must be placed in the top-left corner of the new image.
+										// Also create the background colour that will be used to fill the spaces not taken by the original image.
+										_newImageGraphics.Clear(Color.FromArgb(255, 35, 88, 120));
+
+										_newImageGraphics.DrawImage(_oldImage, 0, 0, _oldImage.Width, _oldImage.Height);
+									}
+									else
+									{
+										// A non-map image. Must be placed in the centre of the new image with a black background.
+										_newImageGraphics.Clear(Color.Black);
+
+										_newImageGraphics.DrawImage(_oldImage, (_newImageWidth - _oldImage.Width) / 2, 
+											(_newImageHeight - _oldImage.Height) / 2, _oldImage.Width, _oldImage.Height);
+									}
+
+									_newImage.Save(_patchedFilesFolder + @"\DATA\" + _centredImages[_i], _jpegCodecInfo, _encoderParameters);
+								}
 							}
 						}
-						EncoderParameters _encoderParameters = new EncoderParameters(1);
-						_encoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 85);
-						_newImage.Save(_patchedFilesFolder + _centredImages[_i], ImageCodecInfo, _encoderParameters);
 					}
+					else
+					{
+						MessageBox.Show("Could not find the image located at: " + _zeusDataFolderLocation + _centredImages[_i]);
+					}
+				//});
 				}
-			});
+			}
+			else
+			{
+				MessageBox.Show("Could not resize any of the game's images because the program could not find a JPEG Encoder available on your PC. Since Windows comes " +
+					"with such a codec by default, this could indicate a serious problem with your PC that can only be fixed by reinstalling Windows.");
+			}
 		}
 
-		private static void _fillImageArrays(string _zeusDataFolderLocation, out string[] _imagesToResize)
+		private static void _fillImageArrays(out string[] _imagesToResize)
 		{
 			_imagesToResize = new string[]
 			{

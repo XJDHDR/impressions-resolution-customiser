@@ -74,6 +74,8 @@
     <Compile Include="non-UI_code\Zeus_MakeChanges.cs" />
     <Compile Include="non-UI_code\Zeus_ResizeImages.cs" />
     <Compile Include="non-UI_code\Zeus_ResolutionEdits.cs" />
+    <Compile Include="non-UI_code\Zeus_SlowAnimFixes.cs" />
+    <Compile Include="non-UI_code\Zeus_WindowFix.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
