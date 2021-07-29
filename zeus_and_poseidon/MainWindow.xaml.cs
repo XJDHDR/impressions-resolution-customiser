@@ -24,16 +24,20 @@ namespace zeus_and_poseidon
 			InitializeComponent();
 		}
 
+		/// <summary>
+		/// Code that runs when the "Generate EXE" button is clicked. Checks whether the two inputted resolution values are valid. 
+		/// If they are, pass them and the state of the checkboxes to the "ProcessZeusExe" function.
+		/// </summary>
 		private void GenerateExe_Click(object sender, RoutedEventArgs e)
 		{
 			if (_exeCreationBusy != true)
 			{
 				_exeCreationBusy = true;
-				if (!Single.TryParse(ResWidth.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resWidthPreTests))
+				if (!float.TryParse(ResWidth.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resWidthPreTests))
 				{
 					MessageBox.Show("An error occurred while trying to convert the typed in Horizontal Resolution from a string. Make sure you only typed in digits.");
 				}
-				else if (!Single.TryParse(ResHeight.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resHeightPreTests))
+				else if (!float.TryParse(ResHeight.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resHeightPreTests))
 				{
 					MessageBox.Show("An error occurred while trying to convert the typed in Vertical Resolution from a string. Make sure you only typed in digits.");
 				}
@@ -65,13 +69,17 @@ namespace zeus_and_poseidon
 				{
 					bool _fixAnimations = ApplyAnimationFix.IsChecked ?? false;
 					bool _fixWindowed = ApplyWindowFix.IsChecked ?? false;
-					bool _resizeImages  = ResizeImages.IsChecked ?? false;
+					bool _resizeImages = ResizeImages.IsChecked ?? false;
 					Zeus_MakeChanges.ProcessZeusExe(_zeusExePath, Convert.ToUInt16(_resWidthPreTests), Convert.ToUInt16(_resHeightPreTests), _fixAnimations, _fixWindowed, _resizeImages);
 				}
 				_exeCreationBusy = false;
 			}
 		}
 
+		/// <summary>
+		/// Code that runs when the "Select Zeus.exe" button is clicked. 
+		/// Opens a file selection dialog to allow the user to select a Zeus.exe to patch.
+		/// </summary>
 		private void SelectExe_Click(object sender, RoutedEventArgs e)
 		{
 			OpenFileDialog openFileDialog = new OpenFileDialog
@@ -87,9 +95,18 @@ namespace zeus_and_poseidon
 			}
 		}
 
+		/// <summary>
+		/// Code that runs when the "HelpMe" button is clicked. 
+		/// Opens a MessageBox containing helpful information for the user.
+		/// </summary>
 		private void HelpMe_Click(object sender, RoutedEventArgs e)
 		{
-
+			string[] _messageLines = new string[]
+			{
+						"Help menu for the Zeus & Poseidon Resolution Customiser utility",
+						""
+			};
+			MessageBox.Show(string.Join(Environment.NewLine, _messageLines));
 		}
 	}
 }
