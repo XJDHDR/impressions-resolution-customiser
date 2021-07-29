@@ -14,6 +14,11 @@ namespace zeus_and_poseidon
 	/// </summary>
 	class Zeus_ResolutionEdits
 	{
+		/// <summary>
+		/// Gets the offset that needs to be patched to fix the windowed mode bug then patches it.
+		/// </summary>
+		/// <param name="_exeLangAndDistrib">Enum that specifies which version of Zeus.exe was detected.</param>
+		/// <param name="_zeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
 		internal static void _hexEditExeResVals(ushort _resWidth, ushort _resHeight, ExeLangAndDistrib _exeLangAndDistrib, ref byte[] _zeusExeData)
 		{
 			if (_fillResHexOffsetTable(_exeLangAndDistrib, out ResHexOffsetTable _resHexOffsetTable))
@@ -144,7 +149,7 @@ namespace zeus_and_poseidon
 				// There are two portions of new code that were inserted.
 				
 				// The first piece of new code extends the red stripe on the left edge of the sidebar all the way down to the bottom of the game window.
-				// -----------------------------------------------------------------------------------------
+				// -------------------------------------------------------------------------------------------------------------------------------------
 				// First, we need to shift some of the original code at this offset 3 bytes forward to make space for a change.
 				// Fortunately, there are a string of NOPs starting at offset 0x117BE6 that can be overwritten to accomodate this shift.
 				for (byte i = 115; i > 3; i--)
@@ -168,441 +173,133 @@ namespace zeus_and_poseidon
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump +  90] -= 3;
 				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 108] -= 3;
 				// Finally, insert our new code into an empty portion of the EXE
-				_extendSidebarRedStripeNewCode(_resHexOffsetTable, ref _zeusExeData);
+				_setExtendSidebarRedStripeNewCode(out byte[] _extendSidebarRedStripeNewCode);
+				for (byte _i = 0; _i < _extendSidebarRedStripeNewCode.Length; _i++)
+				{
+					_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + _i] = _extendSidebarRedStripeNewCode[_i];
+				}
 				
 				// The second piece of new code fills both of the gaps noted above with a blue background similar to the already existing ones.
-				// ---------------------------------------
+				// ----------------------------------------------------------------------------------------------------------------------------
 				// First, modify a function call into a jump to our inserted code.
 				_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump]	   = 0xE9;
 				_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 1] = 0x1E;
 				_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 2] = 0x87;
 				_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 3] = 0x03;
 				// After that, insert our new code.
-				_paintBlueBackgroundInGapsNewCode(_resHexOffsetTable, ref _zeusExeData);
+				_setPaintBlueBackgroundInGapsNewCode(out byte[] _paintBlueBackgroundInGapsNewCode);
+				for (ushort _i = 0; _i < _paintBlueBackgroundInGapsNewCode.Length; _i++)
+				{
+					_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + _i] = _paintBlueBackgroundInGapsNewCode[_i];
+				}
 			}
 		}
 
-		private static void _extendSidebarRedStripeNewCode(ResHexOffsetTable _resHexOffsetTable, ref byte[] _zeusExeData)
+		private static void _setExtendSidebarRedStripeNewCode(out byte[] _extendSidebarRedStripeNewCode)
 		{
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode]		 = 0xA3;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 1]  = 0xF4;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 2]  = 0xDF;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 3]  = 0x60;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 4]  = 0x01;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 5]  = 0xE8;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 6]  = 0x9D;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 7]  = 0x4F;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 8]  = 0xFD;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 9]  = 0xFF;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 10] = 0xA1;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 11] = 0xF4;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 12] = 0xDF;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 13] = 0x60;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 14] = 0x01;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 15] = 0x8B;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 16] = 0x0D;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 17] = 0x34;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 18] = 0xFF;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 19] = 0x0D;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 20] = 0x01;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 21] = 0x6A;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 22] = 0x00;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 23] = 0x6A;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 24] = 0x00;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 25] = 0x6A;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 26] = 0x00;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 27] = 0x6A;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 28] = 0x00;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 29] = 0x51;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 30] = 0x50;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 31] = 0xB9;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 32] = 0xE8;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 33] = 0xEB;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 34] = 0x2A;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 35] = 0x01;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 36] = 0xE8;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 37] = 0x7E;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 38] = 0x4F;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 39] = 0xFD;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 40] = 0xFF;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 41] = 0xE9;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 42] = 0xAF;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 43] = 0xFB;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 44] = 0xF3;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 45] = 0xFF;
-			_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + 46] = 0x90;
+			_extendSidebarRedStripeNewCode = new byte[]
+			{
+				0xA3,0xF4,0xDF,0x60,0x01,0xE8,0x9D,0x4F, 0xFD,0xFF,0xA1,0xF4,0xDF,0x60,0x01,0x8B, 0x0D,0x34,0xFF,0x0D,0x01,0x6A,0x00,0x6A, 
+				0x00,0x6A,0x00,0x6A,0x00,0x51,0x50,0xB9, 0xE8,0xEB,0x2A,0x01,0xE8,0x7E,0x4F,0xFD, 0xFF,0xE9,0xAF,0xFB,0xF3,0xFF,0x90
+			};
 		}
 
-		private static void _paintBlueBackgroundInGapsNewCode(ResHexOffsetTable _resHexOffsetTable, ref byte[] _zeusExeData)
+		private static void _setPaintBlueBackgroundInGapsNewCode(out byte[] _paintBlueBackgroundInGapsNewCode)
 		{
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode]		 = 0xCC;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 1]	 = 0xCC;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 2]	 = 0xCC;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 3]	 = 0xE8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 4]	 = 0xF7;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 5]	 = 0x5B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 6]	 = 0xFD;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 7]	 = 0xFF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 8]	 = 0xA1;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 9]	 = 0x64;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 10]  = 0x94;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 11]  = 0x2C;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 12]  = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 13]  = 0xA1;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 14]  = 0x30;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 15]  = 0xC8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 16]  = 0x2B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 17]  = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 18]  = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 19]  = 0x58;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 20]  = 0x03;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 21]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 22]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 23]  = 0x8B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 24]  = 0x40;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 25]  = 0x04;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 26]  = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 27]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 28]  = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 29]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 30]  = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 31]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 32]  = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 33]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 34]  = 0x40;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 35]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 36]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 37]  = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 38]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 39]  = 0x68;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 40]  = 0x0F;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 41]  = 0x02;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 42]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 43]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 44]  = 0x50;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 45]  = 0xB9;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 46]  = 0xE8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 47]  = 0xEB;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 48]  = 0x2A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 49]  = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 50]  = 0xE8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 51]  = 0xC8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 52]  = 0x5B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 53]  = 0xFD;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 54]  = 0xFF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 55]  = 0xA1;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 56]  = 0x64;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 57]  = 0x94;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 58]  = 0x2C;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 59]  = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 60]  = 0xA1;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 61]  = 0x30;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 62]  = 0xC8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 63]  = 0x2B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 64]  = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 65]  = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 66]  = 0x58;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 67]  = 0x03;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 68]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 69]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 70]  = 0x8B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 71]  = 0x40;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 72]  = 0x04;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 73]  = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 74]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 75]  = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 76]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 77]  = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 78]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 79]  = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 80]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 81]  = 0x40;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 82]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 83]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 84]  = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 85]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 86]  = 0x68;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 87]  = 0x1C;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 88]  = 0x02;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 89]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 90]  = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 91]  = 0x50;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 92]  = 0xB9;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 93]  = 0xE8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 94]  = 0xEB;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 95]  = 0x2A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 96]  = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 97]  = 0xE8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 98]  = 0x99;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 99]  = 0x5B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 100] = 0xFD;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 101] = 0xFF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 102] = 0xC7;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 103] = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 104] = 0xF0;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 105] = 0xDF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 106] = 0x60;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 107] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 108] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 109] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 110] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 111] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 112] = 0xA1;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 113] = 0x64;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 114] = 0x94;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 115] = 0x2C;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 116] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 117] = 0xA1;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 118] = 0x30;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 119] = 0xC8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 120] = 0x2B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 121] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 122] = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 123] = 0x58;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 124] = 0x03;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 125] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 126] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 127] = 0x8B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 128] = 0x40;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 129] = 0x04;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 130] = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 131] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 132] = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 133] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 134] = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 135] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 136] = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 137] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 138] = 0x40;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 139] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 140] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 141] = 0xFF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 142] = 0x35;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 143] = 0xF0;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 144] = 0xDF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 145] = 0x60;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 146] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 147] = 0x83;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 148] = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 149] = 0xF0;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 150] = 0xDF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 151] = 0x60;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 152] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 153] = 0x10;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 154] = 0x68;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 155] = 0x1C;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 156] = 0x06;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 157] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 158] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 159] = 0x50;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 160] = 0xB9;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 161] = 0xE8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 162] = 0xEB;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 163] = 0x2A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 164] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 165] = 0xE8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 166] = 0x55;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 167] = 0x5B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 168] = 0xFD;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 169] = 0xFF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 170] = 0x81;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 171] = 0x3D;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 172] = 0xF0;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 173] = 0xDF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 174] = 0x60;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 175] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 176] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 177] = 0x03;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 178] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 179] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 180] = 0x75;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 181] = 0xBA;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 182] = 0xC7;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 183] = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 184] = 0xF0;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 185] = 0xDF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 186] = 0x60;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 187] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 188] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 189] = 0x03;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 190] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 191] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 192] = 0xA1;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 193] = 0x64;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 194] = 0x94;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 195] = 0x2C;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 196] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 197] = 0xA1;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 198] = 0x30;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 199] = 0xC8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 200] = 0x2B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 201] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 202] = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 203] = 0x58;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 204] = 0x03;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 205] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 206] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 207] = 0x8B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 208] = 0x40;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 209] = 0x04;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 210] = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 211] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 212] = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 213] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 214] = 0x6A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 215] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 216] = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 217] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 218] = 0x40;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 219] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 220] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 221] = 0xFF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 222] = 0x35;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 223] = 0xF0;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 224] = 0xDF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 225] = 0x60;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 226] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 227] = 0x83;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 228] = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 229] = 0xF0;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 230] = 0xDF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 231] = 0x60;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 232] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 233] = 0x10;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 234] = 0x68;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 235] = 0x68;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 236] = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 237] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 238] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 239] = 0x50;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 240] = 0xB9;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 241] = 0xE8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 242] = 0xEB;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 243] = 0x2A;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 244] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 245] = 0xE8;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 246] = 0x05;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 247] = 0x5B;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 248] = 0xFD;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 249] = 0xFF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 250] = 0x81;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 251] = 0x3D;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 252] = 0xF0;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 253] = 0xDF;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 254] = 0x60;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 255] = 0x01;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 256] = 0x90;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 257] = 0x03;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 258] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 259] = 0x00;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 260] = 0x75;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 261] = 0xBA;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 262] = 0xE9;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 263] = 0xDA;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 264] = 0x77;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 265] = 0xFC;
-			_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + 266] = 0xFF;
+			_paintBlueBackgroundInGapsNewCode = new byte[]
+			{
+				0xCC,0xCC,0xCC,0xE8,0xF7,0x5B,0xFD,0xFF, 0xA1,0x64,0x94,0x2C,0x01,0xA1,0x30,0xC8, 0x2B,0x01,0x05,0x58,0x03,0x00,0x00,0x8B, 0x40,0x04,0x6A,0x00,0x6A,0x00,0x6A,0x00, 
+				0x05,0x00,0x40,0x00,0x00,0x6A,0x00,0x68, 0x0F,0x02,0x00,0x00,0x50,0xB9,0xE8,0xEB, 0x2A,0x01,0xE8,0xC8,0x5B,0xFD,0xFF,0xA1, 0x64,0x94,0x2C,0x01,0xA1,0x30,0xC8,0x2B, 
+				0x01,0x05,0x58,0x03,0x00,0x00,0x8B,0x40, 0x04,0x6A,0x00,0x6A,0x00,0x6A,0x00,0x05, 0x00,0x40,0x00,0x00,0x6A,0x00,0x68,0x1C, 0x02,0x00,0x00,0x50,0xB9,0xE8,0xEB,0x2A,
+				0x01,0xE8,0x99,0x5B,0xFD,0xFF,0xC7,0x05, 0xF0,0xDF,0x60,0x01,0x00,0x00,0x00,0x00, 0xA1,0x64,0x94,0x2C,0x01,0xA1,0x30,0xC8, 0x2B,0x01,0x05,0x58,0x03,0x00,0x00,0x8B, 
+				0x40,0x04,0x6A,0x00,0x6A,0x00,0x6A,0x00, 0x05,0x00,0x40,0x00,0x00,0xFF,0x35,0xF0, 0xDF,0x60,0x01,0x83,0x05,0xF0,0xDF,0x60, 0x01,0x10,0x68,0x1C,0x06,0x00,0x00,0x50, 
+				0xB9,0xE8,0xEB,0x2A,0x01,0xE8,0x55,0x5B, 0xFD,0xFF,0x81,0x3D,0xF0,0xDF,0x60,0x01, 0x00,0x03,0x00,0x00,0x75,0xBA,0xC7,0x05, 0xF0,0xDF,0x60,0x01,0x00,0x03,0x00,0x00, 
+				0xA1,0x64,0x94,0x2C,0x01,0xA1,0x30,0xC8, 0x2B,0x01,0x05,0x58,0x03,0x00,0x00,0x8B, 0x40,0x04,0x6A,0x00,0x6A,0x00,0x6A,0x00, 0x05,0x00,0x40,0x00,0x00,0xFF,0x35,0xF0, 
+				0xDF,0x60,0x01,0x83,0x05,0xF0,0xDF,0x60, 0x01,0x10,0x68,0x68,0x05,0x00,0x00,0x50, 0xB9,0xE8,0xEB,0x2A,0x01,0xE8,0x05,0x5B, 0xFD,0xFF,0x81,0x3D,0xF0,0xDF,0x60,0x01, 
+				0x90,0x03,0x00,0x00,0x75,0xBA,0xE9,0xDA, 0x77,0xFC,0xFF
+			};
 		}
 
+		/// <summary>
+		/// Supplies a ResHexOffsetTable struct specifying the offsets that need to be patched, based on which version of Zeus.exe was supplied.
+		/// </summary>
+		/// <param name="_exeLangAndDistrib">Enum that specifies which version of Zeus.exe was detected.</param>
+		/// <param name="_resHexOffsetTable">Struct containing the offset for the supplied Zeus.exe that needs patching.</param>
+		/// <returns>
+		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
+		/// False if the EXE is not recognised.
+		/// </returns>
 		private static bool _fillResHexOffsetTable(ExeLangAndDistrib _exeLangAndDistrib, out ResHexOffsetTable _resHexOffsetTable)
 		{
 			switch ((byte)_exeLangAndDistrib)
 			{
 				case 1:         // English GOG version
-					int _resWidth = 0x10BA29;
-					int _resHeight = 0x10BA2E;
-					int _mainMenuViewportWidth = 0x1051FA;
-					int _mainMenuViewportHeight = 0x105212;
+					_resHexOffsetTable = new ResHexOffsetTable();
+					_resHexOffsetTable._resWidth = 0x10BA29;
+					_resHexOffsetTable._resHeight = 0x10BA2E;
+					_resHexOffsetTable._mainMenuViewportWidth = 0x1051FA;
+					_resHexOffsetTable._mainMenuViewportHeight = 0x105212;
 
-					int _fixMoneyPopDateTextPosWidth = 0x18EF7C;
-					int _fixTopMenuBarBackgroundPosWidth = 0x19EBFB;
+					_resHexOffsetTable._fixMoneyPopDateTextPosWidth = 0x18EF7C;
+					_resHexOffsetTable._fixTopMenuBarBackgroundPosWidth = 0x19EBFB;
 
-					int _viewportWidth = 0x11CC1E;
-					int _viewportHeightMult = 0x11CC29;
-					int _viewportWidthMult = 0x11CC2B;
+					_resHexOffsetTable._viewportWidth = 0x11CC1E;
+					_resHexOffsetTable._viewportHeightMult = 0x11CC29;
+					_resHexOffsetTable._viewportWidthMult = 0x11CC2B;
 
-					int _fixCompSidebarBottomWidth = 0x18E2F7;
-					int _fixPushSidebarBottomWidth = 0x18E30A;
-					int _sidebarRenderLimitWidth = 0x18E2BE;
-					int _sidebarLeftEdgeStartWidth = 0x18E2CA;
+					_resHexOffsetTable._fixCompSidebarBottomWidth = 0x18E2F7;
+					_resHexOffsetTable._fixPushSidebarBottomWidth = 0x18E30A;
+					_resHexOffsetTable._sidebarRenderLimitWidth = 0x18E2BE;
+					_resHexOffsetTable._sidebarLeftEdgeStartWidth = 0x18E2CA;
 
-					int _unknownWidth  = 0x10BD03;
-					int _unknownHeight = 0x10BD0D;
-					int _unknownWidth2 = 0x1C459E;
+					_resHexOffsetTable._unknownWidth  = 0x10BD03;
+					_resHexOffsetTable._unknownHeight = 0x10BD0D;
+					_resHexOffsetTable._unknownWidth2 = 0x1C459E;
 
-					int _extendSidebarRedStripeNewCodeJump = 0x117B75;
-					int _paintBlueBackgroundInGapsNewCodeJump = 0x19EC31;
+					_resHexOffsetTable._extendSidebarRedStripeNewCodeJump = 0x117B75;
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump = 0x19EC31;
 
-					int _extendSidebarRedStripeNewCode = 0x1D7FA9;
-					int _paintBlueBackgroundInGapsNewCode = 0x1D7351;
-
-					_resHexOffsetTable = new ResHexOffsetTable(_resWidth, _resHeight, _mainMenuViewportWidth, _mainMenuViewportHeight, _fixMoneyPopDateTextPosWidth, 
-						_fixTopMenuBarBackgroundPosWidth, _viewportWidth, _viewportHeightMult, _viewportWidthMult, _fixCompSidebarBottomWidth, _fixPushSidebarBottomWidth,
-						_sidebarRenderLimitWidth, _sidebarLeftEdgeStartWidth, _unknownWidth, _unknownHeight, _unknownWidth2, 
-						_extendSidebarRedStripeNewCodeJump, _paintBlueBackgroundInGapsNewCodeJump, _extendSidebarRedStripeNewCode, _paintBlueBackgroundInGapsNewCode);
+					_resHexOffsetTable._extendSidebarRedStripeNewCode = 0x1D7FA9;
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCode = 0x1D7351;
 					return true;
 
 				default:        // Unrecognised EXE
-					_resHexOffsetTable = new ResHexOffsetTable(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+					_resHexOffsetTable = new ResHexOffsetTable();
 					return false;
 			}
 		}
 
-		private readonly struct ResHexOffsetTable
+		/// <summary>
+		/// Struct which describes the offsets that need to be patched to change the game's resolution.
+		/// </summary>
+		private struct ResHexOffsetTable
 		{
-			internal readonly int _resWidth;
-			internal readonly int _resHeight;
-			internal readonly int _mainMenuViewportWidth;
-			internal readonly int _mainMenuViewportHeight;
+			internal int _resWidth;
+			internal int _resHeight;
+			internal int _mainMenuViewportWidth;
+			internal int _mainMenuViewportHeight;
 
-			internal readonly int _fixMoneyPopDateTextPosWidth;
-			internal readonly int _fixTopMenuBarBackgroundPosWidth;
+			internal int _fixMoneyPopDateTextPosWidth;
+			internal int _fixTopMenuBarBackgroundPosWidth;
 
-			internal readonly int _viewportWidth;
-			internal readonly int _viewportHeightMult;
-			internal readonly int _viewportWidthMult;
+			internal int _viewportWidth;
+			internal int _viewportHeightMult;
+			internal int _viewportWidthMult;
 
-			internal readonly int _fixCompSidebarBottomWidth;
-			internal readonly int _fixPushSidebarBottomWidth;
-			internal readonly int _sidebarRenderLimitWidth;
-			internal readonly int _sidebarLeftEdgeStartWidth;
+			internal int _fixCompSidebarBottomWidth;
+			internal int _fixPushSidebarBottomWidth;
+			internal int _sidebarRenderLimitWidth;
+			internal int _sidebarLeftEdgeStartWidth;
 
-			internal readonly int _unknownWidth;
-			internal readonly int _unknownHeight;
-			internal readonly int _unknownWidth2;
+			internal int _unknownWidth;
+			internal int _unknownHeight;
+			internal int _unknownWidth2;
 
-			internal readonly int _extendSidebarRedStripeNewCodeJump;
-			internal readonly int _paintBlueBackgroundInGapsNewCodeJump;
+			internal int _extendSidebarRedStripeNewCodeJump;
+			internal int _paintBlueBackgroundInGapsNewCodeJump;
 
-			internal readonly int _extendSidebarRedStripeNewCode;
-			internal readonly int _paintBlueBackgroundInGapsNewCode;
-
-			internal ResHexOffsetTable(int ResWidth, int ResHeight, int MainMenuViewportWidth, int MainMenuViewportHeight, int FixMoneyPopDateTextPosWidth,
-				int FixTopMenuBarBackgroundPosWidth, int ViewportWidth, int ViewportHeightMult, int ViewportWidthMult, int FixCompSidebarBottomWidth, 
-				int FixPushSidebarBottomWidth, int SidebarRenderLimitWidth, int SidebarLeftEdgeStartWidth, int UnknownWidth, int UnknownHeight, int UnknownWidth2,
-				int ExtendSidebarRedStripeNewCodeJump, int PaintBlueBackgroundInGapsNewCodeJump, int ExtendSidebarRedStripeNewCode, int PaintBlueBackgroundInGapsNewCode)
-			{
-				_resWidth = ResWidth;
-				_resHeight = ResHeight;
-				_mainMenuViewportWidth = MainMenuViewportWidth;
-				_mainMenuViewportHeight = MainMenuViewportHeight;
-				_fixMoneyPopDateTextPosWidth = FixMoneyPopDateTextPosWidth;
-				_fixTopMenuBarBackgroundPosWidth = FixTopMenuBarBackgroundPosWidth;
-				_viewportWidth = ViewportWidth;
-				_viewportHeightMult = ViewportHeightMult;
-				_viewportWidthMult = ViewportWidthMult;
-				_fixCompSidebarBottomWidth = FixCompSidebarBottomWidth;
-				_fixPushSidebarBottomWidth = FixPushSidebarBottomWidth;
-				_sidebarRenderLimitWidth = SidebarRenderLimitWidth;
-				_sidebarLeftEdgeStartWidth = SidebarLeftEdgeStartWidth;
-				_unknownWidth = UnknownWidth;
-				_unknownHeight = UnknownHeight;
-				_unknownWidth2 = UnknownWidth2;
-				_extendSidebarRedStripeNewCodeJump = ExtendSidebarRedStripeNewCodeJump;
-				_paintBlueBackgroundInGapsNewCodeJump = PaintBlueBackgroundInGapsNewCodeJump;
-				_extendSidebarRedStripeNewCode = ExtendSidebarRedStripeNewCode;
-				_paintBlueBackgroundInGapsNewCode = PaintBlueBackgroundInGapsNewCode;
-			}
+			internal int _extendSidebarRedStripeNewCode;
+			internal int _paintBlueBackgroundInGapsNewCode;
 		}
 	}
 }

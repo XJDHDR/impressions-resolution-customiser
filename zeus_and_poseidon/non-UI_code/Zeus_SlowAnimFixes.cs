@@ -13,6 +13,11 @@ namespace zeus_and_poseidon
 	/// </summary>
 	class Zeus_SlowAnimFixes
 	{
+		/// <summary>
+		/// Gets the list of offsets that need to be patched to fix the animation bugs then patches them.
+		/// </summary>
+		/// <param name="_exeLangAndDistrib">Enum that specifies which version of Zeus.exe was detected.</param>
+		/// <param name="_zeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
 		internal static void _hexEditExeAnims(ExeLangAndDistrib _exeLangAndDistrib, ref byte[] _zeusExeData)
 		{
 			if (_fillAnimHexOffsetTable(_exeLangAndDistrib, out int[] _animHexOffsetTable))
@@ -40,6 +45,15 @@ namespace zeus_and_poseidon
 			}
 		}
 
+		/// <summary>
+		/// Fills an array containing all the offsets that need to be patched, based on which version of Zeus.exe was supplied.
+		/// </summary>
+		/// <param name="_exeLangAndDistrib">Enum that specifies which version of Zeus.exe was detected.</param>
+		/// <param name="_animHexOffsetTable">Int array containing the offsets for the supplied Zeus.exe that need patching.</param>
+		/// <returns>
+		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
+		/// False if the EXE is not recognised.
+		/// </returns>
 		private static bool _fillAnimHexOffsetTable(ExeLangAndDistrib _exeLangAndDistrib, out int[] _animHexOffsetTable)
 		{
 			switch ((byte)_exeLangAndDistrib)

@@ -16,6 +16,16 @@ namespace zeus_and_poseidon
 	/// </summary>
 	class Zeus_MakeChanges
 	{
+		/// <summary>
+		/// Checks if there is a Zeus.exe selected or available to patch, prepares the "patched_files" folder for the patched files
+		/// then calls the requested patching functions.
+		/// </summary>
+		/// <param name="ZeusExeLocation">Optionally contains the location of the Zeus.exe selected by the UI's file selection dialog.</param>
+		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
+		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
+		/// <param name="FixAnimations">Whether the "Apply Animation Fixes" checkbox is selected or not.</param>
+		/// <param name="FixWindowed">Whether the "Apply Windowed Mode Fixes" checkbox is selected or not.</param>
+		/// <param name="ResizeImages">Whether the "Resize Images" checkbox is selected or not.</param>
 		internal static void ProcessZeusExe(string ZeusExeLocation, ushort ResWidth, ushort ResHeight, bool FixAnimations, bool FixWindowed, bool ResizeImages)
 		{
 			if (!File.Exists(ZeusExeLocation))
@@ -93,7 +103,7 @@ namespace zeus_and_poseidon
 
 		/// <summary>
 		/// Copies the contents of Zeus.exe into a byte array for editing then calculates a CRC32 hash for the contents of that array. 
-		/// After that, compares that CRC to a list of known CRCs to determine 
+		/// After that, compares that CRC to a list of known CRCs to determine which distribution of this game is being patched.
 		/// </summary>
 		/// <param name="_zeusExeLocation">String that defines the location of Zeus.exe</param>
 		/// <param name="_zeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
@@ -126,6 +136,9 @@ namespace zeus_and_poseidon
 			}
 		}
 
+		/// <summary>
+		/// Used to define the various versions of Zeus.exe that this program recognises and knows what offsets to patch. 
+		/// </summary>
 		internal enum ExeLangAndDistrib
 		{
 			Not_Recognised = 0,
