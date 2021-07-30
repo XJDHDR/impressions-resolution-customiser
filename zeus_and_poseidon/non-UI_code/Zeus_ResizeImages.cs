@@ -17,13 +17,28 @@ namespace zeus_and_poseidon
 	/// </summary>
 	class Zeus_ResizeImages
 	{
-		internal static void CreateResizedImages(string ZeusExeLocation, ushort _resWidth, ushort _resHeight, string PatchedFilesFolder)
+		/// <summary>
+		/// Root function that calls the other functions in this class.
+		/// </summary>
+		/// <param name="ZeusExeLocation">String that contains the location of Zeus.exe</param>
+		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
+		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
+		/// <param name="PatchedFilesFolder">String which specifies the location of the "patched_files" folder.</param>
+		internal static void CreateResizedImages(string ZeusExeLocation, ushort ResWidth, ushort ResHeight, string PatchedFilesFolder)
 		{
 			string _zeusDataFolderLocation = ZeusExeLocation.Remove(ZeusExeLocation.Length - 8) + @"DATA\";
 			_fillImageArrays(out string[] _imagesToResize);
-			_resizeCentredImages(_zeusDataFolderLocation, _imagesToResize, _resWidth, _resHeight, PatchedFilesFolder);
+			_resizeCentredImages(_zeusDataFolderLocation, _imagesToResize, ResWidth, ResHeight, PatchedFilesFolder);
 		}
 
+		/// <summary>
+		/// Root function that calls the other functions in this class.
+		/// </summary>
+		/// <param name="_zeusDataFolderLocation">String that contains the location of Zeus' "DATA" folder.</param>
+		/// <param name="_centredImages">String array that contains a list of the images that need to be resized.</param>
+		/// <param name="_resWidth">The width value of the resolution inputted into the UI.</param>
+		/// <param name="_resHeight">The height value of the resolution inputted into the UI.</param>
+		/// <param name="_patchedFilesFolder">String which specifies the location of the "patched_files" folder.</param>
 		private static void _resizeCentredImages(string _zeusDataFolderLocation, string[] _centredImages, ushort _resWidth, ushort _resHeight, string _patchedFilesFolder)
 		{
 			ImageCodecInfo _jpegCodecInfo = null;
@@ -110,6 +125,10 @@ namespace zeus_and_poseidon
 			}
 		}
 
+		/// <summary>
+		/// Fills a string array with a list of the images that need to be resized.
+		/// </summary>
+		/// <param name="_imagesToResize">String array that contains a list of the images that need to be resized.</param>
 		private static void _fillImageArrays(out string[] _imagesToResize)
 		{
 			_imagesToResize = new string[]
