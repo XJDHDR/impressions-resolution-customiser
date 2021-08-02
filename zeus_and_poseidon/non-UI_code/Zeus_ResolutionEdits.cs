@@ -5,63 +5,63 @@
 //
 
 using System;
-using static zeus_and_poseidon.Zeus_MakeChanges;
+using static Zeus_and_Poseidon.Zeus_ExeDefinitions;
 
-namespace zeus_and_poseidon
+namespace Zeus_and_Poseidon
 {
 	/// <summary>
 	/// Holds code used to set the resolution that the game must run at and resize various elements of the game to account for the new resolution.
 	/// </summary>
-	class Zeus_ResolutionEdits
+	internal class Zeus_ResolutionEdits
 	{
 		/// <summary>
 		/// Patches the various offsets in Zeus.exe to run at the desired resolution and scale various UI elements 
 		/// to fit the new resolution.
 		/// </summary>
-		/// <param name="_resWidth">The width value of the resolution inputted into the UI.</param>
-		/// <param name="_resHeight">The height value of the resolution inputted into the UI.</param>
-		/// <param name="_exeLangAndDistrib">Enum that specifies which version of Zeus.exe was detected.</param>
-		/// <param name="_zeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
-		internal static void _hexEditExeResVals(ushort _resWidth, ushort _resHeight, ExeLangAndDistrib _exeLangAndDistrib, ref byte[] _zeusExeData)
+		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
+		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
+		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
+		/// <param name="ZeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
+		internal static void _hexEditExeResVals(ushort ResWidth, ushort ResHeight, ExeAttributes ExeAttributes, ref byte[] ZeusExeData)
 		{
-			if (_fillResHexOffsetTable(_exeLangAndDistrib, out ResHexOffsetTable _resHexOffsetTable))
+			if (FillResHexOffsetTable(ExeAttributes, out ResHexOffsetTable _resHexOffsetTable))
 			{
-				byte[] _resWidthBytes = BitConverter.GetBytes(_resWidth);
-				byte[] _resHeightBytes = BitConverter.GetBytes(_resHeight);
+				byte[] _resWidthBytes = BitConverter.GetBytes(ResWidth);
+				byte[] _resHeightBytes = BitConverter.GetBytes(ResHeight);
 
 				// These two offsets set the game's resolution to the desired amount
-				_zeusExeData[_resHexOffsetTable._resWidth]		= _resWidthBytes[0];
-				_zeusExeData[_resHexOffsetTable._resWidth + 1]  = _resWidthBytes[1];
-				_zeusExeData[_resHexOffsetTable._resHeight]		= _resHeightBytes[0];
-				_zeusExeData[_resHexOffsetTable._resHeight + 1] = _resHeightBytes[1];
-				
+				ZeusExeData[_resHexOffsetTable._resWidth + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._resWidth + 1] = _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._resHeight + 0] = _resHeightBytes[0];
+				ZeusExeData[_resHexOffsetTable._resHeight + 1] = _resHeightBytes[1];
+
 				// These two offsets correct the game's main menu viewport to use the new resolution values.
 				// Without this fix, the game will not accept main menu images where either dimension is larger
 				// than either 1024x768 or custom resolutions with either dimension smaller than 1024x768.
 				// In turn, any image smaller than those dimensions will be put in the top-left corner and
 				// black bars will fill the remaining space on the bottom and right.
 				// This is all despite the fact that buttons will be in the correct locations.
-				_zeusExeData[_resHexOffsetTable._mainMenuViewportWidth]			= _resWidthBytes[0];
-				_zeusExeData[_resHexOffsetTable._mainMenuViewportWidth + 1]		= _resWidthBytes[1];
-				_zeusExeData[_resHexOffsetTable._mainMenuViewportHeight]		= _resHeightBytes[0];
-				_zeusExeData[_resHexOffsetTable._mainMenuViewportHeight + 1]	= _resHeightBytes[1];
-				
+				ZeusExeData[_resHexOffsetTable._mainMenuViewportWidth + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._mainMenuViewportWidth + 1] = _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._mainMenuViewportHeight + 0] = _resHeightBytes[0];
+				ZeusExeData[_resHexOffsetTable._mainMenuViewportHeight + 1] = _resHeightBytes[1];
+
 				// This offset corrects the position of the money, population and date text in the top menu bar.
 				// Without this patch, that text will be drawn too far to the left.
-				_zeusExeData[_resHexOffsetTable._fixMoneyPopDateTextPosWidth]			 = _resWidthBytes[0];
-				_zeusExeData[_resHexOffsetTable._fixMoneyPopDateTextPosWidth + 1]		 = _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._fixMoneyPopDateTextPosWidth + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._fixMoneyPopDateTextPosWidth + 1] = _resWidthBytes[1];
 
 				// This offset corrects the position of the blue background for the top menu bar containing the above text.
 				// Without this patch, that background will be drawn too far to the left.
-				_zeusExeData[_resHexOffsetTable._fixTopMenuBarBackgroundPosWidth]		= _resWidthBytes[0];
-				_zeusExeData[_resHexOffsetTable._fixTopMenuBarBackgroundPosWidth + 1]	= _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._fixTopMenuBarBackgroundPosWidth + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._fixTopMenuBarBackgroundPosWidth + 1] = _resWidthBytes[1];
 
 				// Set main game's viewport to the correct width.
 				// This means the width that will be taken by both the city view's "camera" and the right sidebar containing the city's info and 
 				// buttons to build and demolish buildings and other functions.
 				// Without this patch, the view of your city will be rendered in a small square placed at the top-left corner of the main viewing area.
-				_zeusExeData[_resHexOffsetTable._viewportWidth]		= _resWidthBytes[0];
-				_zeusExeData[_resHexOffsetTable._viewportWidth + 1] = _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._viewportWidth + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._viewportWidth + 1] = _resWidthBytes[1];
 
 				// These next two offsets are used to determine the size of the city view's "camera".
 				// However, the game doesn't allow specifying a size. Only a multiplier can be used.
@@ -91,10 +91,10 @@ namespace zeus_and_poseidon
 				//         off the screen without any problem. Thus, I'll use this fact to get a little bit more space for the city view.
 				// 
 				// Finally, we also need to round our final figure down to the nearest integer.
-				byte _resHeightMult = (byte)Math.Floor((_resHeight - 30) / 15f + 1);	// fs are required. Otherwise,
-				byte _resWidthMult  = (byte)Math.Floor((_resWidth - 182 + 2) / 60f);	// compiler error CS0121 occurrs.
-				_zeusExeData[_resHexOffsetTable._viewportHeightMult] = _resHeightMult;
-				_zeusExeData[_resHexOffsetTable._viewportWidthMult]  = _resWidthMult;
+				byte _resHeightMult = (byte)Math.Floor((ResHeight - 30) / 15f + 1); // fs are required. Otherwise,
+				byte _resWidthMult = (byte)Math.Floor((ResWidth - 182 + 2) / 60f);  // compiler error CS0121 occurrs.
+				ZeusExeData[_resHexOffsetTable._viewportHeightMult] = _resHeightMult;
+				ZeusExeData[_resHexOffsetTable._viewportWidthMult] = _resWidthMult;
 
 				// Due to the nature of how the city view is created using a multiplier, some resolutions where the height is not a multiple of 15 will have
 				// a gap at the bottom of the screen where the last background image can be seen. Even the original game with it's vertical resolution
@@ -105,16 +105,16 @@ namespace zeus_and_poseidon
 				// I noticed that Mario's guide recommends modifying the first offset listed here, which appears to check
 				// whether the player has set a widescreen resolution (vs. 800x600) but doesn't mention the second offset
 				// which makes the black bar get drawn to the length of the resolution's width.
-				_zeusExeData[_resHexOffsetTable._fixCompSidebarBottomWidth]		= _resWidthBytes[0];
-				_zeusExeData[_resHexOffsetTable._fixCompSidebarBottomWidth + 1] = _resWidthBytes[1];
-				_zeusExeData[_resHexOffsetTable._fixPushSidebarBottomWidth]		= _resWidthBytes[0];
-				_zeusExeData[_resHexOffsetTable._fixPushSidebarBottomWidth + 1] = _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._fixCompSidebarBottomWidth + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._fixCompSidebarBottomWidth + 1] = _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._fixPushSidebarBottomWidth + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._fixPushSidebarBottomWidth + 1] = _resWidthBytes[1];
 
 				// This offset partially corrects the position of the game's sidebar to align with the new viewport render limit
 				// Without this change, the sidebar is drawn against the left edge of the screen and clips with the city view
-				_zeusExeData[_resHexOffsetTable._sidebarRenderLimitWidth]		= _resWidthBytes[0];
-				_zeusExeData[_resHexOffsetTable._sidebarRenderLimitWidth + 1]	= _resWidthBytes[1];
-				
+				ZeusExeData[_resHexOffsetTable._sidebarRenderLimitWidth + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._sidebarRenderLimitWidth + 1] = _resWidthBytes[1];
+
 				// This next offset is used to determine which column of pixels in the game's window will be used as the left edge of the right sidebar.
 				// The original game uses the calculation "ResolutionWidth - 186" to find this column. However, this causes a problem.
 				// The original game used a horizontal resolution of 1024. When used in the formula to calculate a width multiplier (with a sidebar width of 186px),
@@ -128,20 +128,20 @@ namespace zeus_and_poseidon
 				// appropriate multiplier calculated above. This figure is then used to designate where the left edge of the sidebar starts.
 				// This means that the sidebar will be shifted left to be next to the city view.
 				byte[] _viewportWidthBytes = BitConverter.GetBytes(Convert.ToUInt16(_resWidthMult * 60 - 2));
-				_zeusExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth]		= _viewportWidthBytes[0];
-				_zeusExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 1] = _viewportWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 0] = _viewportWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 1] = _viewportWidthBytes[1];
 
 				// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
-				_zeusExeData[_resHexOffsetTable._unknownWidth]		= _resWidthBytes[0];
-				_zeusExeData[_resHexOffsetTable._unknownWidth + 1]  = _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._unknownWidth + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._unknownWidth + 1] = _resWidthBytes[1];
 
 				// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
-				_zeusExeData[_resHexOffsetTable._unknownHeight]		= _resHeightBytes[0];
-				_zeusExeData[_resHexOffsetTable._unknownHeight + 1] = _resHeightBytes[1];
+				ZeusExeData[_resHexOffsetTable._unknownHeight + 0] = _resHeightBytes[0];
+				ZeusExeData[_resHexOffsetTable._unknownHeight + 1] = _resHeightBytes[1];
 
 				// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
-				_zeusExeData[_resHexOffsetTable._unknownWidth2]		= _resWidthBytes[0];
-				_zeusExeData[_resHexOffsetTable._unknownWidth2 + 1] = _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._unknownWidth2 + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._unknownWidth2 + 1] = _resWidthBytes[1];
 
 				// At this point, the only outstanding issue to be fixed is that there are two gaps in the UI that just
 				// show the last thing drawn in that area. The first is a small gap between the right edge of the top menubar
@@ -157,43 +157,44 @@ namespace zeus_and_poseidon
 				// Fortunately, there are a string of NOPs starting at offset 0x117BE6 that can be overwritten to accomodate this shift.
 				for (byte i = 115; i > 3; i--)
 				{
-					_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + i] = _zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + i - 3];
+					ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + i] = ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + i - 3];
 				}
 				// Next, convert a "push 0" instruction into a "push 0x1B0" instruction.
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump]		= 0x68;
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 1] = 0xB0;
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 2] = 0x01;
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 3] = 0x00;
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 4] = 0x00;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 0] = 0x68;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 1] = 0xB0;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 2] = 0x01;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 3] = 0x00;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 4] = 0x00;
 				// Next, we must replace a function call with a jump to our inserted new code.
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 12] = 0xE9;
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 13] = 0x23;
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 14] = 0x04;
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 15] = 0x0C;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 12] = 0xE9;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 13] = 0x1A;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 14] = 0x04;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 15] = 0x0C;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 16] = 0x00;
 				// In the shifted code, there were a number of jump commands to other offsets. The shift means that these jumps no longer point to the correct place.
 				// We need to patch these commands to point to the new correct locations.
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump +  85] -= 3;
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump +  90] -= 3;
-				_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 108] -= 3;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 085] -= 3;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 090] -= 3;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 108] -= 3;
 				// Finally, insert our new code into an empty portion of the EXE
 				_setExtendSidebarRedStripeNewCode(out byte[] _extendSidebarRedStripeNewCode);
 				for (byte _i = 0; _i < _extendSidebarRedStripeNewCode.Length; _i++)
 				{
-					_zeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + _i] = _extendSidebarRedStripeNewCode[_i];
+					ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + _i] = _extendSidebarRedStripeNewCode[_i];
 				}
 
 				// The second piece of new code fills both of the gaps noted above with a blue background similar to the already existing ones.
 				// ----------------------------------------------------------------------------------------------------------------------------
 				// First, modify a function call into a jump to our inserted code.
-				_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 0] = 0xE9;
-				_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 1] = 0x0D;
-				_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 2] = 0x92;
-				_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 3] = 0x03;
+				ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 0] = 0xE9;
+				ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 1] = 0x0A;
+				ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 2] = 0x92;
+				ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 3] = 0x03;
 				// After that, insert our new code.
 				_setPaintBlueBackgroundInGapsNewCode(out byte[] _paintBlueBackgroundInGapsNewCode);
 				for (ushort _i = 0; _i < _paintBlueBackgroundInGapsNewCode.Length; _i++)
 				{
-					_zeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + _i] = _paintBlueBackgroundInGapsNewCode[_i];
+					ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + _i] = _paintBlueBackgroundInGapsNewCode[_i];
 				}
 			}
 		}
@@ -206,8 +207,8 @@ namespace zeus_and_poseidon
 		{
 			_extendSidebarRedStripeNewCode = new byte[]
 			{
-				0xA3,0xF4,0xDF,0x60,0x01,0xE8,0x9D,0x4F, 0xFD,0xFF,0xA1,0xF4,0xDF,0x60,0x01,0x8B, 0x0D,0x34,0xFF,0x0D,0x01,0x6A,0x00,0x6A,
-				0x00,0x6A,0x00,0x6A,0x00,0x51,0x50,0xB9, 0xE8,0xEB,0x2A,0x01,0xE8,0x7E,0x4F,0xFD, 0xFF,0xE9,0xAF,0xFB,0xF3,0xFF,0x90
+				0xA3,0xF4,0xDF,0x60,0x01,0xE8,0xA6,0x4F, 0xFD,0xFF,0xA1,0xF4,0xDF,0x60,0x01,0x8B, 0x0D,0x34,0xFF,0x0D,0x01,0x6A,0x00,0x6A,
+				0x00,0x6A,0x00,0x6A,0x00,0x51,0x50,0xB9, 0xE8,0xEB,0x2A,0x01,0xE8,0x87,0x4F,0xFD, 0xFF,0xE9,0xB8,0xFB,0xF3,0xFF
 			};
 		}
 
@@ -219,107 +220,21 @@ namespace zeus_and_poseidon
 		{
 			_paintBlueBackgroundInGapsNewCode = new byte[]
 			{
-				0xCC,0xCC,0xCC,0xE8,0x08,0x51,0xFD,0xFF, 0xA1,0x64,0x94,0x2C,0x01,0xA1,0x30,0xC8, 0x2B,0x01,0x05,0x58,0x03,0x00,0x00,0x8B,
-				0x40,0x04,0x6A,0x00,0x6A,0x00,0x6A,0x00, 0x05,0x00,0x40,0x00,0x00,0x6A,0x00,0x68, 0x0F,0x02,0x00,0x00,0x50,0xB9,0xE8,0xEB,
-				0x2A,0x01,0xE8,0xD9,0x50,0xFD,0xFF,0xA1, 0x64,0x94,0x2C,0x01,0xA1,0x30,0xC8,0x2B, 0x01,0x05,0x58,0x03,0x00,0x00,0x8B,0x40,
-				0x04,0x6A,0x00,0x6A,0x00,0x6A,0x00,0x05, 0x00,0x40,0x00,0x00,0x6A,0x00,0x68,0x1C, 0x02,0x00,0x00,0x50,0xB9,0xE8,0xEB,0x2A,
-				0x01,0xE8,0xAA,0x50,0xFD,0xFF,0xC7,0x05, 0xF0,0xDF,0x60,0x01,0x00,0x00,0x00,0x00, 0xA1,0x64,0x94,0x2C,0x01,0xA1,0x30,0xC8,
-				0x2B,0x01,0x05,0x58,0x03,0x00,0x00,0x8B, 0x40,0x04,0x6A,0x00,0x6A,0x00,0x6A,0x00, 0x05,0x00,0x40,0x00,0x00,0xFF,0x35,0xF0,
-				0xDF,0x60,0x01,0x83,0x05,0xF0,0xDF,0x60, 0x01,0x10,0x68,0x1C,0x06,0x00,0x00,0x50, 0xB9,0xE8,0xEB,0x2A,0x01,0xE8,0x66,0x50,
-				0xFD,0xFF,0x81,0x3D,0xF0,0xDF,0x60,0x01, 0x00,0x03,0x00,0x00,0x75,0xBA,0xC7,0x05, 0xF0,0xDF,0x60,0x01,0x00,0x03,0x00,0x00,
-				0xA1,0x64,0x94,0x2C,0x01,0xA1,0x30,0xC8, 0x2B,0x01,0x05,0x58,0x03,0x00,0x00,0x8B, 0x40,0x04,0x6A,0x00,0x6A,0x00,0x6A,0x00,
-				0x05,0x00,0x40,0x00,0x00,0xFF,0x35,0xF0, 0xDF,0x60,0x01,0x83,0x05,0xF0,0xDF,0x60, 0x01,0x10,0x68,0x68,0x05,0x00,0x00,0x50,
-				0xB9,0xE8,0xEB,0x2A,0x01,0xE8,0x16,0x50, 0xFD,0xFF,0x81,0x3D,0xF0,0xDF,0x60,0x01, 0x90,0x03,0x00,0x00,0x75,0xBA,0xE9,0xEB,
-				0x6C,0xFC,0xFF
+				0xE8,0x0B,0x51,0xFD,0xFF,0xA1,0x64,0x94, 0x2C,0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05, 0x58,0x03,0x00,0x00,0x8B,0x40,0x04,0x6A,
+				0x00,0x6A,0x00,0x6A,0x00,0x05,0x00,0x40, 0x00,0x00,0x6A,0x00,0x68,0x0F,0x02,0x00, 0x00,0x50,0xB9,0xE8,0xEB,0x2A,0x01,0xE8,
+				0xDC,0x50,0xFD,0xFF,0xA1,0x64,0x94,0x2C, 0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05,0x58, 0x03,0x00,0x00,0x8B,0x40,0x04,0x6A,0x00,
+				0x6A,0x00,0x6A,0x00,0x05,0x00,0x40,0x00, 0x00,0x6A,0x00,0x68,0x1C,0x02,0x00,0x00, 0x50,0xB9,0xE8,0xEB,0x2A,0x01,0xE8,0xAD,
+				0x50,0xFD,0xFF,0xC7,0x05,0xF0,0xDF,0x60, 0x01,0x00,0x00,0x00,0x00,0xA1,0x64,0x94, 0x2C,0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05,
+				0x58,0x03,0x00,0x00,0x8B,0x40,0x04,0x6A, 0x00,0x6A,0x00,0x6A,0x00,0x05,0x00,0x40, 0x00,0x00,0xFF,0x35,0xF0,0xDF,0x60,0x01,
+				0x83,0x05,0xF0,0xDF,0x60,0x01,0x10,0x68, 0x1C,0x06,0x00,0x00,0x50,0xB9,0xE8,0xEB, 0x2A,0x01,0xE8,0x69,0x50,0xFD,0xFF,0x81,
+				0x3D,0xF0,0xDF,0x60,0x01,0x00,0x03,0x00, 0x00,0x75,0xBA,0xC7,0x05,0xF0,0xDF,0x60, 0x01,0x00,0x03,0x00,0x00,0xA1,0x64,0x94,
+				0x2C,0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05, 0x58,0x03,0x00,0x00,0x8B,0x40,0x04,0x6A, 0x00,0x6A,0x00,0x6A,0x00,0x05,0x00,0x40,
+				0x00,0x00,0xFF,0x35,0xF0,0xDF,0x60,0x01, 0x83,0x05,0xF0,0xDF,0x60,0x01,0x10,0x68, 0x68,0x05,0x00,0x00,0x50,0xB9,0xE8,0xEB,
+				0x2A,0x01,0xE8,0x19,0x50,0xFD,0xFF,0x81, 0x3D,0xF0,0xDF,0x60,0x01,0x90,0x03,0x00, 0x00,0x75,0xBA,0xE9,0xEE,0x6C,0xFC,0xFF
 			};
-		}
-
-		/// <summary>
-		/// Supplies a ResHexOffsetTable struct specifying the offsets that need to be patched, based on which version of Zeus.exe was supplied.
-		/// </summary>
-		/// <param name="_exeLangAndDistrib">Enum that specifies which version of Zeus.exe was detected.</param>
-		/// <param name="_resHexOffsetTable">Struct containing the offset for the supplied Zeus.exe that needs patching.</param>
-		/// <returns>
-		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
-		/// False if the EXE is not recognised.
-		/// </returns>
-		private static bool _fillResHexOffsetTable(ExeLangAndDistrib _exeLangAndDistrib, out ResHexOffsetTable _resHexOffsetTable)
-		{
-			switch ((byte)_exeLangAndDistrib)
-			{
-				case 1:         // English GOG version
-					_resHexOffsetTable = new ResHexOffsetTable
-					{
-						_resWidth = 0x10BA29,
-						_resHeight = 0x10BA2E,
-						_mainMenuViewportWidth = 0x1051FA,
-						_mainMenuViewportHeight = 0x105212,
-
-						_fixMoneyPopDateTextPosWidth = 0x18EF7C,
-						_fixTopMenuBarBackgroundPosWidth = 0x19EBFB,
-
-						_viewportWidth = 0x11CC1E,
-						_viewportHeightMult = 0x11CC29,
-						_viewportWidthMult = 0x11CC2B,
-
-						_fixCompSidebarBottomWidth = 0x18E2F7,
-						_fixPushSidebarBottomWidth = 0x18E30A,
-						_sidebarRenderLimitWidth = 0x18E2BE,
-						_sidebarLeftEdgeStartWidth = 0x18E2CA,
-
-						_unknownWidth = 0x10BD03,
-						_unknownHeight = 0x10BD0D,
-						_unknownWidth2 = 0x1C459E,
-
-						_extendSidebarRedStripeNewCodeJump = 0x117B75,
-						_paintBlueBackgroundInGapsNewCodeJump = 0x19EC31,
-
-						_extendSidebarRedStripeNewCode = 0x1D7FA9,
-						_paintBlueBackgroundInGapsNewCode = 0x1D7E40
-					};
-					return true;
-
-				default:        // Unrecognised EXE
-					_resHexOffsetTable = new ResHexOffsetTable();
-					return false;
-			}
-		}
-
-		/// <summary>
-		/// Struct which describes the offsets that need to be patched to change the game's resolution.
-		/// </summary>
-		private struct ResHexOffsetTable
-		{
-			internal int _resWidth;
-			internal int _resHeight;
-			internal int _mainMenuViewportWidth;
-			internal int _mainMenuViewportHeight;
-
-			internal int _fixMoneyPopDateTextPosWidth;
-			internal int _fixTopMenuBarBackgroundPosWidth;
-
-			internal int _viewportWidth;
-			internal int _viewportHeightMult;
-			internal int _viewportWidthMult;
-
-			internal int _fixCompSidebarBottomWidth;
-			internal int _fixPushSidebarBottomWidth;
-			internal int _sidebarRenderLimitWidth;
-			internal int _sidebarLeftEdgeStartWidth;
-
-			internal int _unknownWidth;
-			internal int _unknownHeight;
-			internal int _unknownWidth2;
-
-			internal int _extendSidebarRedStripeNewCodeJump;
-			internal int _paintBlueBackgroundInGapsNewCodeJump;
-
-			internal int _extendSidebarRedStripeNewCode;
-			internal int _paintBlueBackgroundInGapsNewCode;
 		}
 	}
 }
-
 
 /*
 	The above code I wrote was mainly thanks to a post on the Widescreen Gaming Forum written by Mario: https://www.wsgf.org/phpBB3/viewtopic.php?p=172910#p172910

@@ -4,18 +4,20 @@
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
 
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 
-namespace zeus_and_poseidon
+namespace Zeus_and_Poseidon
 {
 	/// <summary>
 	/// Code used to resize the background images and maps that the game uses to fit new resolutions.
 	/// </summary>
-	class Zeus_ResizeImages
+	internal class Zeus_ResizeImages
 	{
 		/// <summary>
 		/// Root function that calls the other functions in this class.
@@ -24,10 +26,10 @@ namespace zeus_and_poseidon
 		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
 		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
 		/// <param name="PatchedFilesFolder">String which specifies the location of the "patched_files" folder.</param>
-		internal static void CreateResizedImages(string ZeusExeLocation, ushort ResWidth, ushort ResHeight, string PatchedFilesFolder)
+		internal static void CreateResizedImages(string ZeusExeLocation, ExeAttributes ExeAttributes, ushort ResWidth, ushort ResHeight, string PatchedFilesFolder)
 		{
 			string _zeusDataFolderLocation = ZeusExeLocation.Remove(ZeusExeLocation.Length - 8) + @"DATA\";
-			_fillImageArrays(out string[] _imagesToResize);
+			_fillImageArrays(ExeAttributes, out string[] _imagesToResize);
 			_resizeCentredImages(_zeusDataFolderLocation, _imagesToResize, ResWidth, ResHeight, PatchedFilesFolder);
 		}
 
@@ -59,8 +61,7 @@ namespace zeus_and_poseidon
 
 				Directory.CreateDirectory(_patchedFilesFolder + @"\DATA");
 
-				//Parallel.For(0, _centredImages.Length, _i =>
-				for (byte _i = 0; _i < _centredImages.Length; _i++)
+				Parallel.For(0, _centredImages.Length, _i =>
 				{
 					if (File.Exists(_zeusDataFolderLocation + _centredImages[_i]))
 					{
@@ -115,8 +116,7 @@ namespace zeus_and_poseidon
 					{
 						MessageBox.Show("Could not find the image located at: " + _zeusDataFolderLocation + _centredImages[_i]);
 					}
-				//});
-				}
+				});
 			}
 			else
 			{
@@ -128,13 +128,12 @@ namespace zeus_and_poseidon
 		/// <summary>
 		/// Fills a string array with a list of the images that need to be resized.
 		/// </summary>
+		/// <param name="_exeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
 		/// <param name="_imagesToResize">String array that contains a list of the images that need to be resized.</param>
-		private static void _fillImageArrays(out string[] _imagesToResize)
+		private static void _fillImageArrays(ExeAttributes _exeAttributes, out string[] _imagesToResize)
 		{
-			_imagesToResize = new string[]
+			List<string> _imagesToResizeConstruction = new List<string>
 			{
-				"Poseidon_FE_MainMenu.jpg",
-				"Poseidon_FE_Registry.jpg",
 				"scoreb.jpg",
 				"Zeus_Defeat.jpg",
 				"Zeus_FE_CampaignSelection.jpg",
@@ -143,10 +142,11 @@ namespace zeus_and_poseidon
 				"Zeus_FE_Registry.jpg",
 				"Zeus_FE_tutorials.jpg",
 				"Zeus_Victory.jpg",
-				"Poseidon_map01.jpg",
-				"Poseidon_map02.jpg",
-				"Poseidon_map03.jpg",
-				"Poseidon_map04.jpg",
+				"Zeus_FE_MainMenu.jpg",
+				"Zeus_Load1.jpg",
+				"Zeus_Load2.jpg",
+				"Zeus_Load3.jpg",
+				"Zeus_Load4.jpg",
 				"Zeus_MapOfGreece01.jpg",
 				"Zeus_MapOfGreece02.jpg",
 				"Zeus_MapOfGreece03.jpg",
@@ -156,8 +156,32 @@ namespace zeus_and_poseidon
 				"Zeus_MapOfGreece07.jpg",
 				"Zeus_MapOfGreece08.jpg",
 				"Zeus_MapOfGreece09.jpg",
-				"Zeus_MapOfGreece10.jpg"
+				"Zeus_MapOfGreece10.jpg",
+				"Zeus_Title.jpg"
 			};
+
+			if (_exeAttributes.IsPoseidonInstalled)
+			{
+				_imagesToResizeConstruction.AddRange(new List<string>
+				{
+					"Poseidon_FE_MainMenu.jpg",
+					"Poseidon_FE_Registry.jpg",
+					"Poseidon_Load1.jpg",
+					"Poseidon_Load2.jpg",
+					"Poseidon_Load3.jpg",
+					"Poseidon_Load4.jpg",
+					"Poseidon_Load5.jpg",
+					"Poseidon_Load6.jpg",
+					"Poseidon_Load7.jpg",
+					"Poseidon_Load8.jpg",
+					"Poseidon_map01.jpg",
+					"Poseidon_map02.jpg",
+					"Poseidon_map03.jpg",
+					"Poseidon_map04.jpg"
+				});
+			}
+
+			_imagesToResize = _imagesToResizeConstruction.ToArray();
 		}
 	}
 }

@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("zeus_and_poseidon")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Zeus & Poseidon Resolution Customiser")]
+[assembly: AssemblyDescription("Allows customising the resolution that the game 'Zeus: Master of Olympus' runs at as well as applying specific patches.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("zeus_and_poseidon")]
-[assembly: AssemblyCopyright("Copyright ©  2021")]
+[assembly: AssemblyProduct("Zeus & Poseidon Resolution Customiser")]
+[assembly: AssemblyCopyright("Copyright © XJDHDR - MIT license - 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.2021.08.0")]
+[assembly: AssemblyFileVersion("1.2021.08.0")]

@@ -4,25 +4,23 @@
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
 
-using static zeus_and_poseidon.Zeus_MakeChanges;
-
-namespace zeus_and_poseidon
+namespace Zeus_and_Poseidon
 {
 	/// <summary>
 	/// Holds code used to patch the slow animation bugs that Zeus experiences on modern CPUs.
 	/// </summary>
-	class Zeus_SlowAnimFixes
+	internal class Zeus_SlowAnimFixes
 	{
 		/// <summary>
 		/// Gets the list of offsets that need to be patched to fix the animation bugs then patches them.
 		/// </summary>
-		/// <param name="_exeLangAndDistrib">Enum that specifies which version of Zeus.exe was detected.</param>
-		/// <param name="_zeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
-		internal static void _hexEditExeAnims(ExeLangAndDistrib _exeLangAndDistrib, ref byte[] _zeusExeData)
+		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
+		/// <param name="ZeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
+		internal static void _hexEditExeAnims(ExeAttributes ExeAttributes, ref byte[] ZeusExeData)
 		{
-			if (_fillAnimHexOffsetTable(_exeLangAndDistrib, out int[] _animHexOffsetTable))
+			if (Zeus_ExeDefinitions.FillAnimHexOffsetTable(ExeAttributes, out int[] _animHexOffsetTable))
 			{
-				// To explain what this code does, I'll quote what Pecunia, who discovered how to fix these bugs, said to me:
+				// To explain what this code does, I'll quote what Pecunia (who discovered how to fix these bugs) said to me:
 				// https://www.wsgf.org/phpBB3/viewtopic.php?p=172648#p172648
 				//
 				// Some animation basics:
@@ -40,35 +38,8 @@ namespace zeus_and_poseidon
 				//
 				for (byte i = 0; i < _animHexOffsetTable.Length; i++)
 				{
-					_zeusExeData[_animHexOffsetTable[i]] = 0x00;
+					ZeusExeData[_animHexOffsetTable[i]] = 0x00;
 				}
-			}
-		}
-
-		/// <summary>
-		/// Fills an array containing all the offsets that need to be patched, based on which version of Zeus.exe was supplied.
-		/// </summary>
-		/// <param name="_exeLangAndDistrib">Enum that specifies which version of Zeus.exe was detected.</param>
-		/// <param name="_animHexOffsetTable">Int array containing the offsets for the supplied Zeus.exe that need patching.</param>
-		/// <returns>
-		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
-		/// False if the EXE is not recognised.
-		/// </returns>
-		private static bool _fillAnimHexOffsetTable(ExeLangAndDistrib _exeLangAndDistrib, out int[] _animHexOffsetTable)
-		{
-			switch ((byte)_exeLangAndDistrib)
-			{
-				case 1:         // English GOG version
-					_animHexOffsetTable = new int[] { 0x30407, 0xB395D, 0xB3992, 0xB5642, 0xB5AED, 0xB5DE5, 0xB65FF, 0xB69B7, 0xB91D6, 0xB9AB2, 0xB9AFB, 0xB9B7C,
-						0xB9DB1, 0xBA007, 0xBAC20, 0xBAC31, 0xBAC42, 0xBAC53, 0xBB1F4, 0xBB381, 0xBB3E5, 0xBB40B, 0xBB431, 0xBB457, 0xBB47D, 0xBB4A3, 0xBB4C9,
-						0xBB4EC, 0xBB50F, 0xBB532, 0xBB593, 0xBB5AD, 0xBB5C7, 0xBB5E4, 0xBB656, 0xBD331, 0xBD349, 0xBD3B2, 0xBDC62, 0xBDC7F, 0xBDC9C, 0xBDCB9,
-						0xBDD2F, 0xBDDD7, 0xBDE5A, 0xBDE9F, 0xBDEE4, 0xBDF29, 0xBDF6E, 0xBDFB3, 0xBDFF8, 0xBE03D, 0xBE082, 0xBE0C7, 0xBFC43, 0xBFDF8, 0xBFF47,
-						0xC26D1, 0xC2740, 0xC28E3, 0xC2904, 0xC2BD8, 0xC3A78, 0xC8415, 0xC84FC, 0xC9DEC, 0xC9E80, 0xCB1D7, 0xCB1F0, 0xCB23F };
-					return true;
-
-				default:        // Unrecognised EXE
-					_animHexOffsetTable = new int[1];
-					return false;
 			}
 		}
 	}

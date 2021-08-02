@@ -1,0 +1,1 @@
+You can place an unmodified copy of Zeus.exe in this folder and it will be used to create a patched EXE if you don't select a specific Zeus.exe in the file picker window.

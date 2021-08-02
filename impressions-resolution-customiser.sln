@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zeus_and_poseidon", "zeus_and_poseidon\zeus_and_poseidon.csproj", "{7E2EAB3F-AB54-4DDF-B465-5CE5EB0E5FD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeus_and_Poseidon", "zeus_and_poseidon\Zeus_and_Poseidon.csproj", "{7E2EAB3F-AB54-4DDF-B465-5CE5EB0E5FD8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{37D3B4D7-1EAE-444F-8CD1-BB34DAD0FB81}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

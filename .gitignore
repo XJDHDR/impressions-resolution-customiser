@@ -1,3 +1,7 @@
 /.vs/
-/*/bin/
+/*/bin/*/*.exe
+/*/bin/*/*.pdb
+/*/bin/*/base_files/*.exe
+/*/bin/*/base_files/DATA/*.jpg
+/*/bin/*/patched_files/
 /*/obj/

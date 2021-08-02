@@ -5,7 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 
-namespace zeus_and_poseidon
+namespace Zeus_and_Poseidon
 {
 	/// <summary>
 	/// Interaction logic for App.xaml
