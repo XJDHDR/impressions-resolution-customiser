@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Zeus & Poseidon Resolution Customiser")]
-[assembly: AssemblyCopyright("Copyright © XJDHDR - MIT license - 2021")]
+[assembly: AssemblyCopyright("Copyright © 2021 - XJDHDR - MIT license")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
