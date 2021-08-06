@@ -1,7 +1,7 @@
+*.7z
+*.exe
+*.jpg
+*.pdb
 /.vs/
-/*/bin/*/*.exe
-/*/bin/*/*.pdb
-/*/bin/*/base_files/*.exe
-/*/bin/*/base_files/DATA/*.jpg
 /*/bin/*/patched_files/
 /*/obj/

@@ -16,7 +16,14 @@ namespace Emperor
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private const ulong _maxResolutionValue = ushort.MaxValue;
+		// Because _resHeightMult and _resWidthMult (in the Emperor_ResolutionEdits class) are 8 bit numbers, they can't go higher than 255.
+		// This means that we must cap our resolution numbers to figures that will be the highest possible that still leaves their multipliers at 255.
+		// 
+		// Thus, to copy and adapt the relevant formulas for calculating a resolution from a multiplier:
+		// _maxResolutionHeight = (256 - 1) * 20 + 40 - 1 = 5139
+		// _maxResolutionWidth = 256 * 80 + 222 - 2 - 1 = 20699
+		private const ulong _maxResolutionHeight = 5139;
+		private const ulong _maxResolutionWidth = 20699;
 
 		private bool _exeCreationBusy;
 		private string _emperorExePath;
@@ -48,10 +55,10 @@ namespace Emperor
 					MessageBox.Show("The desired Horizontal Resolution is less than 800, which is the absolute minimum width the game's window can be. " +
 						"Please type in a number which is at least 800.");
 				}
-				else if (_resWidthPreTests > _maxResolutionValue)
+				else if (_resWidthPreTests > _maxResolutionWidth)
 				{
-					MessageBox.Show("The desired Horizontal Resolution is greater than " + _maxResolutionValue + ", which is not allowed. Please type in a number " +
-						"which is less than " + _maxResolutionValue + ".");
+					MessageBox.Show("The desired Horizontal Resolution is greater than " + _maxResolutionWidth + ", which is not allowed. Please type in a number " +
+						"which is less than " + _maxResolutionWidth + ".");
 				}
 				else if (_resWidthPreTests % 4 != 0)
 				{
@@ -62,10 +69,10 @@ namespace Emperor
 					MessageBox.Show("The desired Vertical Resolution is less than 600, which is the absolute minimum height the game's window can be. " +
 						"Please type in a number which is at least 600.");
 				}
-				else if (_resHeightPreTests > _maxResolutionValue)
+				else if (_resHeightPreTests > _maxResolutionHeight)
 				{
-					MessageBox.Show("The desired Vertical Resolution is greater than " + _maxResolutionValue + ", which is not allowed. Please type in a number " +
-						"which is less than " + _maxResolutionValue + ".");
+					MessageBox.Show("The desired Vertical Resolution is greater than " + _maxResolutionHeight + ", which is not allowed. Please type in a number " +
+						"which is less than " + _maxResolutionHeight + ".");
 				}
 				else
 				{
@@ -117,10 +124,10 @@ namespace Emperor
 				"",
 				"",
 				"Resolution Width: This text box allows you to specify the horizontal component of your desired resolution. If your screen is in landscape, " +
-				"this is the bigger number. Note that this number must be divisible by 4 as well as between 800 and " + _maxResolutionValue + ", both inclusive.",
+				"this is the bigger number. Note that this number must be divisible by 4 as well as between 800 and " + _maxResolutionWidth + ", both inclusive.",
 				"",
 				"Resolution Height: This text box allows you to specify the vertical component of your desired resolution. If your screen is in landscape, " +
-				"this is the smaller number. Note that this number must be between 600 and " + _maxResolutionValue + ", both inclusive.",
+				"this is the smaller number. Note that this number must be between 600 and " + _maxResolutionHeight + ", both inclusive.",
 				"",
 				"Apply Windowed Mode Fixes: This tickbox tells this program to fix a bug in Emperor which means that the game can't be switched into windowed mode.",
 				"",

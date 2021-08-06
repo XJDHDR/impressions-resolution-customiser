@@ -45,24 +45,24 @@ namespace Emperor
 				EmperorExeData[_resHexOffsetTable._mainMenuViewportWidth + 1] = _resWidthBytes[1];
 				EmperorExeData[_resHexOffsetTable._mainMenuViewportHeight + 0] = _resHeightBytes[0];
 				EmperorExeData[_resHexOffsetTable._mainMenuViewportHeight + 1] = _resHeightBytes[1];
-				
+
 				// This offset corrects the position of the money, population and zodiac info in the top menu bar.
 				// Without this patch, that text will be drawn too far to the left.
 				EmperorExeData[_resHexOffsetTable._fixMoneyPopDateTextPosWidth + 0] = _resWidthBytes[0];
 				EmperorExeData[_resHexOffsetTable._fixMoneyPopDateTextPosWidth + 1] = _resWidthBytes[1];
-				
+
 				// This offset corrects the position of the top menu bar containing the above text.
 				// Without this patch, that background will be drawn too far to the left.
 				EmperorExeData[_resHexOffsetTable._fixTopMenuBarBackgroundPosWidth + 0] = _resWidthBytes[0];
 				EmperorExeData[_resHexOffsetTable._fixTopMenuBarBackgroundPosWidth + 1] = _resWidthBytes[1];
-				
+
 				// Set main game's viewport to the correct width.
 				// This means the width that will be taken by both the city view's "camera" and the right sidebar containing the city's info and 
 				// buttons to build and demolish buildings and other functions.
 				// Without this patch, the view of your city will be rendered in a small square placed at the top-left corner of the main viewing area.
 				EmperorExeData[_resHexOffsetTable._viewportWidth + 0] = _resWidthBytes[0];
 				EmperorExeData[_resHexOffsetTable._viewportWidth + 1] = _resWidthBytes[1];
-				
+
 				// These next two offsets are used to determine the size of the city view's "camera".
 				// However, the game doesn't allow specifying a size. Only a multiplier can be used.
 				// These multipliers are, in turn, used to calculate the size in pixels that the city's viewport should be.
@@ -96,7 +96,7 @@ namespace Emperor
 				byte _resWidthMult  = (byte)Math.Floor((ResWidth - 222 + 2) / 80f);	// compiler error CS0121 occurrs.
 				EmperorExeData[_resHexOffsetTable._viewportHeightMult] = _resHeightMult;
 				EmperorExeData[_resHexOffsetTable._viewportWidthMult]  = _resWidthMult;
-				
+
 				// Due to the nature of how the city view is created using a multiplier, some resolutions where the height is not a multiple of 15 will have
 				// a gap at the bottom of the screen where the last background image can be seen. Even the original game with it's vertical resolution
 				// of 768px had this problem. To fix this, the game creates a black bar that is drawn over this gap. These two offsets make sure this bar
@@ -115,7 +115,7 @@ namespace Emperor
 				// Without this change, the sidebar is drawn against the left edge of the screen and clips with the city view
 				EmperorExeData[_resHexOffsetTable._sidebarRenderLimitWidth + 0] = _resWidthBytes[0];
 				EmperorExeData[_resHexOffsetTable._sidebarRenderLimitWidth + 1] = _resWidthBytes[1];
-				
+
 				// This next offset is used to determine which column of pixels in the game's window will be used as the left edge of the right sidebar.
 				// The original game uses the calculation "ResolutionWidth - 226" to find this column. However, this causes a problem.
 				// The original game used a horizontal resolution of 1024. When used in the formula to calculate a width multiplier (with a sidebar width of 186px),
@@ -131,7 +131,7 @@ namespace Emperor
 				byte[] _viewportWidthBytes = BitConverter.GetBytes(Convert.ToUInt16(_resWidthMult * 80 - 2));
 				EmperorExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 0] = _viewportWidthBytes[0];
 				EmperorExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 1] = _viewportWidthBytes[1];
-				/*
+/*
 				// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
 				EmperorExeData[_resHexOffsetTable._unknownWidth + 0] = _resWidthBytes[0];
 				EmperorExeData[_resHexOffsetTable._unknownWidth + 1] = _resWidthBytes[1];

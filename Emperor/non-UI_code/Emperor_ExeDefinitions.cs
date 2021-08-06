@@ -120,7 +120,7 @@ namespace Emperor
 						_sidebarRenderLimitWidth = 0x1B4E22,
 						_sidebarLeftEdgeStartWidth = 0x1B4E2E,
 
-						_unknownWidth = 0x0,
+						_unknownWidth = 0x125F2A,
 						_unknownHeight = 0x0,
 						_unknownWidth2 = 0x0,
 
