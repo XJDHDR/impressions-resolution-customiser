@@ -1,0 +1,1 @@
+You can place unmodified copies of all JPEGs found in Emperor's DATA folder in this location and they will be used to create resized images if you don't select a specific Emperor.exe in the file picker window.

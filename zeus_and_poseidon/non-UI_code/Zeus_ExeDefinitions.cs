@@ -67,8 +67,8 @@ namespace Zeus_and_Poseidon
 				default:                // Unrecognised EXE
 					string[] _messageLines = new string[]
 					{
-						"Zeus.exe was not recognised. Only the following distributions and languages are currently supported:",
-						"- GOG Zeus & Poseidon - English"
+						"Zeus.exe was not recognised. Only the following unmodified distributions and languages are currently supported:",
+						"- English GOG version with Poseidon expansion"
 					};
 					MessageBox.Show(string.Join(Environment.NewLine, _messageLines));
 					ExeAttributes = new ExeAttributes
@@ -173,7 +173,7 @@ namespace Zeus_and_Poseidon
 			switch ((byte)ExeAttributes.SelectedExeLangAndDistrib)
 			{
 				case 1:         // English GOG version
-					WinFixOffset = 0x212606;
+					WinFixOffset = 0x33E7E;
 					return true;
 
 				default:        // Unrecognised EXE

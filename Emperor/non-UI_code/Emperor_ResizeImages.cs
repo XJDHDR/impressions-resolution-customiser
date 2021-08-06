@@ -4,7 +4,6 @@
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
 
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -12,37 +11,36 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Zeus_and_Poseidon
+namespace Emperor
 {
 	/// <summary>
 	/// Code used to resize the background images and maps that the game uses to fit new resolutions.
 	/// </summary>
-	internal class Zeus_ResizeImages
+	class Emperor_ResizeImages
 	{
 		/// <summary>
 		/// Root function that calls the other functions in this class.
 		/// </summary>
-		/// <param name="ZeusExeLocation">String that contains the location of Zeus.exe</param>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
+		/// <param name="EmperorExeLocation">String that contains the location of Emperor.exe</param>
 		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
 		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
 		/// <param name="PatchedFilesFolder">String which specifies the location of the "patched_files" folder.</param>
-		internal static void CreateResizedImages(string ZeusExeLocation, ExeAttributes ExeAttributes, ushort ResWidth, ushort ResHeight, string PatchedFilesFolder)
+		internal static void CreateResizedImages(string EmperorExeLocation, ushort ResWidth, ushort ResHeight, string PatchedFilesFolder)
 		{
-			string _zeusDataFolderLocation = ZeusExeLocation.Remove(ZeusExeLocation.Length - 8) + @"DATA\";
-			_fillImageArrays(ExeAttributes, out string[] _imagesToResize);
-			_resizeCentredImages(_zeusDataFolderLocation, _imagesToResize, ResWidth, ResHeight, PatchedFilesFolder);
+			string _emperorDataFolderLocation = EmperorExeLocation.Remove(EmperorExeLocation.Length - 11) + @"DATA\";
+			_fillImageArrays(out string[] _imagesToResize);
+			_resizeCentredImages(_emperorDataFolderLocation, _imagesToResize, ResWidth, ResHeight, PatchedFilesFolder);
 		}
 
 		/// <summary>
 		/// Root function that calls the other functions in this class.
 		/// </summary>
-		/// <param name="_zeusDataFolderLocation">String that contains the location of Zeus' "DATA" folder.</param>
+		/// <param name="_emperorDataFolderLocation">String that contains the location of Emperor's "DATA" folder.</param>
 		/// <param name="_centredImages">String array that contains a list of the images that need to be resized.</param>
 		/// <param name="_resWidth">The width value of the resolution inputted into the UI.</param>
 		/// <param name="_resHeight">The height value of the resolution inputted into the UI.</param>
 		/// <param name="_patchedFilesFolder">String which specifies the location of the "patched_files" folder.</param>
-		private static void _resizeCentredImages(string _zeusDataFolderLocation, string[] _centredImages, ushort _resWidth, ushort _resHeight, string _patchedFilesFolder)
+		private static void _resizeCentredImages(string _emperorDataFolderLocation, string[] _centredImages, ushort _resWidth, ushort _resHeight, string _patchedFilesFolder)
 		{
 			ImageCodecInfo _jpegCodecInfo = null;
 			ImageCodecInfo[] _allImageCodecs = ImageCodecInfo.GetImageEncoders();
@@ -64,14 +62,14 @@ namespace Zeus_and_Poseidon
 
 				Parallel.For(0, _centredImages.Length, _i =>
 				{
-					if (File.Exists(_zeusDataFolderLocation + _centredImages[_i]))
+					if (File.Exists(_emperorDataFolderLocation + _centredImages[_i]))
 					{
-						using (Bitmap _oldImage = new Bitmap(_zeusDataFolderLocation + _centredImages[_i]))
+						using (Bitmap _oldImage = new Bitmap(_emperorDataFolderLocation + _centredImages[_i]))
 						{
 							bool _currentImageIsMap = false;
 							ushort _newImageWidth;
 							ushort _newImageHeight;
-							if (Regex.IsMatch(_centredImages[_i], "_Map(OfGreece)*[0-9][0-9].jpg$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
+							if (Regex.IsMatch(_centredImages[_i], "^China_MapOfChina0[1-4].jpg$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
 							{
 								// Map images need to have the new images sized to fit the game's viewport.
 								_currentImageIsMap = true;
@@ -104,7 +102,7 @@ namespace Zeus_and_Poseidon
 										// A non-map image. Must be placed in the centre of the new image with a black background.
 										_newImageGraphics.Clear(Color.Black);
 
-										_newImageGraphics.DrawImage(_oldImage, (_newImageWidth - _oldImage.Width) / 2, 
+										_newImageGraphics.DrawImage(_oldImage, (_newImageWidth - _oldImage.Width) / 2,
 											(_newImageHeight - _oldImage.Height) / 2, _oldImage.Width, _oldImage.Height);
 									}
 
@@ -115,7 +113,7 @@ namespace Zeus_and_Poseidon
 					}
 					else
 					{
-						MessageBox.Show("Could not find the image located at: " + _zeusDataFolderLocation + _centredImages[_i]);
+						MessageBox.Show("Could not find the image located at: " + _emperorDataFolderLocation + _centredImages[_i]);
 					}
 				});
 			}
@@ -129,60 +127,38 @@ namespace Zeus_and_Poseidon
 		/// <summary>
 		/// Fills a string array with a list of the images that need to be resized.
 		/// </summary>
-		/// <param name="_exeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
 		/// <param name="_imagesToResize">String array that contains a list of the images that need to be resized.</param>
-		private static void _fillImageArrays(ExeAttributes _exeAttributes, out string[] _imagesToResize)
+		private static void _fillImageArrays(out string[] _imagesToResize)
 		{
-			List<string> _imagesToResizeConstruction = new List<string>
+			_imagesToResize = new string[]
 			{
-				"scoreb.jpg",
-				"Zeus_Defeat.jpg",
-				"Zeus_FE_CampaignSelection.jpg",
-				"Zeus_FE_ChooseGame.jpg",
-				"Zeus_FE_MissionIntroduction.jpg",
-				"Zeus_FE_Registry.jpg",
-				"Zeus_FE_tutorials.jpg",
-				"Zeus_Victory.jpg",
-				"Zeus_FE_MainMenu.jpg",
-				"Zeus_Load1.jpg",
-				"Zeus_Load2.jpg",
-				"Zeus_Load3.jpg",
-				"Zeus_Load4.jpg",
-				"Zeus_MapOfGreece01.jpg",
-				"Zeus_MapOfGreece02.jpg",
-				"Zeus_MapOfGreece03.jpg",
-				"Zeus_MapOfGreece04.jpg",
-				"Zeus_MapOfGreece05.jpg",
-				"Zeus_MapOfGreece06.jpg",
-				"Zeus_MapOfGreece07.jpg",
-				"Zeus_MapOfGreece08.jpg",
-				"Zeus_MapOfGreece09.jpg",
-				"Zeus_MapOfGreece10.jpg",
-				"Zeus_Title.jpg"
+				"China_Defeat.jpg",
+				"China_editor_splash.jpg",
+				"China_FE_CampaignSelection.jpg",
+				"China_FE_ChooseGame.jpg",
+				"China_FE_HighScores.jpg",
+				"China_FE_MainMenu.jpg",
+				"China_FE_MissionIntroduction.jpg",
+				"China_FE_OpenPlay.jpg",
+				"China_FE_Registry.jpg",
+				"China_FE_tutorials.jpg",
+				"China_Load1.jpg",
+				"China_Load2.jpg",
+				"China_Load3.jpg",
+				"China_Load4.jpg",
+				"China_Load5.jpg",
+				"China_MapOfChina01.jpg",
+				"China_MapOfChina02.jpg",
+				"China_MapOfChina03.jpg",
+				"China_MapOfChina04.jpg",
+				"China_Victory.jpg",
+				"Eoc_MapOfChina01.jpg",
+				"Eoc_MapOfChina02.jpg",
+				"Eoc_MapOfChina03.jpg",
+				"Eoc_MapOfChina04.jpg",
+				"Eoc_MapOfChina05.jpg",
+				"scoreb.jpg"
 			};
-
-			if (_exeAttributes.IsPoseidonInstalled)
-			{
-				_imagesToResizeConstruction.AddRange(new List<string>
-				{
-					"Poseidon_FE_MainMenu.jpg",
-					"Poseidon_FE_Registry.jpg",
-					"Poseidon_Load1.jpg",
-					"Poseidon_Load2.jpg",
-					"Poseidon_Load3.jpg",
-					"Poseidon_Load4.jpg",
-					"Poseidon_Load5.jpg",
-					"Poseidon_Load6.jpg",
-					"Poseidon_Load7.jpg",
-					"Poseidon_Load8.jpg",
-					"Poseidon_map01.jpg",
-					"Poseidon_map02.jpg",
-					"Poseidon_map03.jpg",
-					"Poseidon_map04.jpg"
-				});
-			}
-
-			_imagesToResize = _imagesToResizeConstruction.ToArray();
 		}
 	}
 }
