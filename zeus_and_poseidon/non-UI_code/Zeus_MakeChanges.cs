@@ -35,7 +35,7 @@ namespace Zeus_and_Poseidon
 					// Check if the user has placed the Zeus data files in the "base_files" folder.
 					ZeusExeLocation = AppDomain.CurrentDomain.BaseDirectory + @"base_files\Zeus.exe";
 				}
-				else if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Zeus.exe"))
+				else if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Zeus.exe") && (AppDomain.CurrentDomain.FriendlyName != "Zeus.exe"))
 				{
 					// As a last resort, check if the Zeus data files are in the same folder as this program.
 					ZeusExeLocation = AppDomain.CurrentDomain.BaseDirectory + "Zeus.exe";

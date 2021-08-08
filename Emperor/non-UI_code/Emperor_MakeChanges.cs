@@ -34,7 +34,7 @@ namespace Emperor
 					// Check if the user has placed the Zeus data files in the "base_files" folder.
 					EmperorExeLocation = AppDomain.CurrentDomain.BaseDirectory + @"base_files\Emperor.exe";
 				}
-				else if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Emperor.exe"))
+				else if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Emperor.exe") && (AppDomain.CurrentDomain.FriendlyName != "Emperor.exe"))
 				{
 					// As a last resort, check if the Zeus data files are in the same folder as this program.
 					EmperorExeLocation = AppDomain.CurrentDomain.BaseDirectory + "Emperor.exe";

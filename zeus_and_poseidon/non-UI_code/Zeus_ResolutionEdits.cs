@@ -105,10 +105,10 @@ namespace Zeus_and_Poseidon
 				// I noticed that Mario's guide recommends modifying the first offset listed here, which appears to check
 				// whether the player has set a widescreen resolution (vs. 800x600) but doesn't mention the second offset
 				// which makes the black bar get drawn to the length of the resolution's width.
-				ZeusExeData[_resHexOffsetTable._fixCompSidebarBottomWidth + 0] = _resWidthBytes[0];
-				ZeusExeData[_resHexOffsetTable._fixCompSidebarBottomWidth + 1] = _resWidthBytes[1];
-				ZeusExeData[_resHexOffsetTable._fixPushSidebarBottomWidth + 0] = _resWidthBytes[0];
-				ZeusExeData[_resHexOffsetTable._fixPushSidebarBottomWidth + 1] = _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._fixCompBottomBlackBarWidth + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._fixCompBottomBlackBarWidth + 1] = _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._fixPushBottomBlackBarWidth + 0] = _resWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._fixPushBottomBlackBarWidth + 1] = _resWidthBytes[1];
 
 				// This offset partially corrects the position of the game's sidebar to align with the new viewport render limit
 				// Without this change, the sidebar is drawn against the left edge of the screen and clips with the city view

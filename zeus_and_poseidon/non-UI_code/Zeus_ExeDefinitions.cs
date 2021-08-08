@@ -109,8 +109,8 @@ namespace Zeus_and_Poseidon
 						_viewportHeightMult = 0x11CC29,
 						_viewportWidthMult = 0x11CC2B,
 
-						_fixCompSidebarBottomWidth = 0x18E2F7,
-						_fixPushSidebarBottomWidth = 0x18E30A,
+						_fixCompBottomBlackBarWidth = 0x18E2F7,
+						_fixPushBottomBlackBarWidth = 0x18E30A,
 						_sidebarRenderLimitWidth = 0x18E2BE,
 						_sidebarLeftEdgeStartWidth = 0x18E2CA,
 
@@ -199,8 +199,8 @@ namespace Zeus_and_Poseidon
 			internal int _viewportHeightMult;
 			internal int _viewportWidthMult;
 
-			internal int _fixCompSidebarBottomWidth;
-			internal int _fixPushSidebarBottomWidth;
+			internal int _fixCompBottomBlackBarWidth;
+			internal int _fixPushBottomBlackBarWidth;
 			internal int _sidebarRenderLimitWidth;
 			internal int _sidebarLeftEdgeStartWidth;
 

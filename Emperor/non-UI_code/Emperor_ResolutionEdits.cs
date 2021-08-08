@@ -97,24 +97,30 @@ namespace Emperor
 				EmperorExeData[_resHexOffsetTable._viewportHeightMult] = _resHeightMult;
 				EmperorExeData[_resHexOffsetTable._viewportWidthMult]  = _resWidthMult;
 
-				// Due to the nature of how the city view is created using a multiplier, some resolutions where the height is not a multiple of 15 will have
-				// a gap at the bottom of the screen where the last background image can be seen. Even the original game with it's vertical resolution
-				// of 768px had this problem. To fix this, the game creates a black bar that is drawn over this gap. These two offsets make sure this bar
-				// is drawn to the correct length (the window's width). The height appears to be fixed at 9px and I don't know how to change this.
-				// That does mean that vertical resolutions which significantly deviate from a multiple of 15 will still have a gap present.
-				// 
-				// I noticed that Mario's guide recommends modifying the first offset listed here, which appears to check
-				// whether the player has set a widescreen resolution (vs. 800x600) but doesn't mention the second offset
-				// which makes the black bar get drawn to the length of the resolution's width.
-			//	EmperorExeData[_resHexOffsetTable._fixCompSidebarBottomWidth + 0] = _resWidthBytes[0];
-			//	EmperorExeData[_resHexOffsetTable._fixCompSidebarBottomWidth + 1] = _resWidthBytes[1];
-			//	EmperorExeData[_resHexOffsetTable._fixPushSidebarBottomWidth + 0] = _resWidthBytes[0];
-			//	EmperorExeData[_resHexOffsetTable._fixPushSidebarBottomWidth + 1] = _resWidthBytes[1];
-				
 				// This offset partially corrects the position of the game's sidebar to align with the new viewport render limit
 				// Without this change, the sidebar is drawn against the left edge of the screen and clips with the city view
 				EmperorExeData[_resHexOffsetTable._sidebarRenderLimitWidth + 0] = _resWidthBytes[0];
 				EmperorExeData[_resHexOffsetTable._sidebarRenderLimitWidth + 1] = _resWidthBytes[1];
+
+				// This offset corrects the position of the rotate city view button's interaction point
+				// Without this change, the interaction point is placed too high on the sidebar (under the city map in my case).
+				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_RotateButton + 0] = _resWidthBytes[0];
+				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_RotateButton + 1] = _resWidthBytes[1];
+
+				// This offset corrects the position of the rotate city view button's icon
+				// Without this change, the icon is drawn too high on the sidebar (under the city map in my case).
+				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_RotateIcon + 0] = _resWidthBytes[0];
+				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_RotateIcon + 1] = _resWidthBytes[1];
+
+				// This offset corrects the position of the interaction points for the other 4 buttons below the city map
+				// Without this change, the interaction points are placed too high on the sidebar (inside the city map in my case).
+				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_GoalsOverviewWorldMapMessagesIcons + 0] = _resWidthBytes[0];
+				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_GoalsOverviewWorldMapMessagesIcons + 1] = _resWidthBytes[1];
+
+				// This offset corrects the position of the icons for the other 4 buttons below the city map
+				// Without this change, the icons are drawn too high on the sidebar (inside the city map in my case).
+				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_GoalsOverviewWorldMapMessagesButtons + 0] = _resWidthBytes[0];
+				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_GoalsOverviewWorldMapMessagesButtons + 1] = _resWidthBytes[1];
 
 				// This next offset is used to determine which column of pixels in the game's window will be used as the left edge of the right sidebar.
 				// The original game uses the calculation "ResolutionWidth - 226" to find this column. However, this causes a problem.
@@ -131,7 +137,26 @@ namespace Emperor
 				byte[] _viewportWidthBytes = BitConverter.GetBytes(Convert.ToUInt16(_resWidthMult * 80 - 2));
 				EmperorExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 0] = _viewportWidthBytes[0];
 				EmperorExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 1] = _viewportWidthBytes[1];
-/*
+
+				// This offset replaces a JNZ call with two NOPs
+				// It causes the bottom bar to be drawn all the way and connect to the sidebar instead of stopping at 798px in length.
+				EmperorExeData[_resHexOffsetTable._fixBottomBarLength + 0] = 0x90;
+				EmperorExeData[_resHexOffsetTable._fixBottomBarLength + 1] = 0x90;
+
+
+
+				// This offset moves the bar at the bottom of the screen to the right.
+				//byte[] _bottomBarRowTopEdgePosBytes = BitConverter.GetBytes(Convert.ToUInt16(_resHeightMult - 8));
+				//EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak1 + 0] = _bottomBarRowTopEdgePosBytes[0];
+				//EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak1 + 1] = _bottomBarRowTopEdgePosBytes[1];
+
+				// Check this.
+				//EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak2 + 0] = _bottomBarRowTopEdgePosBytes[0];
+				//EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak2 + 1] = _bottomBarRowTopEdgePosBytes[1];
+
+
+
+
 				// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
 				EmperorExeData[_resHexOffsetTable._unknownWidth + 0] = _resWidthBytes[0];
 				EmperorExeData[_resHexOffsetTable._unknownWidth + 1] = _resWidthBytes[1];
@@ -140,99 +165,25 @@ namespace Emperor
 				EmperorExeData[_resHexOffsetTable._unknownHeight + 0] = _resHeightBytes[0];
 				EmperorExeData[_resHexOffsetTable._unknownHeight + 1] = _resHeightBytes[1];
 
-				// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
-				EmperorExeData[_resHexOffsetTable._unknownWidth2 + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._unknownWidth2 + 1] = _resWidthBytes[1];
 
 				// At this point, the only outstanding issue to be fixed is that there are two gaps in the UI that just
 				// show the last thing drawn in that area. The first is a small gap between the right edge of the top menubar
 				// and left edge of the right sidebar. The second is a large gap on the right and bottom of the sidebar.
 				//
-				// JackFuste fixed these in his patch by inserting some new code into the EXE that paints a blue background 
-				// over the areas where these gaps existed. The last portion of this function will be used to replicate this insertion.
-				// There are two portions of new code that were inserted.
-
-				// The first piece of new code extends the red stripe on the left edge of the sidebar all the way down to the bottom of the game window.
-				// -------------------------------------------------------------------------------------------------------------------------------------
-				// First, we need to shift some of the original code at this offset 3 bytes forward to make space for a change.
-				// Fortunately, there are a string of NOPs starting at offset 0x117BE6 that can be overwritten to accomodate this shift.
-				for (byte i = 115; i > 3; i--)
-				{
-					EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + i] = EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + i - 3];
-				}
-				// Next, convert a "push 0" instruction into a "push 0x1B0" instruction.
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 0] = 0x68;
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 1] = 0xB0;
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 2] = 0x01;
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 3] = 0x00;
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 4] = 0x00;
-				// Next, we must replace a function call with a jump to our inserted new code.
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 12] = 0xE9;
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 13] = 0x1A;
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 14] = 0x04;
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 15] = 0x0C;
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 16] = 0x00;
-				// In the shifted code, there were a number of jump commands to other offsets. The shift means that these jumps no longer point to the correct place.
-				// We need to patch these commands to point to the new correct locations.
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 085] -= 3;
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 090] -= 3;
-				EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 108] -= 3;
-				// Finally, insert our new code into an empty portion of the EXE
-				_setExtendSidebarRedStripeNewCode(out byte[] _extendSidebarRedStripeNewCode);
-				for (byte _i = 0; _i < _extendSidebarRedStripeNewCode.Length; _i++)
-				{
-					EmperorExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + _i] = _extendSidebarRedStripeNewCode[_i];
-				}
-
-				// The second piece of new code fills both of the gaps noted above with a blue background similar to the already existing ones.
-				// ----------------------------------------------------------------------------------------------------------------------------
+				// JackFuste fixed these in his patch by inserting some new code into the EXE that extends the current UI into
+				// the areas where these gaps existed. The last portion of this function will be used to replicate this insertion.
+				//
 				// First, modify a function call into a jump to our inserted code.
-				EmperorExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 0] = 0xE9;
-				EmperorExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 1] = 0x0A;
-				EmperorExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 2] = 0x92;
-				EmperorExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 3] = 0x03;
-				// After that, insert our new code.
-				_setPaintBlueBackgroundInGapsNewCode(out byte[] _paintBlueBackgroundInGapsNewCode);
-				for (ushort _i = 0; _i < _paintBlueBackgroundInGapsNewCode.Length; _i++)
+				for (byte _i = 0; _i < _resHexOffsetTable._extendOriginalUiNewCodeJumpData.Length; _i++)
 				{
-					EmperorExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + _i] = _paintBlueBackgroundInGapsNewCode[_i];
-				}*/
+					EmperorExeData[_resHexOffsetTable._extendOriginalUiNewCodeJumpOffset + _i] = _resHexOffsetTable._extendOriginalUiNewCodeJumpData[_i];
+				}
+				// After that, insert our new code.
+				for (byte _i = 0; _i < _resHexOffsetTable._extendOriginalUiNewCodeData.Length; _i++)
+				{
+					EmperorExeData[_resHexOffsetTable._extendOriginalUiNewCodeOffset + _i] = _resHexOffsetTable._extendOriginalUiNewCodeData[_i];
+				}
 			}
-		}
-
-		/// <summary>
-		/// Creates a byte array containing the new code that is used to extend the sidebar's red stripe.
-		/// </summary>
-		/// <param name="_extendSidebarRedStripeNewCode">Byte array that contains the new code.</param>
-		private static void _setExtendSidebarRedStripeNewCode(out byte[] _extendSidebarRedStripeNewCode)
-		{
-			_extendSidebarRedStripeNewCode = new byte[]
-			{
-				0xA3,0xF4,0xDF,0x60,0x01,0xE8,0xA6,0x4F, 0xFD,0xFF,0xA1,0xF4,0xDF,0x60,0x01,0x8B, 0x0D,0x34,0xFF,0x0D,0x01,0x6A,0x00,0x6A,
-				0x00,0x6A,0x00,0x6A,0x00,0x51,0x50,0xB9, 0xE8,0xEB,0x2A,0x01,0xE8,0x87,0x4F,0xFD, 0xFF,0xE9,0xB8,0xFB,0xF3,0xFF
-			};
-		}
-
-		/// <summary>
-		/// Creates a byte array containing the new code that is used to fill gaps in the UI with a blue background.
-		/// </summary>
-		/// <param name="_paintBlueBackgroundInGapsNewCode">Byte array that contains the new code.</param>
-		private static void _setPaintBlueBackgroundInGapsNewCode(out byte[] _paintBlueBackgroundInGapsNewCode)
-		{
-			_paintBlueBackgroundInGapsNewCode = new byte[]
-			{
-				0xE8,0x0B,0x51,0xFD,0xFF,0xA1,0x64,0x94, 0x2C,0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05, 0x58,0x03,0x00,0x00,0x8B,0x40,0x04,0x6A,
-				0x00,0x6A,0x00,0x6A,0x00,0x05,0x00,0x40, 0x00,0x00,0x6A,0x00,0x68,0x0F,0x02,0x00, 0x00,0x50,0xB9,0xE8,0xEB,0x2A,0x01,0xE8,
-				0xDC,0x50,0xFD,0xFF,0xA1,0x64,0x94,0x2C, 0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05,0x58, 0x03,0x00,0x00,0x8B,0x40,0x04,0x6A,0x00,
-				0x6A,0x00,0x6A,0x00,0x05,0x00,0x40,0x00, 0x00,0x6A,0x00,0x68,0x1C,0x02,0x00,0x00, 0x50,0xB9,0xE8,0xEB,0x2A,0x01,0xE8,0xAD,
-				0x50,0xFD,0xFF,0xC7,0x05,0xF0,0xDF,0x60, 0x01,0x00,0x00,0x00,0x00,0xA1,0x64,0x94, 0x2C,0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05,
-				0x58,0x03,0x00,0x00,0x8B,0x40,0x04,0x6A, 0x00,0x6A,0x00,0x6A,0x00,0x05,0x00,0x40, 0x00,0x00,0xFF,0x35,0xF0,0xDF,0x60,0x01,
-				0x83,0x05,0xF0,0xDF,0x60,0x01,0x10,0x68, 0x1C,0x06,0x00,0x00,0x50,0xB9,0xE8,0xEB, 0x2A,0x01,0xE8,0x69,0x50,0xFD,0xFF,0x81,
-				0x3D,0xF0,0xDF,0x60,0x01,0x00,0x03,0x00, 0x00,0x75,0xBA,0xC7,0x05,0xF0,0xDF,0x60, 0x01,0x00,0x03,0x00,0x00,0xA1,0x64,0x94,
-				0x2C,0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05, 0x58,0x03,0x00,0x00,0x8B,0x40,0x04,0x6A, 0x00,0x6A,0x00,0x6A,0x00,0x05,0x00,0x40,
-				0x00,0x00,0xFF,0x35,0xF0,0xDF,0x60,0x01, 0x83,0x05,0xF0,0xDF,0x60,0x01,0x10,0x68, 0x68,0x05,0x00,0x00,0x50,0xB9,0xE8,0xEB,
-				0x2A,0x01,0xE8,0x19,0x50,0xFD,0xFF,0x81, 0x3D,0xF0,0xDF,0x60,0x01,0x90,0x03,0x00, 0x00,0x75,0xBA,0xE9,0xEE,0x6C,0xFC,0xFF
-			};
 		}
 	}
 }

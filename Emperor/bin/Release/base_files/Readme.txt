@@ -1,0 +1,1 @@
+You can place an unmodified copy of Emperor.exe in this folder and it will be used to create a patched EXE if you don't select a specific Emperor.exe in the file picker window.
