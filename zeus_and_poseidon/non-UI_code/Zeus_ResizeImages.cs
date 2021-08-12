@@ -35,7 +35,7 @@ namespace Zeus_and_Poseidon
 		}
 
 		/// <summary>
-		/// Root function that calls the other functions in this class.
+		/// Resizes the maps and other images used by the game to the correct size.
 		/// </summary>
 		/// <param name="_zeusDataFolderLocation">String that contains the location of Zeus' "DATA" folder.</param>
 		/// <param name="_centredImages">String array that contains a list of the images that need to be resized.</param>

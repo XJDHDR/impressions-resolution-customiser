@@ -186,10 +186,10 @@ namespace Zeus_and_Poseidon
 				// The second piece of new code fills both of the gaps noted above with a blue background similar to the already existing ones.
 				// ----------------------------------------------------------------------------------------------------------------------------
 				// First, modify a function call into a jump to our inserted code.
-				ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 0] = 0xE9;
-				ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 1] = 0x0A;
-				ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 2] = 0x92;
-				ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 3] = 0x03;
+				//ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 0] = 0xE9;
+				//ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 1] = 0x0A;
+				//ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 2] = 0x92;
+				//ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 3] = 0x03;
 				// After that, insert our new code.
 				_setPaintBlueBackgroundInGapsNewCode(out byte[] _paintBlueBackgroundInGapsNewCode);
 				for (ushort _i = 0; _i < _paintBlueBackgroundInGapsNewCode.Length; _i++)

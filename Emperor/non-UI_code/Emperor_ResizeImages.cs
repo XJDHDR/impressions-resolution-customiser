@@ -4,6 +4,7 @@
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
 
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -27,13 +28,13 @@ namespace Emperor
 		/// <param name="PatchedFilesFolder">String which specifies the location of the "patched_files" folder.</param>
 		internal static void CreateResizedImages(string EmperorExeLocation, ushort ResWidth, ushort ResHeight, string PatchedFilesFolder)
 		{
-			string _emperorDataFolderLocation = EmperorExeLocation.Remove(EmperorExeLocation.Length - 11) + @"DATA\";
+			string _emperorDataFilesFolderLocation = EmperorExeLocation.Remove(EmperorExeLocation.Length - 11) + @"DATA\";
 			_fillImageArrays(out string[] _imagesToResize);
-			_resizeCentredImages(_emperorDataFolderLocation, _imagesToResize, ResWidth, ResHeight, PatchedFilesFolder);
+			_resizeCentredImages(_emperorDataFilesFolderLocation, _imagesToResize, ResWidth, ResHeight, PatchedFilesFolder);
 		}
 
 		/// <summary>
-		/// Root function that calls the other functions in this class.
+		/// Resizes the maps and other images used by the game to the correct size.
 		/// </summary>
 		/// <param name="_emperorDataFolderLocation">String that contains the location of Emperor's "DATA" folder.</param>
 		/// <param name="_centredImages">String array that contains a list of the images that need to be resized.</param>
@@ -59,6 +60,13 @@ namespace Emperor
 				_encoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 85L);
 
 				Directory.CreateDirectory(_patchedFilesFolder + @"\DATA");
+				string _emperorMapTemplateImageLocation = AppDomain.CurrentDomain.BaseDirectory + @"ocean_pattern\ocean_pattern.png";
+
+				if (!File.Exists(_emperorMapTemplateImageLocation))
+				{
+					MessageBox.Show("Could not find \"ocean_pattern\\ocean_pattern.png\". A fallback colour will be used to create the maps instead. " +
+						"Please check if the ocean_pattern image was successfully extracted from this program's downloaded archive and is in the correct place.");
+				}
 
 				Parallel.For(0, _centredImages.Length, _i =>
 				{
@@ -93,7 +101,18 @@ namespace Emperor
 									{
 										// This file is one of the maps. Must be placed in the top-left corner of the new image.
 										// Also create the background colour that will be used to fill the spaces not taken by the original image.
-										_newImageGraphics.Clear(Color.FromArgb(255, 35, 88, 120));
+										if (File.Exists(_emperorMapTemplateImageLocation))
+										{
+											// Note to self: Don't try and make this more efficient. Only one thread can access a bitmap at a time, even if just reading.
+											using (Bitmap _mapBackgroundImage = new Bitmap(_emperorMapTemplateImageLocation))
+											{
+												_newImageGraphics.DrawImage(_mapBackgroundImage, 0, 0, _mapBackgroundImage.Width, _mapBackgroundImage.Height);
+											}
+										}
+										else
+										{
+											_newImageGraphics.Clear(Color.FromArgb(255, 35, 88, 120));
+										}
 
 										_newImageGraphics.DrawImage(_oldImage, 0, 0, _oldImage.Width, _oldImage.Height);
 									}
@@ -152,11 +171,6 @@ namespace Emperor
 				"China_MapOfChina03.jpg",
 				"China_MapOfChina04.jpg",
 				"China_Victory.jpg",
-				"Eoc_MapOfChina01.jpg",
-				"Eoc_MapOfChina02.jpg",
-				"Eoc_MapOfChina03.jpg",
-				"Eoc_MapOfChina04.jpg",
-				"Eoc_MapOfChina05.jpg",
 				"scoreb.jpg"
 			};
 		}

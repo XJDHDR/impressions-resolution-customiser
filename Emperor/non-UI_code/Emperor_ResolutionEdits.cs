@@ -140,22 +140,18 @@ namespace Emperor
 
 				// This offset replaces a JNZ call with two NOPs
 				// It causes the bottom bar to be drawn all the way and connect to the sidebar instead of stopping at 798px in length.
+				// It does this by drawing the bar graphic twice.
 				EmperorExeData[_resHexOffsetTable._fixBottomBarLength + 0] = 0x90;
 				EmperorExeData[_resHexOffsetTable._fixBottomBarLength + 1] = 0x90;
 
+				// This offset moves the first bar created above to the bottom left corner of the window.
+				byte[] _bottomBarRowTopEdgePosBytes = BitConverter.GetBytes(Convert.ToUInt16(ResHeight - 8));
+				EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak1 + 0] = _bottomBarRowTopEdgePosBytes[0];
+				EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak1 + 1] = _bottomBarRowTopEdgePosBytes[1];
 
-
-				// This offset moves the bar at the bottom of the screen to the right.
-				//byte[] _bottomBarRowTopEdgePosBytes = BitConverter.GetBytes(Convert.ToUInt16(_resHeightMult - 8));
-				//EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak1 + 0] = _bottomBarRowTopEdgePosBytes[0];
-				//EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak1 + 1] = _bottomBarRowTopEdgePosBytes[1];
-
-				// Check this.
-				//EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak2 + 0] = _bottomBarRowTopEdgePosBytes[0];
-				//EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak2 + 1] = _bottomBarRowTopEdgePosBytes[1];
-
-
-
+				// This offset moves the second bar created above next to the first bar.
+				EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak2 + 0] = _bottomBarRowTopEdgePosBytes[0];
+				EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak2 + 1] = _bottomBarRowTopEdgePosBytes[1];
 
 				// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
 				EmperorExeData[_resHexOffsetTable._unknownWidth + 0] = _resWidthBytes[0];

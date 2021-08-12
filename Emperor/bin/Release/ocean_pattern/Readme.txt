@@ -1,0 +1,1 @@
+This folder holds the background image used to create the game's maps. The image in here is required for image resizing to work properly. 
