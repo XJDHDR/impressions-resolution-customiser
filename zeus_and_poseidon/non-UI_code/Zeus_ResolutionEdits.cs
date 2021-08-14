@@ -99,16 +99,18 @@ namespace Zeus_and_Poseidon
 				// Due to the nature of how the city view is created using a multiplier, some resolutions where the height is not a multiple of 15 will have
 				// a gap at the bottom of the screen where the last background image can be seen. Even the original game with it's vertical resolution
 				// of 768px had this problem. To fix this, the game creates a black bar that is drawn over this gap. These two offsets make sure this bar
-				// is drawn to the correct length (the window's width). The height appears to be fixed at 9px and I don't know how to change this.
+				// is drawn to the correct length (the city view's width). The height appears to be fixed at 9px and I don't know how to change this.
 				// That does mean that vertical resolutions which significantly deviate from a multiple of 15 will still have a gap present.
 				// 
 				// I noticed that Mario's guide recommends modifying the first offset listed here, which appears to check
 				// whether the player has set a widescreen resolution (vs. 800x600) but doesn't mention the second offset
-				// which makes the black bar get drawn to the length of the resolution's width.
+				// which makes the black bar get drawn to the length of the city view's width.
+				ushort _cityViewWidth = (ushort)(_resWidthMult * 60 - 2);
+				byte[] _viewportWidthBytes = BitConverter.GetBytes(Convert.ToUInt16(_cityViewWidth));
 				ZeusExeData[_resHexOffsetTable._fixCompBottomBlackBarWidth + 0] = _resWidthBytes[0];
 				ZeusExeData[_resHexOffsetTable._fixCompBottomBlackBarWidth + 1] = _resWidthBytes[1];
-				ZeusExeData[_resHexOffsetTable._fixPushBottomBlackBarWidth + 0] = _resWidthBytes[0];
-				ZeusExeData[_resHexOffsetTable._fixPushBottomBlackBarWidth + 1] = _resWidthBytes[1];
+				ZeusExeData[_resHexOffsetTable._fixPushBottomBlackBarWidth + 0] = _viewportWidthBytes[0];
+				ZeusExeData[_resHexOffsetTable._fixPushBottomBlackBarWidth + 1] = _viewportWidthBytes[1];
 
 				// This offset partially corrects the position of the game's sidebar to align with the new viewport render limit
 				// Without this change, the sidebar is drawn against the left edge of the screen and clips with the city view
@@ -127,7 +129,6 @@ namespace Zeus_and_Poseidon
 				// To alleviate that problem, my solution is to use the formula mentioned above to calculate the width of the city view using the
 				// appropriate multiplier calculated above. This figure is then used to designate where the left edge of the sidebar starts.
 				// This means that the sidebar will be shifted left to be next to the city view.
-				byte[] _viewportWidthBytes = BitConverter.GetBytes(Convert.ToUInt16(_resWidthMult * 60 - 2));
 				ZeusExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 0] = _viewportWidthBytes[0];
 				ZeusExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 1] = _viewportWidthBytes[1];
 
@@ -157,81 +158,93 @@ namespace Zeus_and_Poseidon
 				// Fortunately, there are a string of NOPs starting at offset 0x117BE6 that can be overwritten to accomodate this shift.
 				for (byte i = 115; i > 3; i--)
 				{
-					ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + i] = ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + i - 3];
+					ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJumpOffset + i] = ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJumpOffset + i - 3];
 				}
 				// Next, convert a "push 0" instruction into a "push 0x1B0" instruction.
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 0] = 0x68;
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 1] = 0xB0;
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 2] = 0x01;
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 3] = 0x00;
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 4] = 0x00;
-				// Next, we must replace a function call with a jump to our inserted new code.
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 12] = 0xE9;
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 13] = 0x1A;
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 14] = 0x04;
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 15] = 0x0C;
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 16] = 0x00;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJumpOffset + 0] = 0x68;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJumpOffset + 1] = 0xB0;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJumpOffset + 2] = 0x01;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJumpOffset + 3] = 0x00;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJumpOffset + 4] = 0x00;
+				// Next, we must replace a function call at the 12th to 16th bytes in this sequence with a jump to our inserted new code.
+				for (byte _i = 0; _i < _resHexOffsetTable._extendSidebarRedStripeNewCodeJumpData.Length; _i++)
+				{
+					ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJumpOffset + 12 + _i] = _resHexOffsetTable._extendSidebarRedStripeNewCodeJumpData[_i];
+				}
 				// In the shifted code, there were a number of jump commands to other offsets. The shift means that these jumps no longer point to the correct place.
 				// We need to patch these commands to point to the new correct locations.
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 085] -= 3;
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 090] -= 3;
-				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJump + 108] -= 3;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJumpOffset + 085] -= 3;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJumpOffset + 090] -= 3;
+				ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeJumpOffset + 108] -= 3;
 				// Finally, insert our new code into an empty portion of the EXE
-				_setExtendSidebarRedStripeNewCode(out byte[] _extendSidebarRedStripeNewCode);
-				for (byte _i = 0; _i < _extendSidebarRedStripeNewCode.Length; _i++)
+				for (byte _i = 0; _i < _resHexOffsetTable._extendSidebarRedStripeNewCodeData.Length; _i++)
 				{
-					ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCode + _i] = _extendSidebarRedStripeNewCode[_i];
+					ZeusExeData[_resHexOffsetTable._extendSidebarRedStripeNewCodeOffset + _i] = _resHexOffsetTable._extendSidebarRedStripeNewCodeData[_i];
 				}
 
 				// The second piece of new code fills both of the gaps noted above with a blue background similar to the already existing ones.
+				// It works by drawing the blue background that forms the top bar multiple times. First, by drawing multiple copies of the blue bar
+				// graphic vertically next to each other until the combination touches the left edge of the sidebar. After that, it draws multiple copies of
+				// the graphic horizontally on top of each other in the gaps to the right and bottom of the sidebar until they have been filled with blue.
 				// ----------------------------------------------------------------------------------------------------------------------------
 				// First, modify a function call into a jump to our inserted code.
-				//ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 0] = 0xE9;
-				//ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 1] = 0x0A;
-				//ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 2] = 0x92;
-				//ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJump + 3] = 0x03;
-				// After that, insert our new code.
-				_setPaintBlueBackgroundInGapsNewCode(out byte[] _paintBlueBackgroundInGapsNewCode);
-				for (ushort _i = 0; _i < _paintBlueBackgroundInGapsNewCode.Length; _i++)
+				for (byte _i = 0; _i < _resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJumpData.Length; _i++)
 				{
-					ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCode + _i] = _paintBlueBackgroundInGapsNewCode[_i];
+					ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJumpOffset + _i] = _resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJumpData[_i];
+				}
+				// Next, we need to modify our injected code to conform to the custom resolution values the user supplied.
+				// Each blue bar graphic created by this code is 838 pixels long. The bar overall needs to be the length of the city viewport's width.
+				// First, indices 37-40 are used to define the position of the left edge of the 2nd bar graphic created in this code.
+				// If the city view's width is not greater than 1676px, we only need 2 bars to fill that gap and can leave the 2nd on top of the 1st.
+				// Otherwise, position that bar immediately to the right of the 1st.
+				if (_cityViewWidth > 1676)
+				{
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[37] = 0x46;
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[38] = 0x03;
+				}
+				// Next, indices 84-87 are used to define the position of the left edge of the 3rd bar graphic.
+				// Position this bar so that it's right edge will touch the sidebar's graphic. I.e. Left position is 838px left of the city view width.
+				byte[] _finalBarPosition = BitConverter.GetBytes(Convert.ToUInt16(_cityViewWidth - 838));
+				for (ushort _i = 0; _i < _finalBarPosition.Length; _i++)
+				{
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[84 + _i] = _finalBarPosition[_i];
+				}
+				// Next, indices 152-155 are used to define the position of the left edge of the bar graphic created for the gap to the right of the sidebar.
+				// Position it to the right of said sidebar. That being the city view's width + 186.
+				ushort _cityViewAndSidebarWidth = (ushort)(_cityViewWidth + 186);
+				byte[] _rightGapBarPosition = BitConverter.GetBytes(Convert.ToUInt16(_cityViewAndSidebarWidth));
+				for (ushort _i = 0; _i < _rightGapBarPosition.Length; _i++)
+				{
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[152 + _i] = _rightGapBarPosition[_i];
+				}
+				// Next, indices 173-176 are used to define where the game will stop drawing the bars that fill the sidebar's right gap on top of each other.
+				// For resolutions where this gap is visible, we can leave this value at 768 so that these bars are drawn to the bottom of the sidebar's graphic.
+				// However, for resolutions where the gap is not visible, we can shortcut this logic by changing this value to a 0, as there is no point
+				// drawing graphics that the player won't see. 
+				if (_cityViewAndSidebarWidth >= ResWidth)
+				{
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[173] = 0;
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[174] = 0;
+				}
+				// Next, indices 232-235 are used to define the position of the left edge of the bar graphic created for the gap below the sidebar.
+				// Position it to the right of the red stripe. That being the city view's width + 6.
+				byte[] _bottomGapBarPosition = BitConverter.GetBytes(Convert.ToUInt16(_cityViewWidth + 6));
+				for (ushort _i = 0; _i < _bottomGapBarPosition.Length; _i++)
+				{
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[232 + _i] = _bottomGapBarPosition[_i];
+				}
+				// Next, indices 253-256 are used to define where the game will stop drawing the bars filling the sidebar's bottom gap on top of each other.
+				// This must be changed to the screen's height.
+				for (ushort _i = 0; _i < _resHeightBytes.Length; _i++)
+				{
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[253 + _i] = _resHeightBytes[_i];
+				}
+				// Finally, we can insert our new code.
+				for (ushort _i = 0; _i < _resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData.Length; _i++)
+				{
+					ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeOffset + _i] = _resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[_i];
 				}
 			}
-		}
-
-		/// <summary>
-		/// Creates a byte array containing the new code that is used to extend the sidebar's red stripe.
-		/// </summary>
-		/// <param name="_extendSidebarRedStripeNewCode">Byte array that contains the new code.</param>
-		private static void _setExtendSidebarRedStripeNewCode(out byte[] _extendSidebarRedStripeNewCode)
-		{
-			_extendSidebarRedStripeNewCode = new byte[]
-			{
-				0xA3,0xF4,0xDF,0x60,0x01,0xE8,0xA6,0x4F, 0xFD,0xFF,0xA1,0xF4,0xDF,0x60,0x01,0x8B, 0x0D,0x34,0xFF,0x0D,0x01,0x6A,0x00,0x6A,
-				0x00,0x6A,0x00,0x6A,0x00,0x51,0x50,0xB9, 0xE8,0xEB,0x2A,0x01,0xE8,0x87,0x4F,0xFD, 0xFF,0xE9,0xB8,0xFB,0xF3,0xFF
-			};
-		}
-
-		/// <summary>
-		/// Creates a byte array containing the new code that is used to fill gaps in the UI with a blue background.
-		/// </summary>
-		/// <param name="_paintBlueBackgroundInGapsNewCode">Byte array that contains the new code.</param>
-		private static void _setPaintBlueBackgroundInGapsNewCode(out byte[] _paintBlueBackgroundInGapsNewCode)
-		{
-			_paintBlueBackgroundInGapsNewCode = new byte[]
-			{
-				0xE8,0x0B,0x51,0xFD,0xFF,0xA1,0x64,0x94, 0x2C,0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05, 0x58,0x03,0x00,0x00,0x8B,0x40,0x04,0x6A,
-				0x00,0x6A,0x00,0x6A,0x00,0x05,0x00,0x40, 0x00,0x00,0x6A,0x00,0x68,0x0F,0x02,0x00, 0x00,0x50,0xB9,0xE8,0xEB,0x2A,0x01,0xE8,
-				0xDC,0x50,0xFD,0xFF,0xA1,0x64,0x94,0x2C, 0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05,0x58, 0x03,0x00,0x00,0x8B,0x40,0x04,0x6A,0x00,
-				0x6A,0x00,0x6A,0x00,0x05,0x00,0x40,0x00, 0x00,0x6A,0x00,0x68,0x1C,0x02,0x00,0x00, 0x50,0xB9,0xE8,0xEB,0x2A,0x01,0xE8,0xAD,
-				0x50,0xFD,0xFF,0xC7,0x05,0xF0,0xDF,0x60, 0x01,0x00,0x00,0x00,0x00,0xA1,0x64,0x94, 0x2C,0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05,
-				0x58,0x03,0x00,0x00,0x8B,0x40,0x04,0x6A, 0x00,0x6A,0x00,0x6A,0x00,0x05,0x00,0x40, 0x00,0x00,0xFF,0x35,0xF0,0xDF,0x60,0x01,
-				0x83,0x05,0xF0,0xDF,0x60,0x01,0x10,0x68, 0x1C,0x06,0x00,0x00,0x50,0xB9,0xE8,0xEB, 0x2A,0x01,0xE8,0x69,0x50,0xFD,0xFF,0x81,
-				0x3D,0xF0,0xDF,0x60,0x01,0x00,0x03,0x00, 0x00,0x75,0xBA,0xC7,0x05,0xF0,0xDF,0x60, 0x01,0x00,0x03,0x00,0x00,0xA1,0x64,0x94,
-				0x2C,0x01,0xA1,0x30,0xC8,0x2B,0x01,0x05, 0x58,0x03,0x00,0x00,0x8B,0x40,0x04,0x6A, 0x00,0x6A,0x00,0x6A,0x00,0x05,0x00,0x40,
-				0x00,0x00,0xFF,0x35,0xF0,0xDF,0x60,0x01, 0x83,0x05,0xF0,0xDF,0x60,0x01,0x10,0x68, 0x68,0x05,0x00,0x00,0x50,0xB9,0xE8,0xEB,
-				0x2A,0x01,0xE8,0x19,0x50,0xFD,0xFF,0x81, 0x3D,0xF0,0xDF,0x60,0x01,0x90,0x03,0x00, 0x00,0x75,0xBA,0xE9,0xEE,0x6C,0xFC,0xFF
-			};
 		}
 	}
 }
