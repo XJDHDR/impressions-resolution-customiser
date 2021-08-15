@@ -193,51 +193,53 @@ namespace Zeus_and_Poseidon
 					ZeusExeData[_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJumpOffset + _i] = _resHexOffsetTable._paintBlueBackgroundInGapsNewCodeJumpData[_i];
 				}
 				// Next, we need to modify our injected code to conform to the custom resolution values the user supplied.
-				// Each blue bar graphic created by this code is 838 pixels long. The bar overall needs to be the length of the city viewport's width.
-				// First, indices 37-40 are used to define the position of the left edge of the 2nd bar graphic created in this code.
-				// If the city view's width is not greater than 1676px, we only need 2 bars to fill that gap and can leave the 2nd on top of the 1st.
-				// Otherwise, position that bar immediately to the right of the 1st.
-				if (_cityViewWidth > 1676)
+				// Each blue bar graphic created by this code is 838 pixels long. The starting part of this code draws the multiple bar graphics next to each other
+				// to complete the top bar's background. This bar overall needs to be the length of the city view's width, which we calculated earlier.
+				//
+				// First, we need to calculate where the position of the final bar graphic's left edge needs to be. Since the graphic is exactly 838px long, this means
+				// that this edge needs to be placed 838px to the left of the right edge of the city viewport's width. After that, there are two offsets that need to be edited.
+				// The first is part of a counter that detects when the game has drawn and stacked enough copies of the graphic that the second-to-last one overlaps this point,
+				// at which point the process moves on to creating the last graphic for the top bar. The second offset tells the game where this final graphic needs to be positioned.
+				long _finalTopBarGraphicPosition = _cityViewWidth - 838;
+				if (_finalTopBarGraphicPosition < 0)
 				{
-					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[37] = 0x46;
-					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[38] = 0x03;
+					_finalTopBarGraphicPosition = 0;
 				}
-				// Next, indices 84-87 are used to define the position of the left edge of the 3rd bar graphic.
-				// Position this bar so that it's right edge will touch the sidebar's graphic. I.e. Left position is 838px left of the city view width.
-				byte[] _finalBarPosition = BitConverter.GetBytes(Convert.ToUInt16(_cityViewWidth - 838));
-				for (ushort _i = 0; _i < _finalBarPosition.Length; _i++)
+				byte[] _finalTopBarPositionBytes = BitConverter.GetBytes(Convert.ToUInt16(_finalTopBarGraphicPosition));
+				for (ushort _i = 0; _i < _finalTopBarPositionBytes.Length; _i++)
 				{
-					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[84 + _i] = _finalBarPosition[_i];
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[12 + _i] = _finalTopBarPositionBytes[_i];
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[103 + _i] = _finalTopBarPositionBytes[_i];
 				}
-				// Next, indices 152-155 are used to define the position of the left edge of the bar graphic created for the gap to the right of the sidebar.
+				// Next, indices 175-178 are used to define the position of the left edge of the bar graphic created for the gap to the right of the sidebar.
 				// Position it to the right of said sidebar. That being the city view's width + 186.
 				ushort _cityViewAndSidebarWidth = (ushort)(_cityViewWidth + 186);
 				byte[] _rightGapBarPosition = BitConverter.GetBytes(Convert.ToUInt16(_cityViewAndSidebarWidth));
 				for (ushort _i = 0; _i < _rightGapBarPosition.Length; _i++)
 				{
-					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[152 + _i] = _rightGapBarPosition[_i];
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[171 + _i] = _rightGapBarPosition[_i];
 				}
-				// Next, indices 173-176 are used to define where the game will stop drawing the bars that fill the sidebar's right gap on top of each other.
+				// Next, indices 196-199 are used to define where the game will stop drawing the bars that fill the sidebar's right gap on top of each other.
 				// For resolutions where this gap is visible, we can leave this value at 768 so that these bars are drawn to the bottom of the sidebar's graphic.
 				// However, for resolutions where the gap is not visible, we can shortcut this logic by changing this value to a 0, as there is no point
 				// drawing graphics that the player won't see. 
 				if (_cityViewAndSidebarWidth >= ResWidth)
 				{
-					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[173] = 0;
-					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[174] = 0;
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[192] = 0;
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[193] = 0;
 				}
-				// Next, indices 232-235 are used to define the position of the left edge of the bar graphic created for the gap below the sidebar.
+				// Next, indices 255-258 are used to define the position of the left edge of the bar graphic created for the gap below the sidebar.
 				// Position it to the right of the red stripe. That being the city view's width + 6.
 				byte[] _bottomGapBarPosition = BitConverter.GetBytes(Convert.ToUInt16(_cityViewWidth + 6));
 				for (ushort _i = 0; _i < _bottomGapBarPosition.Length; _i++)
 				{
-					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[232 + _i] = _bottomGapBarPosition[_i];
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[251 + _i] = _bottomGapBarPosition[_i];
 				}
-				// Next, indices 253-256 are used to define where the game will stop drawing the bars filling the sidebar's bottom gap on top of each other.
+				// Next, indices 276-279 are used to define where the game will stop drawing the bars filling the sidebar's bottom gap on top of each other.
 				// This must be changed to the screen's height.
 				for (ushort _i = 0; _i < _resHeightBytes.Length; _i++)
 				{
-					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[253 + _i] = _resHeightBytes[_i];
+					_resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData[272 + _i] = _resHeightBytes[_i];
 				}
 				// Finally, we can insert our new code.
 				for (ushort _i = 0; _i < _resHexOffsetTable._paintBlueBackgroundInGapsNewCodeData.Length; _i++)
