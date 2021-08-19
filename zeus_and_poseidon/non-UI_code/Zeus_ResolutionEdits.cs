@@ -91,8 +91,24 @@ namespace Zeus_and_Poseidon
 				//         off the screen without any problem. Thus, I'll use this fact to get a little bit more space for the city view.
 				// 
 				// Finally, we also need to round our final figure down to the nearest integer.
-				byte _resHeightMult = (byte)Math.Floor((ResHeight - 30) / 15f + 1); // fs are required. Otherwise,
-				byte _resWidthMult = (byte)Math.Floor((ResWidth - 182 + 2) / 60f);  // compiler error CS0121 occurrs.
+				byte _resHeightMult;
+				if (ResHeight > 1934)
+				{
+					_resHeightMult = 127;
+				}
+				else
+				{
+					_resHeightMult = (byte)Math.Floor((ResHeight - 30) / 15f + 1); // fs are required. Otherwise, compiler error CS0121 occurrs.
+				}
+				byte _resWidthMult;
+				if (ResWidth > 7859)
+				{
+					_resWidthMult = 127;
+				}
+				else
+				{
+					_resWidthMult = (byte)Math.Floor((ResWidth - 182 + 2) / 60f); // fs are required. Otherwise, compiler error CS0121 occurrs.
+				}
 				ZeusExeData[_resHexOffsetTable._viewportHeightMult] = _resHeightMult;
 				ZeusExeData[_resHexOffsetTable._viewportWidthMult] = _resWidthMult;
 

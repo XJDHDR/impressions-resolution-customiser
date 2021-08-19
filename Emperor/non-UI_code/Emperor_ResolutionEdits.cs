@@ -91,9 +91,26 @@ namespace Emperor
 				//     222px for the right sidebar. Even though the sidebar's actual width is 226px, the last 4 pixels can be pushed 
 				//         off the screen without any problem. Thus, I'll use this fact to get a little bit more space for the city view.
 				// 
-				// Finally, we also need to round our final figure down to the nearest integer.
-				byte _resHeightMult = (byte)Math.Floor((ResHeight - 40) / 20f + 1);	// fs are required. Otherwise,
-				byte _resWidthMult  = (byte)Math.Floor((ResWidth - 222 + 2) / 80f);	// compiler error CS0121 occurrs.
+				// After that, we also need to round our final figure down to the nearest integer.
+				// Finally, these values are signed 8-bit integers and so, must be capped at 127.
+				byte _resHeightMult;
+				if (ResHeight > 2579)
+				{
+					_resHeightMult = 127;
+				}
+				else
+				{
+					_resHeightMult = (byte)Math.Floor((ResHeight - 40) / 20f + 1); // fs are required. Otherwise, compiler error CS0121 occurrs.
+				}
+				byte _resWidthMult;
+				if (ResWidth > 10459)
+				{
+					_resWidthMult = 127;
+				}
+				else
+				{
+					_resWidthMult = (byte)Math.Floor((ResWidth - 222 + 2) / 80f); // fs are required. Otherwise, compiler error CS0121 occurrs.
+				}
 				EmperorExeData[_resHexOffsetTable._viewportHeightMult] = _resHeightMult;
 				EmperorExeData[_resHexOffsetTable._viewportWidthMult]  = _resWidthMult;
 
