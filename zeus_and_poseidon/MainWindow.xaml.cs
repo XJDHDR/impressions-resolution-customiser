@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using System;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Zeus_and_Poseidon
 {
@@ -16,14 +17,18 @@ namespace Zeus_and_Poseidon
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		// Because _resHeightMult and _resWidthMult (in the Zeus_ResolutionEdits class) are 8 bit numbers, they can't go higher than 255.
-		// This means that we must cap our resolution numbers to figures that will be the highest possible that still leaves their multipliers at 255.
+		// Because _resHeightMult and _resWidthMult (in the Zeus_ResolutionEdits class) are 8 bit signed integers, which can't go higher than 127.
+		// The ExeDefinitions class caps these multipliers to a maximum of 127. The following formulae show what
+		// the maximum size of the game's area can be (that being the city viewport, top menubar and sidebar together):
+		// Max Height = (128 - 1) * 15 + 30 - 1 = 1934
+		// Max Width = 128 * 60 + 186 - 2 - 1 = 7863
 		// 
-		// Thus, to copy and adapt the relevant formulas for calculating a resolution from a multiplier:
-		// _maxResolutionHeight = (256 - 1) * 15 + 30 - 1 = 3854
-		// _maxResolutionWidth = 256 * 60 + 182 - 2 - 1 = 15539
-		private const ulong _maxResolutionHeight = 3854;
-		private const ulong _maxResolutionWidth = 15539;
+		// If a higher resolution than these are requested, my custom code will add some background to cover up the gaps that would be present otherwise.
+		// However, higher resolutions will cause the playable portions of the game's window to take up a progressively smaller part of the screen.
+		// To remedy this, I will cap these numbers at 3x higher than the calculated figures above. This means that the game's playable area will
+		// take up at least 11.1% of the screen.
+		private const ulong _maxResolutionHeight = 5802;
+		private const ulong _maxResolutionWidth = 23589;
 
 		private bool _exeCreationBusy;
 		private string _zeusExePath;
@@ -145,6 +150,15 @@ namespace Zeus_and_Poseidon
 				"and optionally resized images. All of these will be placed in the \"patched_files\" folder next to this program."
 			};
 			MessageBox.Show(string.Join(Environment.NewLine, _messageLines));
+		}
+
+		/// <summary>
+		/// Make all text in a textbox selected when clicked on.
+		/// </summary>
+		private void AllTextBoxes_GotFocus(object sender, RoutedEventArgs e)
+		{
+			TextBox textBox = (TextBox)sender;
+			textBox.Dispatcher.BeginInvoke(new Action(() => textBox.SelectAll()));
 		}
 	}
 }

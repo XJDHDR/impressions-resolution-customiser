@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Emperor"
         mc:Ignorable="d"
-        Title="Emperor Resolution Customiser" Height="320" Width="500" Icon="Exe_Resources\Emperor.ico" Background="#E0E0E0">
+        Title="Emperor Resolution Customiser" Height="320" Width="500" Icon="Exe_Resources\Emperor.ico" Background="#E0E0E0"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -42,7 +43,7 @@
         </Border>
         <Border BorderBrush="Black" BorderThickness="2" Grid.Column="4" Grid.Row="3" Width="112" Height="52">
             <TextBox x:Name="ResWidth" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                     TextAlignment="Right" TextWrapping="Wrap" Text="1024" FontSize="32" Width="108" Height="48"/>
+                     TextAlignment="Right" TextWrapping="Wrap" Text="1024" FontSize="32" Width="108" Height="48" GotFocus="AllTextBoxes_GotFocus"/>
         </Border>
 
         <Border BorderBrush="Black" BorderThickness="2" Grid.Column="3" Grid.Row="4" Width="340" Height="52">
@@ -51,7 +52,7 @@
         </Border>
         <Border BorderBrush="Black" BorderThickness="2" Grid.Column="4" Grid.Row="4" Width="112" Height="52">
             <TextBox x:Name="ResHeight" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                     TextAlignment="Right" TextWrapping="Wrap" Text="768" FontSize="32" Width="108" Height="48"/>
+                     TextAlignment="Right" TextWrapping="Wrap" Text="768" FontSize="32" Width="108" Height="48" GotFocus="AllTextBoxes_GotFocus"/>
         </Border>
 
         <CheckBox x:Name="ApplyWindowFix" Content="Apply Windowed Mode Fixes" IsChecked="True" 
