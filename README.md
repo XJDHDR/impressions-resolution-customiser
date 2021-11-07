@@ -19,7 +19,7 @@ Finally, though I don't do this with the intention of getting money and my work 
 
 # FAQ
 **What is your current progress?**
-- Right now, the Zeus & Poseidon Customiser is pretty much feature complete but only supports the GOG version of the game. The only work that really still needs to be done is to add support for additional languages and distributions of the game.
+- Right now, the Zeus & Poseidon Customiser is pretty much feature complete but only supports the Steam and GOG versions of the game. The only work that really still needs to be done is to add support for additional languages and distributions of the game.
 - The Emperor Customiser is mostly finished in terms of supporting the GOG version of the game. It still needs some work and testing before I can start releasing it.
 
 **Where are the binaries/files that players can use?**

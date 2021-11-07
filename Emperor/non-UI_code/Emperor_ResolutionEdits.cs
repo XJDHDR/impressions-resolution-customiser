@@ -94,7 +94,8 @@ namespace Emperor
 				// After that, we also need to round our final figure down to the nearest integer.
 				// Finally, these values are signed 8-bit integers and so, must be capped at 127.
 				byte _resHeightMult;
-				if (ResHeight > 2579)
+				// 2560 plugged into the formula below is equal to 127. Thus, this and any higher number must use a capped multiplier.
+				if (ResHeight >= 2560)
 				{
 					_resHeightMult = 127;
 				}
@@ -103,7 +104,8 @@ namespace Emperor
 					_resHeightMult = (byte)Math.Floor((ResHeight - 40) / 20f + 1); // fs are required. Otherwise, compiler error CS0121 occurrs.
 				}
 				byte _resWidthMult;
-				if (ResWidth > 10459)
+				// 10380 plugged into the formula below is equal to 127. Thus, this and any higher number must use a capped multiplier.
+				if (ResWidth >= 10380)
 				{
 					_resWidthMult = 127;
 				}

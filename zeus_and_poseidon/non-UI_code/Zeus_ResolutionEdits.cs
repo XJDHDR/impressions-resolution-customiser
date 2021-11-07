@@ -92,7 +92,8 @@ namespace Zeus_and_Poseidon
 				// 
 				// Finally, we also need to round our final figure down to the nearest integer.
 				byte _resHeightMult;
-				if (ResHeight > 1934)
+				// 1920 plugged into the formula below is equal to 127. Thus, this and any higher number must use a capped multiplier.
+				if (ResHeight >= 1920)
 				{
 					_resHeightMult = 127;
 				}
@@ -101,7 +102,8 @@ namespace Zeus_and_Poseidon
 					_resHeightMult = (byte)Math.Floor((ResHeight - 30) / 15f + 1); // fs are required. Otherwise, compiler error CS0121 occurrs.
 				}
 				byte _resWidthMult;
-				if (ResWidth > 7859)
+				// 7800 plugged into the formula below is equal to 127. Thus, this and any higher number must use a capped multiplier.
+				if (ResWidth >= 7800)
 				{
 					_resWidthMult = 127;
 				}

@@ -28,7 +28,7 @@ namespace Zeus_and_Poseidon
 	internal enum ExeLangAndDistrib
 	{
 		Not_Recognised = 0,
-		GOG_English = 1
+		GOG_and_Steam_English = 1
 	}
 
 	/// <summary>
@@ -90,22 +90,25 @@ namespace Zeus_and_Poseidon
 
 			switch (_fileHashString)
 			{
-				case "7423a12681188325cab04f72b7dc64f1":        // English GOG version
+				// English GOG and Steam versions
+				case "7423a12681188325cab04f72b7dc64f1":
 					ExeAttributes = new ExeAttributes
 					{
-						SelectedExeLangAndDistrib = ExeLangAndDistrib.GOG_English,
+						SelectedExeLangAndDistrib = ExeLangAndDistrib.GOG_and_Steam_English,
 						IsDiscVersion = false,
 						IsPoseidonInstalled = true
 					};
 					return true;
 
-				default:                // Unrecognised EXE
+				// Unrecognised EXE
+				default:
 					string[] _messageLines = new string[]
 					{
 						"Zeus.exe was not recognised (hash: " + _fileHashString + ").",
 						"",
 						"Only the following unmodified distributions and languages are currently supported:",
 						"- English GOG version with Poseidon expansion (hash: 7423a12681188325cab04f72b7dc64f1)"
+						"- English Steam version with Poseidon expansion (hash: 7423a12681188325cab04f72b7dc64f1)"
 					};
 					MessageBox.Show(string.Join(Environment.NewLine, _messageLines));
 					ExeAttributes = new ExeAttributes
