@@ -15,7 +15,7 @@ namespace Emperor
 	class Emperor_ResolutionEdits
 	{
 		/// <summary>
-		/// Patches the various offsets in Emperor.exe to run at the desired resolution and scale various UI elements 
+		/// Patches the various offsets in Emperor.exe to run at the desired resolution and scale various UI elements
 		/// to fit the new resolution.
 		/// </summary>
 		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
@@ -57,7 +57,7 @@ namespace Emperor
 				EmperorExeData[_resHexOffsetTable._fixTopMenuBarBackgroundPosWidth + 1] = _resWidthBytes[1];
 
 				// Set main game's viewport to the correct width.
-				// This means the width that will be taken by both the city view's "camera" and the right sidebar containing the city's info and 
+				// This means the width that will be taken by both the city view's "camera" and the right sidebar containing the city's info and
 				// buttons to build and demolish buildings and other functions.
 				// Without this patch, the view of your city will be rendered in a small square placed at the top-left corner of the main viewing area.
 				EmperorExeData[_resHexOffsetTable._viewportWidth + 0] = _resWidthBytes[0];
@@ -88,9 +88,9 @@ namespace Emperor
 				//
 				// When using selected resolution in the calculations, the size of the UI elements need to accounted for:
 				//     40px for the top menubar.
-				//     222px for the right sidebar. Even though the sidebar's actual width is 226px, the last 4 pixels can be pushed 
+				//     222px for the right sidebar. Even though the sidebar's actual width is 226px, the last 4 pixels can be pushed
 				//         off the screen without any problem. Thus, I'll use this fact to get a little bit more space for the city view.
-				// 
+				//
 				// After that, we also need to round our final figure down to the nearest integer.
 				// Finally, these values are signed 8-bit integers and so, must be capped at 127.
 				byte _resHeightMult;
@@ -157,6 +157,9 @@ namespace Emperor
 				EmperorExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 0] = _viewportWidthBytes[0];
 				EmperorExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 1] = _viewportWidthBytes[1];
 
+
+
+
 				// This offset replaces a JNZ call with two NOPs
 				// It causes the bottom bar to be drawn all the way and connect to the sidebar instead of stopping at 798px in length.
 				// It does this by drawing the bar graphic twice.
@@ -171,6 +174,9 @@ namespace Emperor
 				// This offset moves the second bar created above next to the first bar.
 				EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak2 + 0] = _bottomBarRowTopEdgePosBytes[0];
 				EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak2 + 1] = _bottomBarRowTopEdgePosBytes[1];
+
+
+
 
 				// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
 				EmperorExeData[_resHexOffsetTable._unknownWidth + 0] = _resWidthBytes[0];

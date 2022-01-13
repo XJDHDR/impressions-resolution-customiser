@@ -21,7 +21,7 @@ namespace Emperor
 	}
 
 	/// <summary>
-	/// Used to define the various versions of Emperor.exe that this program recognises and knows what offsets to patch. 
+	/// Used to define the various versions of Emperor.exe that this program recognises and knows what offsets to patch.
 	/// </summary>
 	internal enum ExeLangAndDistrib
 	{
@@ -33,10 +33,10 @@ namespace Emperor
 	/// <summary>
 	/// Struct that specifies various details about the Emperor.exe given to the program.
 	/// </summary>
-	class Emperor_ExeDefinitions
+	static class Emperor_ExeDefinitions
 	{
 		/// <summary>
-		/// Copies the contents of Emperor.exe into a byte array for editing then calculates a CRC32 hash for the contents of that array. 
+		/// Copies the contents of Emperor.exe into a byte array for editing then calculates a CRC32 hash for the contents of that array.
 		/// After that, compares that CRC to a list of known CRCs to determine which distribution of this game is being patched.
 		/// </summary>
 		/// <param name="ZeusExeLocation">String that defines the location of Emperor.exe</param>

@@ -13,7 +13,7 @@ namespace Emperor
 	/// <summary>
 	/// Base class used to interact with the code patching classes, figure out what version of the game is being patched and prepare the environment before patching.
 	/// </summary>
-	class Emperor_MakeChanges
+	static class Emperor_MakeChanges
 	{
 		/// <summary>
 		/// Checks if there is a Emperor.exe selected or available to patch, prepares the "patched_files" folder for the patched files
