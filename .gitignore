@@ -2,6 +2,7 @@
 *.exe
 *.jpg
 *.pdb
+/.idea/.idea.impressions-resolution-customiser/.idea/workspace.xml
 /.vs/
 /*/bin/*/patched_files/
 /*/obj/
