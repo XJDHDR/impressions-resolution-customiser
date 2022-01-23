@@ -1,4 +1,5 @@
-﻿// This code is part of the Impressions Resolution Customiser project
+﻿// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
@@ -8,36 +9,36 @@ using System;
 using System.IO;
 using System.Windows;
 
-namespace Emperor
+namespace Emperor.non_UI_code
 {
 	/// <summary>
 	/// Base class used to interact with the code patching classes, figure out what version of the game is being patched and prepare the environment before patching.
 	/// </summary>
-	static class Emperor_MakeChanges
+	internal static class EmperorMakeChanges
 	{
 		/// <summary>
 		/// Checks if there is a Emperor.exe selected or available to patch, prepares the "patched_files" folder for the patched files
 		/// then calls the requested patching functions.
 		/// </summary>
-		/// <param name="EmperorExeLocation">Optionally contains the location of the Emperor.exe selected by the UI's file selection dialog.</param>
-		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
-		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
-		/// <param name="FixWindowed">Whether the "Apply Windowed Mode Fixes" checkbox is selected or not.</param>
-		/// <param name="ResizeImages">Whether the "Resize Images" checkbox is selected or not.</param>
-		internal static void ProcessEmperorExe(string EmperorExeLocation, ushort ResWidth, ushort ResHeight, bool FixWindowed, bool ResizeImages)
+		/// <param name="_EmperorExeLocation_">Optionally contains the location of the Emperor.exe selected by the UI's file selection dialog.</param>
+		/// <param name="_ResWidth_">The width value of the resolution inputted into the UI.</param>
+		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
+		/// <param name="_FixWindowed_">Whether the "Apply Windowed Mode Fixes" checkbox is selected or not.</param>
+		/// <param name="_ResizeImages_">Whether the "Resize Images" checkbox is selected or not.</param>
+		internal static void _ProcessEmperorExe(string _EmperorExeLocation_, ushort _ResWidth_, ushort _ResHeight_, bool _FixWindowed_, bool _ResizeImages_)
 		{
-			if (!File.Exists(EmperorExeLocation))
+			if (!File.Exists(_EmperorExeLocation_))
 			{
 				// User didn't select a folder using the selection button.
 				if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"base_files\Emperor.exe"))
 				{
 					// Check if the user has placed the Zeus data files in the "base_files" folder.
-					EmperorExeLocation = AppDomain.CurrentDomain.BaseDirectory + @"base_files\Emperor.exe";
+					_EmperorExeLocation_ = AppDomain.CurrentDomain.BaseDirectory + @"base_files\Emperor.exe";
 				}
 				else if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Emperor.exe") && (AppDomain.CurrentDomain.FriendlyName != "Emperor.exe"))
 				{
 					// As a last resort, check if the Zeus data files are in the same folder as this program.
-					EmperorExeLocation = AppDomain.CurrentDomain.BaseDirectory + "Emperor.exe";
+					_EmperorExeLocation_ = AppDomain.CurrentDomain.BaseDirectory + "Emperor.exe";
 				}
 				else
 				{
@@ -48,14 +49,14 @@ namespace Emperor
 				}
 			}
 
-			string _patchedFilesFolder = AppDomain.CurrentDomain.BaseDirectory + "patched_files";
+			string _patchedFilesFolder_ = AppDomain.CurrentDomain.BaseDirectory + "patched_files";
 			try
 			{
-				if (Directory.Exists(_patchedFilesFolder))
+				if (Directory.Exists(_patchedFilesFolder_))
 				{
-					Directory.Delete(_patchedFilesFolder, true);
+					Directory.Delete(_patchedFilesFolder_, true);
 				}
-				Directory.CreateDirectory(_patchedFilesFolder);
+				Directory.CreateDirectory(_patchedFilesFolder_);
 			}
 			catch (PathTooLongException)
 			{
@@ -77,21 +78,21 @@ namespace Emperor
 				return;
 			}
 
-			if (Emperor_ExeDefinitions.GetAndCheckExeChecksum(EmperorExeLocation, out byte[] _emperorExeData, out ExeAttributes _exeAttributes))
+			if (EmperorExeDefinitions._GetAndCheckExeChecksum(_EmperorExeLocation_, out byte[] _emperorExeData_, out ExeAttributes _exeAttributes_))
 			{
-				Emperor_ResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, _exeAttributes, ref _emperorExeData);
+				EmperorResolutionEdits._hexEditExeResVals(_ResWidth_, _ResHeight_, _exeAttributes_, ref _emperorExeData_);
 
-				if (FixWindowed)
+				if (_FixWindowed_)
 				{
-					Emperor_WindowFix._hexEditWindowFix(_exeAttributes, ref _emperorExeData);
+					EmperorWindowFix._hexEditWindowFix(_exeAttributes_, ref _emperorExeData_);
 				}
-				if (ResizeImages)
+				if (_ResizeImages_)
 				{
-					Emperor_ResizeImages.CreateResizedImages(EmperorExeLocation, ResWidth, ResHeight, _patchedFilesFolder);
+					EmperorResizeImages._CreateResizedImages(_EmperorExeLocation_, _ResWidth_, _ResHeight_, _patchedFilesFolder_);
 				}
 
-				File.WriteAllBytes(_patchedFilesFolder + "/Emperor.exe", _emperorExeData);
-				MessageBox.Show("Your patched Emperor.exe has been successfully created in " + _patchedFilesFolder);
+				File.WriteAllBytes(_patchedFilesFolder_ + "/Emperor.exe", _emperorExeData_);
+				MessageBox.Show("Your patched Emperor.exe has been successfully created in " + _patchedFilesFolder_);
 			}
 		}
 	}

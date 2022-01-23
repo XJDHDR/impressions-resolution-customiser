@@ -1,4 +1,5 @@
-﻿// This code is part of the Impressions Resolution Customiser project
+﻿// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
@@ -10,48 +11,47 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 
-namespace Zeus_and_Poseidon
+namespace Zeus_and_Poseidon.non_UI_code
 {
 	/// <summary>
 	/// Struct that specifies various details about the Zeus.exe given to the program.
 	/// </summary>
 	internal struct ExeAttributes
 	{
-		internal ExeLangAndDistrib SelectedExeLangAndDistrib;
-		internal bool IsDiscVersion;
-		internal bool IsPoseidonInstalled;
+		internal ExeLangAndDistrib _SelectedExeLangAndDistrib;
+		internal bool _IsDiscVersion;
+		internal bool _IsPoseidonInstalled;
 	}
 
 	/// <summary>
-	/// Used to define the various versions of Zeus.exe that this program recognises and knows what offsets to patch. 
+	/// Used to define the various versions of Zeus.exe that this program recognises and knows what offsets to patch.
 	/// </summary>
 	internal enum ExeLangAndDistrib
 	{
-		Not_Recognised = 0,
-		GOG_and_Steam_English = 1
+		NotRecognised = 0,
+		GogAndSteamEnglish = 1
 	}
 
 	/// <summary>
-	/// This class contains all of the code that specifies EXE specific data which varies based on the version of Zeus that is being patched. 
+	/// This class contains all of the code that specifies EXE specific data which varies based on the version of Zeus that is being patched.
 	/// Hypothetically, adding support for additional versions of the game will only require editing this class.
 	/// </summary>
-	internal class Zeus_ExeDefinitions
+	internal static class ZeusExeDefinitions
 	{
 		/// <summary>
-		/// Copies the contents of Zeus.exe into a byte array for editing then calculates a CRC32 hash for the contents of that array. 
+		/// Copies the contents of Zeus.exe into a byte array for editing then calculates a CRC32 hash for the contents of that array.
 		/// After that, compares that CRC to a list of known CRCs to determine which distribution of this game is being patched.
 		/// </summary>
-		/// <param name="ZeusExeLocation">String that defines the location of Zeus.exe</param>
-		/// <param name="ZeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
+		/// <param name="_ZeusExeLocation_">String that defines the location of Zeus.exe</param>
+		/// <param name="_ZeusExeData_">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
+		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Zeus.exe</param>
 		/// <returns>
 		/// True if the CRC for the selected Zeus.exe matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool GetAndCheckExeChecksum(string ZeusExeLocation, out byte[] ZeusExeData, out ExeAttributes ExeAttributes)
+		internal static bool _GetAndCheckExeChecksum(string _ZeusExeLocation_, out byte[] _ZeusExeData_, out ExeAttributes _ExeAttributes_)
 		{
-			string[] _hexStringTable = new string[]
-			{
+			string[] _hexStringTable_ = {
 				"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
 				"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
 				"20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f",
@@ -70,52 +70,51 @@ namespace Zeus_and_Poseidon
 				"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
 			};
 
-			ZeusExeData = File.ReadAllBytes(ZeusExeLocation);
+			_ZeusExeData_ = File.ReadAllBytes(_ZeusExeLocation_);
 
 			// First, create an MD5 hash of the EXE's data
-			MD5 _md5 = MD5.Create();
-			byte[] _md5HashBytes = _md5.ComputeHash(ZeusExeData);
-			_md5.Dispose();
+			MD5 _md5_ = MD5.Create();
+			byte[] _md5HashBytes_ = _md5_.ComputeHash(_ZeusExeData_);
+			_md5_.Dispose();
 
 			// Next, create a string out of the resulting byte array
-			StringBuilder _stringBuilder = new StringBuilder();
-			if (_md5HashBytes != null)
+			StringBuilder _stringBuilder_ = new StringBuilder();
+			for (int _i_ = 0; _i_ < _md5HashBytes_.Length; _i_++)
 			{
-				foreach (byte _hexValue in _md5HashBytes)
-				{
-					_stringBuilder.Append(_hexStringTable[_hexValue]);
-				}
+				byte _hexValue_ = _md5HashBytes_[_i_];
+				_stringBuilder_.Append(_hexStringTable_[_hexValue_]);
 			}
-			string _fileHashString = _stringBuilder.ToString();
 
-			switch (_fileHashString)
+			string _fileHashString_ = _stringBuilder_.ToString();
+
+			switch (_fileHashString_)
 			{
 				// English GOG and Steam versions
 				case "7423a12681188325cab04f72b7dc64f1":
-					ExeAttributes = new ExeAttributes
+					_ExeAttributes_ = new ExeAttributes
 					{
-						SelectedExeLangAndDistrib = ExeLangAndDistrib.GOG_and_Steam_English,
-						IsDiscVersion = false,
-						IsPoseidonInstalled = true
+						_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogAndSteamEnglish,
+						_IsDiscVersion = false,
+						_IsPoseidonInstalled = true
 					};
 					return true;
 
 				// Unrecognised EXE
 				default:
-					string[] _messageLines = new string[]
+					string[] _messageLines_ = new string[]
 					{
-						"Zeus.exe was not recognised (hash: " + _fileHashString + ").",
+						$"Zeus.exe was not recognised (hash: {_fileHashString_}).",
 						"",
 						"Only the following unmodified distributions and languages are currently supported:",
-						"- English GOG version with Poseidon expansion (hash: 7423a12681188325cab04f72b7dc64f1)"
+						"- English GOG version with Poseidon expansion (hash: 7423a12681188325cab04f72b7dc64f1)",
 						"- English Steam version with Poseidon expansion (hash: 7423a12681188325cab04f72b7dc64f1)"
 					};
-					MessageBox.Show(string.Join(Environment.NewLine, _messageLines));
-					ExeAttributes = new ExeAttributes
+					MessageBox.Show(string.Join(Environment.NewLine, _messageLines_));
+					_ExeAttributes_ = new ExeAttributes
 					{
-						SelectedExeLangAndDistrib = ExeLangAndDistrib.Not_Recognised,
-						IsDiscVersion = false,
-						IsPoseidonInstalled = false
+						_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised,
+						_IsDiscVersion = false,
+						_IsPoseidonInstalled = false
 					};
 					return false;
 			}
@@ -124,49 +123,51 @@ namespace Zeus_and_Poseidon
 		/// <summary>
 		/// Supplies a ResHexOffsetTable struct specifying the offsets that need to be patched, based on which version of Zeus.exe was supplied.
 		/// </summary>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
-		/// <param name="ResHexOffsetTable">Struct containing the offset for the supplied Zeus.exe that needs patching.</param>
+		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Zeus.exe</param>
+		/// <param name="_ResHexOffsetTable_">Struct containing the offset for the supplied Zeus.exe that needs patching.</param>
 		/// <returns>
 		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool FillResHexOffsetTable(ExeAttributes ExeAttributes, out ResHexOffsetTable ResHexOffsetTable)
+		internal static bool _FillResHexOffsetTable(ExeAttributes _ExeAttributes_, out ResHexOffsetTable _ResHexOffsetTable_)
 		{
-			switch ((byte)ExeAttributes.SelectedExeLangAndDistrib)
+			switch ((byte)_ExeAttributes_._SelectedExeLangAndDistrib)
 			{
 				case 1:         // English GOG version
-					ResHexOffsetTable = new ResHexOffsetTable
+					_ResHexOffsetTable_ = new ResHexOffsetTable
 					{
-						_resWidth = 0x10BA29,
-						_resHeight = 0x10BA2E,
-						_mainMenuViewportWidth = 0x1051FA,
-						_mainMenuViewportHeight = 0x105212,
+						_ResWidth = 0x10BA29,
+						_ResHeight = 0x10BA2E,
+						_MainMenuViewportWidth = 0x1051FA,
+						_MainMenuViewportHeight = 0x105212,
 
-						_fixMoneyPopDateTextPosWidth = 0x18EF7C,
-						_fixTopMenuBarBackgroundPosWidth = 0x19EBFB,
+						_FixMoneyPopDateTextPosWidth = 0x18EF7C,
+						_FixTopMenuBarBackgroundPosWidth = 0x19EBFB,
 
-						_viewportWidth = 0x11CC1E,
-						_viewportHeightMult = 0x11CC29,
-						_viewportWidthMult = 0x11CC2B,
+						_ViewportWidth = 0x11CC1E,
+						_ViewportHeightMult = 0x11CC29,
+						_ViewportWidthMult = 0x11CC2B,
 
-						_fixCompBottomBlackBarWidth = 0x18E2F7,
-						_fixPushBottomBlackBarWidth = 0x18E30A,
-						_sidebarRenderLimitWidth = 0x18E2BE,
-						_sidebarLeftEdgeStartWidth = 0x18E2CA,
+						_FixCompBottomBlackBarWidth = 0x18E2F7,
+						_FixPushBottomBlackBarWidth = 0x18E30A,
+						_SidebarRenderLimitWidth = 0x18E2BE,
+						_SidebarLeftEdgeStartWidth = 0x18E2CA,
 
-						_unknownWidth = 0x10BD03,
-						_unknownHeight = 0x10BD0D,
-						_unknownWidth2 = 0x1C459E,
+						_UnknownWidth = 0x10BD03,
+						_UnknownHeight = 0x10BD0D,
+						_UnknownWidth2 = 0x1C459E,
 
-						_extendSidebarRedStripeNewCodeJumpOffset = 0x117B69,
-						_extendSidebarRedStripeNewCodeJumpData = new byte[] { 0xE9, 0x32, 0x04, 0x0C, 0x00, 0x90 },
+						_ExtendSidebarRedStripeNewCodeJumpOffset = 0x117B69,
+						_ExtendSidebarRedStripeNewCodeJumpData = new byte[] { 0xE9, 0x32, 0x04, 0x0C, 0x00, 0x90 },
 
-						_paintBlueBackgroundInGapsNewCodeJumpOffset = 0x19EC31,
-						_paintBlueBackgroundInGapsNewCodeJumpData = new byte[] { 0xE9, 0x0A, 0x92, 0x03, 0x00 },
+						_PaintBlueBackgroundInGapsNewCodeJumpOffset = 0x19EC31,
+						_PaintBlueBackgroundInGapsNewCodeJumpData = new byte[] { 0xE9, 0x0A, 0x92, 0x03, 0x00 },
 
-						_extendSidebarRedStripeNewCodeOffset = 0x1D7FA0,
-						_extendSidebarRedStripeNewCodeData = new byte[]
+						_ExtendSidebarRedStripeNewCodeOffset = 0x1D7FA0,
+						_ExtendSidebarRedStripeNewCodeData = new byte[]
 						{
+							// ReSharper disable CommentTypo
+
 							0xBB,0x00,0x00,0x00,0x00,		// mov ebx, 0			- Initial position of red stripe placer. Set by script to <city view width - stripe height>
 
 							// Code required to run the "draw UI element" subroutine
@@ -192,11 +193,15 @@ namespace Zeus_and_Poseidon
 							0x33,0xDB,						// xor ebx, ebx			- Counter has done it's job so zero it
 							0x8B,0x0D,0x34,0xFF,0x0D,0x01,	// mov ecx, 0x10DFF34	- Almost done. Run this to replace the instruction our injected jump overwrote.
 							0xE9,0x8A,0xFB,0xF3,0xFF		// jmp loc_117B6F		- Jump back to the byte after our jump into this injected code as we are done here.
+
+							// ReSharper restore CommentTypo
 						},
 
-						_paintBlueBackgroundInGapsNewCodeOffset = 0x1D7E40,
-						_paintBlueBackgroundInGapsNewCodeData = new byte[]
+						_PaintBlueBackgroundInGapsNewCodeOffset = 0x1D7E40,
+						_PaintBlueBackgroundInGapsNewCodeData = new byte[]
 						{
+							// ReSharper disable CommentTypo
+
 							// This block of code is injected into the EXE in a blank space. It paints a blue background over every area of the in-game UI that
 							// has a gap in it due to moving and resizing the game's elements to fit the new resolution. It does this by creating copies of
 							// the graphic that is used as the background for the top menubar and places those copies in such a way that they cover up the gaps.
@@ -211,14 +216,14 @@ namespace Zeus_and_Poseidon
 							0x33,0xDB,						// xor ebx, ebx			- Set Y coordinate to 0.
 							0xB8,0x46,0x03,0x00,0x00,		// mov eax, 0x346		- Set X coordinate to 838.
 							0xEB,0x27,						// jmp short rel 0x27	- Jump forward by 39 bytes to POS#TEST-START (cmp ebx, <win height>) for variable tests.
-							
+
 							// Run the subroutine that creates the blue bar graphic to create another one
 			// Ind # 014	// POS#DRAW
 							0x6A,0x00,						// push 0
 							0x6A,0x00,
 							0x6A,0x00,
 							0x53,							// push ebx				- Sets the Y position of current bar graphic's top edge.
-							0xA3,0xF4,0xDF,0x60,0x01,		// mov dw_160DFF4, eax	- The subrotine likes to modify the contents of the EAX register so make a backup.
+							0xA3,0xF4,0xDF,0x60,0x01,		// mov dw_160DFF4, eax	- The subroutine likes to modify the contents of the EAX register so make a backup.
 							0x50,							// push eax				- Sets the X position of current bar graphic's left edge.
 							0xB8,0x06,0x44,0x00,0x00,		// mov eax, 0x4406		- Set EAX equal to 0x4406, which is the number for the top menubar.
 							0x50,							// push eax				- Set which UI element the subroutine will draw.
@@ -331,12 +336,14 @@ namespace Zeus_and_Poseidon
 							0x33,0xDB,						// xor ebx, ebx			- Set register back to 0.
 							0xB8,0x06,0x44,0x00,0x00,		// mov eax, 0x4406		- Set register back to it's original value before running this block of code.
 							0xE9,0xE6,0x6C,0xFC,0xFF		// jmp near rel 0xFFFC6CE6	- Jump back to the byte after our jump into this injected code as we are done here.
+
+							// ReSharper restore CommentTypo
 						}
 					};
 					return true;
 
 				default:        // Unrecognised EXE
-					ResHexOffsetTable = new ResHexOffsetTable();
+					_ResHexOffsetTable_ = new ResHexOffsetTable();
 					return false;
 			}
 		}
@@ -344,18 +351,18 @@ namespace Zeus_and_Poseidon
 		/// <summary>
 		/// Fills an array containing all the offsets that need to be patched, based on which version of Zeus.exe was supplied.
 		/// </summary>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
-		/// <param name="AnimHexOffsetTable">Int array containing the offsets for the supplied Zeus.exe that need patching.</param>
+		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Zeus.exe</param>
+		/// <param name="_AnimHexOffsetTable_">Int array containing the offsets for the supplied Zeus.exe that need patching.</param>
 		/// <returns>
 		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool FillAnimHexOffsetTable(ExeAttributes ExeAttributes, out int[] AnimHexOffsetTable)
+		internal static bool _FillAnimHexOffsetTable(ExeAttributes _ExeAttributes_, out int[] _AnimHexOffsetTable_)
 		{
-			switch ((byte)ExeAttributes.SelectedExeLangAndDistrib)
+			switch ((byte)_ExeAttributes_._SelectedExeLangAndDistrib)
 			{
 				case 1:         // English GOG version
-					AnimHexOffsetTable = new int[] { 0x30407, 0xB395D, 0xB3992, 0xB5642, 0xB5AED, 0xB5DE5, 0xB65FF, 0xB69B7, 0xB91D6, 0xB9AB2, 0xB9AFB, 0xB9B7C,
+					_AnimHexOffsetTable_ = new[] { 0x30407, 0xB395D, 0xB3992, 0xB5642, 0xB5AED, 0xB5DE5, 0xB65FF, 0xB69B7, 0xB91D6, 0xB9AB2, 0xB9AFB, 0xB9B7C,
 						0xB9DB1, 0xBA007, 0xBAC20, 0xBAC31, 0xBAC42, 0xBAC53, 0xBB1F4, 0xBB381, 0xBB3E5, 0xBB40B, 0xBB431, 0xBB457, 0xBB47D, 0xBB4A3, 0xBB4C9,
 						0xBB4EC, 0xBB50F, 0xBB532, 0xBB593, 0xBB5AD, 0xBB5C7, 0xBB5E4, 0xBB656, 0xBD331, 0xBD349, 0xBD3B2, 0xBDC62, 0xBDC7F, 0xBDC9C, 0xBDCB9,
 						0xBDD2F, 0xBDDD7, 0xBDE5A, 0xBDE9F, 0xBDEE4, 0xBDF29, 0xBDF6E, 0xBDFB3, 0xBDFF8, 0xBE03D, 0xBE082, 0xBE0C7, 0xBFC43, 0xBFDF8, 0xBFF47,
@@ -363,7 +370,7 @@ namespace Zeus_and_Poseidon
 					return true;
 
 				default:        // Unrecognised EXE
-					AnimHexOffsetTable = new int[1];
+					_AnimHexOffsetTable_ = new int[1];
 					return false;
 			}
 		}
@@ -371,22 +378,22 @@ namespace Zeus_and_Poseidon
 		/// <summary>
 		/// Supplies an int specifying the offset that needs to be patched, based on which version of Zeus.exe was supplied.
 		/// </summary>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
-		/// <param name="WinFixOffset">Int containing the offset for the supplied Zeus.exe that needs patching.</param>
+		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Zeus.exe</param>
+		/// <param name="_WinFixOffset_">Int containing the offset for the supplied Zeus.exe that needs patching.</param>
 		/// <returns>
 		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool IdentifyWinFixOffset(ExeAttributes ExeAttributes, out int WinFixOffset)
+		internal static bool _IdentifyWinFixOffset(ExeAttributes _ExeAttributes_, out int _WinFixOffset_)
 		{
-			switch ((byte)ExeAttributes.SelectedExeLangAndDistrib)
+			switch ((byte)_ExeAttributes_._SelectedExeLangAndDistrib)
 			{
 				case 1:         // English GOG version
-					WinFixOffset = 0x33E7E;
+					_WinFixOffset_ = 0x33E7E;
 					return true;
 
 				default:        // Unrecognised EXE
-					WinFixOffset = 0;
+					_WinFixOffset_ = 0;
 					return false;
 			}
 		}
@@ -396,38 +403,38 @@ namespace Zeus_and_Poseidon
 		/// </summary>
 		internal struct ResHexOffsetTable
 		{
-			internal int _resWidth;
-			internal int _resHeight;
-			internal int _mainMenuViewportWidth;
-			internal int _mainMenuViewportHeight;
+			internal int _ResWidth;
+			internal int _ResHeight;
+			internal int _MainMenuViewportWidth;
+			internal int _MainMenuViewportHeight;
 
-			internal int _fixMoneyPopDateTextPosWidth;
-			internal int _fixTopMenuBarBackgroundPosWidth;
+			internal int _FixMoneyPopDateTextPosWidth;
+			internal int _FixTopMenuBarBackgroundPosWidth;
 
-			internal int _viewportWidth;
-			internal int _viewportHeightMult;
-			internal int _viewportWidthMult;
+			internal int _ViewportWidth;
+			internal int _ViewportHeightMult;
+			internal int _ViewportWidthMult;
 
-			internal int _fixCompBottomBlackBarWidth;
-			internal int _fixPushBottomBlackBarWidth;
-			internal int _sidebarRenderLimitWidth;
-			internal int _sidebarLeftEdgeStartWidth;
+			internal int _FixCompBottomBlackBarWidth;
+			internal int _FixPushBottomBlackBarWidth;
+			internal int _SidebarRenderLimitWidth;
+			internal int _SidebarLeftEdgeStartWidth;
 
-			internal int _unknownWidth;
-			internal int _unknownHeight;
-			internal int _unknownWidth2;
+			internal int _UnknownWidth;
+			internal int _UnknownHeight;
+			internal int _UnknownWidth2;
 
-			internal int _extendSidebarRedStripeNewCodeJumpOffset;
-			internal byte[] _extendSidebarRedStripeNewCodeJumpData;
+			internal int _ExtendSidebarRedStripeNewCodeJumpOffset;
+			internal byte[] _ExtendSidebarRedStripeNewCodeJumpData;
 
-			internal int _paintBlueBackgroundInGapsNewCodeJumpOffset;
-			internal byte[] _paintBlueBackgroundInGapsNewCodeJumpData;
+			internal int _PaintBlueBackgroundInGapsNewCodeJumpOffset;
+			internal byte[] _PaintBlueBackgroundInGapsNewCodeJumpData;
 
-			internal int _extendSidebarRedStripeNewCodeOffset;
-			internal byte[] _extendSidebarRedStripeNewCodeData;
+			internal int _ExtendSidebarRedStripeNewCodeOffset;
+			internal byte[] _ExtendSidebarRedStripeNewCodeData;
 
-			internal int _paintBlueBackgroundInGapsNewCodeOffset;
-			internal byte[] _paintBlueBackgroundInGapsNewCodeData;
+			internal int _PaintBlueBackgroundInGapsNewCodeOffset;
+			internal byte[] _PaintBlueBackgroundInGapsNewCodeData;
 		}
 	}
 }

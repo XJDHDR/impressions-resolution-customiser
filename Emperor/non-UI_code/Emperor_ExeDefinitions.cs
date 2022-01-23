@@ -1,23 +1,24 @@
-﻿// This code is part of the Impressions Resolution Customiser project
+﻿// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
 
-using Soft160.Data.Cryptography;
 using System;
 using System.IO;
 using System.Windows;
+using Soft160.Data.Cryptography;
 
-namespace Emperor
+namespace Emperor.non_UI_code
 {
 	/// <summary>
 	/// Struct that specifies various details about the Emperor.exe given to the program.
 	/// </summary>
 	internal struct ExeAttributes
 	{
-		internal ExeLangAndDistrib SelectedExeLangAndDistrib;
-		internal bool IsDiscVersion;
+		internal ExeLangAndDistrib _SelectedExeLangAndDistrib;
+		internal bool _IsDiscVersion;
 	}
 
 	/// <summary>
@@ -25,41 +26,41 @@ namespace Emperor
 	/// </summary>
 	internal enum ExeLangAndDistrib
 	{
-		Not_Recognised = 0,
-		GOG_English = 1,
-		CD_English = 3
+		NotRecognised = 0,
+		GogEnglish = 1,
+		CdEnglish = 3
 	}
 
 	/// <summary>
 	/// Struct that specifies various details about the Emperor.exe given to the program.
 	/// </summary>
-	static class Emperor_ExeDefinitions
+	internal static class EmperorExeDefinitions
 	{
 		/// <summary>
 		/// Copies the contents of Emperor.exe into a byte array for editing then calculates a CRC32 hash for the contents of that array.
 		/// After that, compares that CRC to a list of known CRCs to determine which distribution of this game is being patched.
 		/// </summary>
-		/// <param name="ZeusExeLocation">String that defines the location of Emperor.exe</param>
-		/// <param name="ZeusExeData">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
+		/// <param name="_ZeusExeLocation_">String that defines the location of Emperor.exe</param>
+		/// <param name="_ZeusExeData_">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
+		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Emperor.exe</param>
 		/// <returns>
 		/// True if the CRC for the selected Emperor.exe matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool GetAndCheckExeChecksum(string ZeusExeLocation, out byte[] ZeusExeData, out ExeAttributes ExeAttributes)
+		internal static bool _GetAndCheckExeChecksum(string _ZeusExeLocation_, out byte[] _ZeusExeData_, out ExeAttributes _ExeAttributes_)
 		{
-			ZeusExeData = File.ReadAllBytes(ZeusExeLocation);
+			_ZeusExeData_ = File.ReadAllBytes(_ZeusExeLocation_);
 
-			uint _fileHash = CRC.Crc32(ZeusExeData, 0, ZeusExeData.Length);
+			uint _fileHash_ = CRC.Crc32(_ZeusExeData_, 0, _ZeusExeData_.Length);
 
-			switch (_fileHash)
+			switch (_fileHash_)
 			{
 				// English GOG version
 				case 0xFD9CF46F:
-					ExeAttributes = new ExeAttributes
+					_ExeAttributes_ = new ExeAttributes
 					{
-						SelectedExeLangAndDistrib = ExeLangAndDistrib.GOG_English,
-						IsDiscVersion = false,
+						_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogEnglish,
+						_IsDiscVersion = false,
 					};
 					return true;
 
@@ -74,17 +75,17 @@ namespace Emperor
 
 				// Unrecognised EXE
 				default:
-					string[] _messageLines = new string[]
+					string[] _messageLines_ = new string[]
 					{
 						"Emperor.exe was not recognised. Only the following unmodified distributions and languages are currently supported:",
 						"- English GOG version (hash: ?)"
 						//,"- English CD version"	// Comment this out until CD version works
 					};
-					MessageBox.Show(string.Join(Environment.NewLine, _messageLines));
-					ExeAttributes = new ExeAttributes
+					MessageBox.Show(string.Join(Environment.NewLine, _messageLines_));
+					_ExeAttributes_ = new ExeAttributes
 					{
-						SelectedExeLangAndDistrib = ExeLangAndDistrib.Not_Recognised,
-						IsDiscVersion = false,
+						_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised,
+						_IsDiscVersion = false,
 					};
 					return false;
 			}
@@ -93,50 +94,50 @@ namespace Emperor
 		/// <summary>
 		/// Supplies a ResHexOffsetTable struct specifying the offsets that need to be patched, based on which version of Emperor.exe was supplied.
 		/// </summary>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
-		/// <param name="ResHexOffsetTable">Struct containing the offset for the supplied Emperor.exe that needs patching.</param>
+		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Emperor.exe</param>
+		/// <param name="_ResHexOffsetTable_">Struct containing the offset for the supplied Emperor.exe that needs patching.</param>
 		/// <returns>
 		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool FillResHexOffsetTable(ExeAttributes ExeAttributes, out ResHexOffsetTable ResHexOffsetTable)
+		internal static bool _FillResHexOffsetTable(ExeAttributes _ExeAttributes_, out ResHexOffsetTable _ResHexOffsetTable_)
 		{
-			switch (ExeAttributes.SelectedExeLangAndDistrib)
+			switch (_ExeAttributes_._SelectedExeLangAndDistrib)
 			{
-				case ExeLangAndDistrib.GOG_English:
-					ResHexOffsetTable = new ResHexOffsetTable
+				case ExeLangAndDistrib.GogEnglish:
+					_ResHexOffsetTable_ = new ResHexOffsetTable
 					{
-						_resWidth = 0x12AA6D,
-						_resHeight = 0x12AA72,
-						_mainMenuViewportWidth = 0x12532A,
-						_mainMenuViewportHeight = 0x125342,
+						_ResWidth = 0x12AA6D,
+						_ResHeight = 0x12AA72,
+						_MainMenuViewportWidth = 0x12532A,
+						_MainMenuViewportHeight = 0x125342,
 
-						_fixMoneyPopDateTextPosWidth = 0x1B5C6A,
-						_fixTopMenuBarBackgroundPosWidth = 0x1BDF70,
+						_FixMoneyPopDateTextPosWidth = 0x1B5C6A,
+						_FixTopMenuBarBackgroundPosWidth = 0x1BDF70,
 
-						_viewportWidth = 0x13BE8D,
-						_viewportHeightMult = 0x13BE98,
-						_viewportWidthMult = 0x13BE9A,
+						_ViewportWidth = 0x13BE8D,
+						_ViewportHeightMult = 0x13BE98,
+						_ViewportWidthMult = 0x13BE9A,
 
-						_sidebarRenderLimitWidth = 0x1B4E22,
-						_fixSidebarCityMap_RotateButton = 0x13A5DA,
-						_fixSidebarCityMap_RotateIcon = 0x13A6CA,
-						_fixSidebarCityMap_GoalsOverviewWorldMapMessagesIcons = 0x13AA0A,
-						_fixSidebarCityMap_GoalsOverviewWorldMapMessagesButtons = 0x13AA3A,
-						_sidebarLeftEdgeStartWidth = 0x1B4E2E,
+						_SidebarRenderLimitWidth = 0x1B4E22,
+						_FixSidebarCityMapRotateButton = 0x13A5DA,
+						_FixSidebarCityMapRotateIcon = 0x13A6CA,
+						_FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons = 0x13AA0A,
+						_FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons = 0x13AA3A,
+						_SidebarLeftEdgeStartWidth = 0x1B4E2E,
 
-						_fixBottomBarLength = 0x1BDFC9,
-						_unknownBottomBarTweak1 = 0x1BDFA8,
-						_unknownBottomBarTweak2 = 0x1BDFDC,
+						_FixBottomBarLength = 0x1BDFC9,
+						_UnknownBottomBarTweak1 = 0x1BDFA8,
+						_UnknownBottomBarTweak2 = 0x1BDFDC,
 
-						_unknownWidth = 0x12AD53,
-						_unknownHeight = 0x12AD5D,
+						_UnknownWidth = 0x12AD53,
+						_UnknownHeight = 0x12AD5D,
 
-						_extendOriginalUiNewCodeJumpOffset = 0x13A841,
-						_extendOriginalUiNewCodeJumpData = new byte[] { 0xE9, 0x9A, 0xD8, 0x26, 0x00 },
+						_ExtendOriginalUiNewCodeJumpOffset = 0x13A841,
+						_ExtendOriginalUiNewCodeJumpData = new byte[] { 0xE9, 0x9A, 0xD8, 0x26, 0x00 },
 
-						_extendOriginalUiNewCodeOffset = 0x3A80E0,
-						_extendOriginalUiNewCodeData = new byte[]
+						_ExtendOriginalUiNewCodeOffset = 0x3A80E0,
+						_ExtendOriginalUiNewCodeData = new byte[]
 						{
 							0x6A,0x00,											// push 0
 							0x6A,0x00,
@@ -199,40 +200,40 @@ namespace Emperor
 					};
 					return true;
 
-				case ExeLangAndDistrib.CD_English:
-					ResHexOffsetTable = new ResHexOffsetTable
+				case ExeLangAndDistrib.CdEnglish:
+					_ResHexOffsetTable_ = new ResHexOffsetTable
 					{
-						_resWidth = 0x12B66D,
-						_resHeight = 0x12B672,
-						_mainMenuViewportWidth = 0x0,
-						_mainMenuViewportHeight = 0x0,
+						_ResWidth = 0x12B66D,
+						_ResHeight = 0x12B672,
+						_MainMenuViewportWidth = 0x0,
+						_MainMenuViewportHeight = 0x0,
 
-						_fixMoneyPopDateTextPosWidth = 0x0,
-						_fixTopMenuBarBackgroundPosWidth = 0x0,
+						_FixMoneyPopDateTextPosWidth = 0x0,
+						_FixTopMenuBarBackgroundPosWidth = 0x0,
 
-						_viewportWidth = 0x0,
-						_viewportHeightMult = 0x0,
-						_viewportWidthMult = 0x0,
+						_ViewportWidth = 0x0,
+						_ViewportHeightMult = 0x0,
+						_ViewportWidthMult = 0x0,
 
-						_sidebarRenderLimitWidth = 0x0,
-						_fixSidebarCityMap_RotateButton = 0x0,
-						_fixSidebarCityMap_RotateIcon = 0x0,
-						_fixSidebarCityMap_GoalsOverviewWorldMapMessagesIcons = 0x0,
-						_fixSidebarCityMap_GoalsOverviewWorldMapMessagesButtons = 0x0,
-						_sidebarLeftEdgeStartWidth = 0x0,
+						_SidebarRenderLimitWidth = 0x0,
+						_FixSidebarCityMapRotateButton = 0x0,
+						_FixSidebarCityMapRotateIcon = 0x0,
+						_FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons = 0x0,
+						_FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons = 0x0,
+						_SidebarLeftEdgeStartWidth = 0x0,
 
-						_fixBottomBarLength = 0x1BEBC9,
-						_unknownBottomBarTweak1 = 0x1BEBA8,
-						_unknownBottomBarTweak2 = 0x1BEBDC,
+						_FixBottomBarLength = 0x1BEBC9,
+						_UnknownBottomBarTweak1 = 0x1BEBA8,
+						_UnknownBottomBarTweak2 = 0x1BEBDC,
 
-						_unknownWidth = 0x0,
-						_unknownHeight = 0x0,
+						_UnknownWidth = 0x0,
+						_UnknownHeight = 0x0,
 
-						_extendOriginalUiNewCodeJumpOffset = 0x13B441,  // Next instruction: 0x13B446
-						_extendOriginalUiNewCodeJumpData = new byte[] { 0xE9, 0x59, 0xD8, 0x26, 0x00 },
+						_ExtendOriginalUiNewCodeJumpOffset = 0x13B441,  // Next instruction: 0x13B446
+						_ExtendOriginalUiNewCodeJumpData = new byte[] { 0xE9, 0x59, 0xD8, 0x26, 0x00 },
 
-						_extendOriginalUiNewCodeOffset = 0x3A8C9F,
-						_extendOriginalUiNewCodeData = new byte[]
+						_ExtendOriginalUiNewCodeOffset = 0x3A8C9F,
+						_ExtendOriginalUiNewCodeData = new byte[]
 						{
 							0x6A,0x00,0x6A,0x00,0x6A,0x00,0x68,0x4E, 0x02,0x00,0x00,0x68,0x4E,0x05,0x00,0x00, 0x68,0x74,0x02,0x00,0x00,0xB9,0x30,0x21,
 							0xC4,0x01,0xE8,0xB2,0xF4,0xC5,0xFF,0x50, 0xE8,0x9C,0xAC,0xC6,0xFF,0x83,0xC4,0x18, 0x6A,0x00,0x6A,0x00,0x6A,0x00,0x6A,0x00,
@@ -248,8 +249,9 @@ namespace Emperor
 					return true;
 
 				// Unrecognised EXE
+				case ExeLangAndDistrib.NotRecognised:
 				default:
-					ResHexOffsetTable = new ResHexOffsetTable();
+					_ResHexOffsetTable_ = new ResHexOffsetTable();
 					return false;
 			}
 		}
@@ -257,26 +259,26 @@ namespace Emperor
 		/// <summary>
 		/// Supplies an int specifying the offset that needs to be patched, based on which version of Emperor.exe was supplied.
 		/// </summary>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
-		/// <param name="WinFixOffset">Int containing the offset for the supplied Emperor.exe that needs patching.</param>
+		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Emperor.exe</param>
+		/// <param name="_WinFixOffset_">Int containing the offset for the supplied Emperor.exe that needs patching.</param>
 		/// <returns>
 		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool IdentifyWinFixOffset(ExeAttributes ExeAttributes, out int WinFixOffset)
+		internal static bool _IdentifyWinFixOffset(ExeAttributes _ExeAttributes_, out int _WinFixOffset_)
 		{
-			switch ((byte)ExeAttributes.SelectedExeLangAndDistrib)
+			switch ((byte)_ExeAttributes_._SelectedExeLangAndDistrib)
 			{
 				case 1:         // English GOG version
-					WinFixOffset = 0x4C62E;
+					_WinFixOffset_ = 0x4C62E;
 					return true;
 
 				case 3:         // English CD version
-					WinFixOffset = 0x4D22E;
+					_WinFixOffset_ = 0x4D22E;
 					return true;
 
 				default:        // Unrecognised EXE
-					WinFixOffset = 0;
+					_WinFixOffset_ = 0;
 					return false;
 			}
 		}
@@ -286,36 +288,36 @@ namespace Emperor
 		/// </summary>
 		internal struct ResHexOffsetTable
 		{
-			internal int _resWidth;
-			internal int _resHeight;
-			internal int _mainMenuViewportWidth;
-			internal int _mainMenuViewportHeight;
+			internal int _ResWidth;
+			internal int _ResHeight;
+			internal int _MainMenuViewportWidth;
+			internal int _MainMenuViewportHeight;
 
-			internal int _fixMoneyPopDateTextPosWidth;
-			internal int _fixTopMenuBarBackgroundPosWidth;
+			internal int _FixMoneyPopDateTextPosWidth;
+			internal int _FixTopMenuBarBackgroundPosWidth;
 
-			internal int _viewportWidth;
-			internal int _viewportHeightMult;
-			internal int _viewportWidthMult;
+			internal int _ViewportWidth;
+			internal int _ViewportHeightMult;
+			internal int _ViewportWidthMult;
 
-			internal int _sidebarRenderLimitWidth;
-			internal int _fixSidebarCityMap_RotateButton;
-			internal int _fixSidebarCityMap_RotateIcon;
-			internal int _fixSidebarCityMap_GoalsOverviewWorldMapMessagesIcons;
-			internal int _fixSidebarCityMap_GoalsOverviewWorldMapMessagesButtons;
-			internal int _sidebarLeftEdgeStartWidth;
+			internal int _SidebarRenderLimitWidth;
+			internal int _FixSidebarCityMapRotateButton;
+			internal int _FixSidebarCityMapRotateIcon;
+			internal int _FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons;
+			internal int _FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons;
+			internal int _SidebarLeftEdgeStartWidth;
 
-			internal int _fixBottomBarLength;
-			internal int _unknownBottomBarTweak1;
-			internal int _unknownBottomBarTweak2;
+			internal int _FixBottomBarLength;
+			internal int _UnknownBottomBarTweak1;
+			internal int _UnknownBottomBarTweak2;
 
-			internal int _unknownWidth;
-			internal int _unknownHeight;
+			internal int _UnknownWidth;
+			internal int _UnknownHeight;
 
-			internal int _extendOriginalUiNewCodeJumpOffset;
-			internal byte[] _extendOriginalUiNewCodeJumpData;
-			internal int _extendOriginalUiNewCodeOffset;
-			internal byte[] _extendOriginalUiNewCodeData;
+			internal int _ExtendOriginalUiNewCodeJumpOffset;
+			internal byte[] _ExtendOriginalUiNewCodeJumpData;
+			internal int _ExtendOriginalUiNewCodeOffset;
+			internal byte[] _ExtendOriginalUiNewCodeData;
 		}
 	}
 }

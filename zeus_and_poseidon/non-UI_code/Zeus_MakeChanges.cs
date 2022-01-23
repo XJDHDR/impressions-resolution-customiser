@@ -1,4 +1,5 @@
-﻿// This code is part of the Impressions Resolution Customiser project
+﻿// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
@@ -8,37 +9,37 @@ using System;
 using System.IO;
 using System.Windows;
 
-namespace Zeus_and_Poseidon
+namespace Zeus_and_Poseidon.non_UI_code
 {
 	/// <summary>
 	/// Base class used to interact with the code patching classes, figure out what version of the game is being patched and prepare the environment before patching.
 	/// </summary>
-	internal class Zeus_MakeChanges
+	internal static class ZeusMakeChanges
 	{
 		/// <summary>
 		/// Checks if there is a Zeus.exe selected or available to patch, prepares the "patched_files" folder for the patched files
 		/// then calls the requested patching functions.
 		/// </summary>
-		/// <param name="ZeusExeLocation">Optionally contains the location of the Zeus.exe selected by the UI's file selection dialog.</param>
-		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
-		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
-		/// <param name="FixAnimations">Whether the "Apply Animation Fixes" checkbox is selected or not.</param>
-		/// <param name="FixWindowed">Whether the "Apply Windowed Mode Fixes" checkbox is selected or not.</param>
-		/// <param name="ResizeImages">Whether the "Resize Images" checkbox is selected or not.</param>
-		internal static void ProcessZeusExe(string ZeusExeLocation, ushort ResWidth, ushort ResHeight, bool FixAnimations, bool FixWindowed, bool ResizeImages)
+		/// <param name="_ZeusExeLocation_">Optionally contains the location of the Zeus.exe selected by the UI's file selection dialog.</param>
+		/// <param name="_ResWidth_">The width value of the resolution inputted into the UI.</param>
+		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
+		/// <param name="_FixAnimations_">Whether the "Apply Animation Fixes" checkbox is selected or not.</param>
+		/// <param name="_FixWindowed_">Whether the "Apply Windowed Mode Fixes" checkbox is selected or not.</param>
+		/// <param name="_ResizeImages_">Whether the "Resize Images" checkbox is selected or not.</param>
+		internal static void _ProcessZeusExe(string _ZeusExeLocation_, ushort _ResWidth_, ushort _ResHeight_, bool _FixAnimations_, bool _FixWindowed_, bool _ResizeImages_)
 		{
-			if (!File.Exists(ZeusExeLocation))
+			if (!File.Exists(_ZeusExeLocation_))
 			{
 				// User didn't select a folder using the selection button.
 				if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"base_files\Zeus.exe"))
 				{
 					// Check if the user has placed the Zeus data files in the "base_files" folder.
-					ZeusExeLocation = AppDomain.CurrentDomain.BaseDirectory + @"base_files\Zeus.exe";
+					_ZeusExeLocation_ = AppDomain.CurrentDomain.BaseDirectory + @"base_files\Zeus.exe";
 				}
 				else if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Zeus.exe") && (AppDomain.CurrentDomain.FriendlyName != "Zeus.exe"))
 				{
 					// As a last resort, check if the Zeus data files are in the same folder as this program.
-					ZeusExeLocation = AppDomain.CurrentDomain.BaseDirectory + "Zeus.exe";
+					_ZeusExeLocation_ = AppDomain.CurrentDomain.BaseDirectory + "Zeus.exe";
 				}
 				else
 				{
@@ -49,14 +50,14 @@ namespace Zeus_and_Poseidon
 				}
 			}
 
-			string _patchedFilesFolder = AppDomain.CurrentDomain.BaseDirectory + "patched_files";
+			string _patchedFilesFolder_ = AppDomain.CurrentDomain.BaseDirectory + "patched_files";
 			try
 			{
-				if (Directory.Exists(_patchedFilesFolder))
+				if (Directory.Exists(_patchedFilesFolder_))
 				{
-					Directory.Delete(_patchedFilesFolder, true);
+					Directory.Delete(_patchedFilesFolder_, true);
 				}
-				Directory.CreateDirectory(_patchedFilesFolder);
+				Directory.CreateDirectory(_patchedFilesFolder_);
 			}
 			catch (PathTooLongException)
 			{
@@ -78,25 +79,25 @@ namespace Zeus_and_Poseidon
 				return;
 			}
 
-			if (Zeus_ExeDefinitions.GetAndCheckExeChecksum(ZeusExeLocation, out byte[] _zeusExeData, out ExeAttributes _exeAttributes))
+			if (ZeusExeDefinitions._GetAndCheckExeChecksum(_ZeusExeLocation_, out byte[] _zeusExeData_, out ExeAttributes _exeAttributes_))
 			{
-				Zeus_ResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, _exeAttributes, ref _zeusExeData);
+				ZeusResolutionEdits._hexEditExeResVals(_ResWidth_, _ResHeight_, _exeAttributes_, ref _zeusExeData_);
 
-				if (FixAnimations)
+				if (_FixAnimations_)
 				{
-					Zeus_SlowAnimFixes._hexEditExeAnims(_exeAttributes, ref _zeusExeData);
+					ZeusSlowAnimFixes._hexEditExeAnims(_exeAttributes_, ref _zeusExeData_);
 				}
-				if (FixWindowed)
+				if (_FixWindowed_)
 				{
-					Zeus_WindowFix._hexEditWindowFix(_exeAttributes, ref _zeusExeData);
+					ZeusWindowFix._hexEditWindowFix(_exeAttributes_, ref _zeusExeData_);
 				}
-				if (ResizeImages)
+				if (_ResizeImages_)
 				{
-					Zeus_ResizeImages.CreateResizedImages(ZeusExeLocation, _exeAttributes, ResWidth, ResHeight, _patchedFilesFolder);
+					ZeusResizeImages._CreateResizedImages(_ZeusExeLocation_, _exeAttributes_, _ResWidth_, _ResHeight_, _patchedFilesFolder_);
 				}
 
-				File.WriteAllBytes(_patchedFilesFolder + "/Zeus.exe", _zeusExeData);
-				MessageBox.Show("Your patched Zeus.exe has been successfully created in " + _patchedFilesFolder);
+				File.WriteAllBytes(_patchedFilesFolder_ + "/Zeus.exe", _zeusExeData_);
+				MessageBox.Show("Your patched Zeus.exe has been successfully created in " + _patchedFilesFolder_);
 			}
 		}
 	}

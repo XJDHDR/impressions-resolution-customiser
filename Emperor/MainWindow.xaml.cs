@@ -1,4 +1,5 @@
-﻿// This code is part of the Impressions Resolution Customiser project
+﻿// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
@@ -9,6 +10,7 @@ using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using Emperor.non_UI_code;
 
 namespace Emperor
 {
@@ -19,15 +21,15 @@ namespace Emperor
 	{
 		// Because _resHeightMult and _resWidthMult (in the Emperor_ResolutionEdits class) are 8 bit numbers, they can't go higher than 255.
 		// This means that we must cap our resolution numbers to figures that will be the highest possible that still leaves their multipliers at 255.
-		// 
+		//
 		// Thus, to copy and adapt the relevant formulas for calculating a resolution from a multiplier:
 		// _maxResolutionHeight = (256 - 1) * 20 + 40 - 1 = 5139
 		// _maxResolutionWidth = 256 * 80 + 222 - 2 - 1 = 20699
-		private const ulong _maxResolutionHeight = 5139;
-		private const ulong _maxResolutionWidth = 20699;
+		private const ulong MAX_RESOLUTION_HEIGHT = 5139;
+		private const ulong MAX_RESOLUTION_WIDTH = 20699;
 
-		private bool _exeCreationBusy;
-		private string _emperorExePath;
+		private bool exeCreationBusy;
+		private string emperorExePath;
 
 		public MainWindow()
 		{
@@ -35,82 +37,84 @@ namespace Emperor
 		}
 
 		/// <summary>
-		/// Code that runs when the "Generate EXE" button is clicked. Checks whether the two inputted resolution values are valid. 
+		/// Code that runs when the "Generate EXE" button is clicked. Checks whether the two inputted resolution values are valid.
 		/// If they are, pass them and the state of the checkboxes to the "ProcessEmperorExe" function.
 		/// </summary>
-		private void GenerateExe_Click(object sender, RoutedEventArgs e)
+		private void GenerateExe_Click(object _Sender_, RoutedEventArgs _E_)
 		{
-			if (_exeCreationBusy != true)
+			if (exeCreationBusy)
 			{
-				_exeCreationBusy = true;
-				if (!float.TryParse(ResWidth.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resWidthPreTests))
-				{
-					MessageBox.Show("An error occurred while trying to convert the typed in Horizontal Resolution from a string. Make sure you only typed in digits.");
-				}
-				else if (!float.TryParse(ResHeight.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resHeightPreTests))
-				{
-					MessageBox.Show("An error occurred while trying to convert the typed in Vertical Resolution from a string. Make sure you only typed in digits.");
-				}
-				else if (_resWidthPreTests < 800)
-				{
-					MessageBox.Show("The desired Horizontal Resolution is less than 800, which is the absolute minimum width the game's window can be. " +
-						"Please type in a number which is at least 800.");
-				}
-				else if (_resWidthPreTests > _maxResolutionWidth)
-				{
-					MessageBox.Show("The desired Horizontal Resolution is greater than " + _maxResolutionWidth + ", which is not allowed. Please type in a number " +
-						"which is less than " + _maxResolutionWidth + ".");
-				}
-				else if (_resWidthPreTests % 4 != 0)
-				{
-					MessageBox.Show("The desired Horizontal Resolution is not divisible by 4. Please type in a number which is.");
-				}
-				else if (_resHeightPreTests < 600)
-				{
-					MessageBox.Show("The desired Vertical Resolution is less than 600, which is the absolute minimum height the game's window can be. " +
-						"Please type in a number which is at least 600.");
-				}
-				else if (_resHeightPreTests > _maxResolutionHeight)
-				{
-					MessageBox.Show("The desired Vertical Resolution is greater than " + _maxResolutionHeight + ", which is not allowed. Please type in a number " +
-						"which is less than " + _maxResolutionHeight + ".");
-				}
-				else
-				{
-					bool _fixWindowed = ApplyWindowFix.IsChecked ?? false;
-					bool _resizeImages = ResizeImages.IsChecked ?? false;
-					Emperor_MakeChanges.ProcessEmperorExe(_emperorExePath, Convert.ToUInt16(_resWidthPreTests), Convert.ToUInt16(_resHeightPreTests), _fixWindowed, _resizeImages);
-				}
-				_exeCreationBusy = false;
+				return;
 			}
+
+			exeCreationBusy = true;
+			if (!float.TryParse(ResWidth.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resWidthPreTests_))
+			{
+				MessageBox.Show("An error occurred while trying to convert the typed in Horizontal Resolution from a string. Make sure you only typed in digits.");
+			}
+			else if (!float.TryParse(ResHeight.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resHeightPreTests_))
+			{
+				MessageBox.Show("An error occurred while trying to convert the typed in Vertical Resolution from a string. Make sure you only typed in digits.");
+			}
+			else if (_resWidthPreTests_ < 800)
+			{
+				MessageBox.Show("The desired Horizontal Resolution is less than 800, which is the absolute minimum width the game's window can be. " +
+				                "Please type in a number which is at least 800.");
+			}
+			else if (_resWidthPreTests_ > MAX_RESOLUTION_WIDTH)
+			{
+				MessageBox.Show("The desired Horizontal Resolution is greater than " + MAX_RESOLUTION_WIDTH + ", which is not allowed. Please type in a number " +
+				                "which is less than " + MAX_RESOLUTION_WIDTH + ".");
+			}
+			else if (_resWidthPreTests_ % 4 != 0)
+			{
+				MessageBox.Show("The desired Horizontal Resolution is not divisible by 4. Please type in a number which is.");
+			}
+			else if (_resHeightPreTests_ < 600)
+			{
+				MessageBox.Show("The desired Vertical Resolution is less than 600, which is the absolute minimum height the game's window can be. " +
+				                "Please type in a number which is at least 600.");
+			}
+			else if (_resHeightPreTests_ > MAX_RESOLUTION_HEIGHT)
+			{
+				MessageBox.Show("The desired Vertical Resolution is greater than " + MAX_RESOLUTION_HEIGHT + ", which is not allowed. Please type in a number " +
+				                "which is less than " + MAX_RESOLUTION_HEIGHT + ".");
+			}
+			else
+			{
+				bool _fixWindowed_ = ApplyWindowFix.IsChecked ?? false;
+				bool _resizeImages_ = ResizeImages.IsChecked ?? false;
+				EmperorMakeChanges._ProcessEmperorExe(emperorExePath, Convert.ToUInt16(_resWidthPreTests_), Convert.ToUInt16(_resHeightPreTests_), _fixWindowed_, _resizeImages_);
+			}
+			exeCreationBusy = false;
 		}
 
 		/// <summary>
-		/// Code that runs when the "Select Emperor.exe" button is clicked. 
+		/// Code that runs when the "Select Emperor.exe" button is clicked.
 		/// Opens a file selection dialog to allow the user to select a Emperor.exe to patch.
 		/// </summary>
-		private void SelectExe_Click(object sender, RoutedEventArgs e)
+		private void SelectExe_Click(object _Sender_, RoutedEventArgs _E_)
 		{
-			OpenFileDialog openFileDialog = new OpenFileDialog
+			OpenFileDialog _openFileDialog_ = new OpenFileDialog
 			{
 				CheckFileExists = true,
 				CheckPathExists = true,
 				Filter = "Emperor.exe|Emperor.exe|All files (*.*)|*.*",
 				Title = "Please select the Emperor.exe you want to patch."
 			};
-			if (openFileDialog.ShowDialog() == true)
+			if (_openFileDialog_.ShowDialog() == true)
 			{
-				_emperorExePath = openFileDialog.FileName;
+				emperorExePath = _openFileDialog_.FileName;
 			}
 		}
 
 		/// <summary>
-		/// Code that runs when the "HelpMe" button is clicked. 
+		/// Code that runs when the "HelpMe" button is clicked.
 		/// Opens a MessageBox containing helpful information for the user.
 		/// </summary>
-		private void HelpMe_Click(object sender, RoutedEventArgs e)
+		private void HelpMe_Click(object _Sender_, RoutedEventArgs _E_)
 		{
-			string[] _messageLines = new string[]
+			string[] _messageLines_ = new string[]
 			{
 				"Help menu for the Emperor Resolution Customiser utility",
 				"",
@@ -125,10 +129,10 @@ namespace Emperor
 				"",
 				"",
 				"Resolution Width: This text box allows you to specify the horizontal component of your desired resolution. If your screen is in landscape, " +
-				"this is the bigger number. Note that this number must be divisible by 4 as well as between 800 and " + _maxResolutionWidth + ", both inclusive.",
+				$"this is the bigger number. Note that this number must be divisible by 4 as well as between 800 and {MAX_RESOLUTION_WIDTH}, both inclusive.",
 				"",
 				"Resolution Height: This text box allows you to specify the vertical component of your desired resolution. If your screen is in landscape, " +
-				"this is the smaller number. Note that this number must be between 600 and " + _maxResolutionHeight + ", both inclusive.",
+				$"this is the smaller number. Note that this number must be between 600 and {MAX_RESOLUTION_HEIGHT}, both inclusive.",
 				"",
 				"Apply Windowed Mode Fixes: This tickbox tells this program to fix a bug in Emperor which means that the game can't be switched into windowed mode.",
 				"",
@@ -142,16 +146,16 @@ namespace Emperor
 				"Generate EXE: Once you have provided all the required information and selected the desired options, click on this button to generate a patched Emperor.exe " +
 				"and optionally resized images. All of these will be placed in the \"patched_files\" folder next to this program."
 			};
-			MessageBox.Show(string.Join(Environment.NewLine, _messageLines));
+			MessageBox.Show(string.Join(Environment.NewLine, _messageLines_));
 		}
 
 		/// <summary>
 		/// Make all text in a textbox selected when clicked on.
 		/// </summary>
-		private void AllTextBoxes_GotFocus(object sender, RoutedEventArgs e)
+		private void AllTextBoxes_GotFocus(object _Sender_, RoutedEventArgs _E_)
 		{
-			TextBox textBox = (TextBox)sender;
-			textBox.Dispatcher.BeginInvoke(new Action(() => textBox.SelectAll()));
+			TextBox _textBox_ = (TextBox)_Sender_;
+			_textBox_.Dispatcher.BeginInvoke(new Action(() => _textBox_.SelectAll()));
 		}
 	}
 }

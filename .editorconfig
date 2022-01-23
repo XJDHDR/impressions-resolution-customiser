@@ -60,7 +60,7 @@ dotnet_style_prefer_is_null_check_over_reference_equality_method = true : warnin
 #	When line with operators are wrapped to multiple lines, prefer operator at end of first line.
 dotnet_style_operator_placement_when_wrapping = end_of_line : warning
 
-file_header_template = This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here: https://github.com/XJDHDR/impressions-resolution-customiser\n\n The license for it may be found here:\n https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE\n\n
+file_header_template = This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:\nhttps://github.com/XJDHDR/impressions-resolution-customiser\n\nThe license for it may be found here:\nhttps://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE\n\n
 
 
 #### C# Language Rules ####

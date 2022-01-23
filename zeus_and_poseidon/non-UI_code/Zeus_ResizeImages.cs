@@ -1,4 +1,5 @@
-﻿// This code is part of the Impressions Resolution Customiser project
+﻿// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
@@ -12,110 +13,110 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Zeus_and_Poseidon
+namespace Zeus_and_Poseidon.non_UI_code
 {
 	/// <summary>
 	/// Code used to resize the background images and maps that the game uses to fit new resolutions.
 	/// </summary>
-	internal class Zeus_ResizeImages
+	internal static class ZeusResizeImages
 	{
 		/// <summary>
 		/// Root function that calls the other functions in this class.
 		/// </summary>
-		/// <param name="ZeusExeLocation">String that contains the location of Zeus.exe</param>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
-		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
-		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
-		/// <param name="PatchedFilesFolder">String which specifies the location of the "patched_files" folder.</param>
-		internal static void CreateResizedImages(string ZeusExeLocation, ExeAttributes ExeAttributes, ushort ResWidth, ushort ResHeight, string PatchedFilesFolder)
+		/// <param name="_ZeusExeLocation_">String that contains the location of Zeus.exe</param>
+		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Zeus.exe</param>
+		/// <param name="_ResWidth_">The width value of the resolution inputted into the UI.</param>
+		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
+		/// <param name="_PatchedFilesFolder_">String which specifies the location of the "patched_files" folder.</param>
+		internal static void _CreateResizedImages(string _ZeusExeLocation_, ExeAttributes _ExeAttributes_, ushort _ResWidth_, ushort _ResHeight_, string _PatchedFilesFolder_)
 		{
-			string _zeusDataFolderLocation = ZeusExeLocation.Remove(ZeusExeLocation.Length - 8) + @"DATA\";
-			_fillImageArrays(ExeAttributes, out string[] _imagesToResize);
-			_resizeCentredImages(_zeusDataFolderLocation, _imagesToResize, ResWidth, ResHeight, PatchedFilesFolder);
+			string _zeusDataFolderLocation_ = _ZeusExeLocation_.Remove(_ZeusExeLocation_.Length - 8) + @"DATA\";
+			_fillImageArrays(_ExeAttributes_, out string[] _imagesToResize_);
+			_resizeCentredImages(_zeusDataFolderLocation_, _imagesToResize_, _ResWidth_, _ResHeight_, _PatchedFilesFolder_);
 		}
 
 		/// <summary>
 		/// Resizes the maps and other images used by the game to the correct size.
 		/// </summary>
-		/// <param name="_zeusDataFolderLocation">String that contains the location of Zeus' "DATA" folder.</param>
-		/// <param name="_centredImages">String array that contains a list of the images that need to be resized.</param>
-		/// <param name="_resWidth">The width value of the resolution inputted into the UI.</param>
-		/// <param name="_resHeight">The height value of the resolution inputted into the UI.</param>
-		/// <param name="_patchedFilesFolder">String which specifies the location of the "patched_files" folder.</param>
-		private static void _resizeCentredImages(string _zeusDataFolderLocation, string[] _centredImages, ushort _resWidth, ushort _resHeight, string _patchedFilesFolder)
+		/// <param name="_ZeusDataFolderLocation_">String that contains the location of Zeus' "DATA" folder.</param>
+		/// <param name="_CentredImages_">String array that contains a list of the images that need to be resized.</param>
+		/// <param name="_ResWidth_">The width value of the resolution inputted into the UI.</param>
+		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
+		/// <param name="_PatchedFilesFolder_">String which specifies the location of the "patched_files" folder.</param>
+		private static void _resizeCentredImages(string _ZeusDataFolderLocation_, string[] _CentredImages_, ushort _ResWidth_, ushort _ResHeight_, string _PatchedFilesFolder_)
 		{
-			ImageCodecInfo _jpegCodecInfo = null;
-			ImageCodecInfo[] _allImageCodecs = ImageCodecInfo.GetImageEncoders();
-			for (int _j = 0; _j < _allImageCodecs.Length; _j++)
+			ImageCodecInfo _jpegCodecInfo_ = null;
+			ImageCodecInfo[] _allImageCodecs_ = ImageCodecInfo.GetImageEncoders();
+			for (int _j_ = 0; _j_ < _allImageCodecs_.Length; _j_++)
 			{
-				if (_allImageCodecs[_j].MimeType == "image/jpeg")
+				if (_allImageCodecs_[_j_].MimeType == "image/jpeg")
 				{
-					_jpegCodecInfo = _allImageCodecs[_j];
+					_jpegCodecInfo_ = _allImageCodecs_[_j_];
 					break;
 				}
 			}
 
-			if (_jpegCodecInfo != null)
+			if (_jpegCodecInfo_ != null)
 			{
-				EncoderParameters _encoderParameters = new EncoderParameters(1);
-				_encoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 85L);
+				EncoderParameters _encoderParameters_ = new EncoderParameters(1);
+				_encoderParameters_.Param[0] = new EncoderParameter(Encoder.Quality, 85L);
 
-				Directory.CreateDirectory(_patchedFilesFolder + @"\DATA");
+				Directory.CreateDirectory(_PatchedFilesFolder_ + @"\DATA");
 
-				Parallel.For(0, _centredImages.Length, _i =>
+				Parallel.For(0, _CentredImages_.Length, _I_ =>
 				{
-					if (File.Exists(_zeusDataFolderLocation + _centredImages[_i]))
+					if (File.Exists(_ZeusDataFolderLocation_ + _CentredImages_[_I_]))
 					{
-						using (Bitmap _oldImage = new Bitmap(_zeusDataFolderLocation + _centredImages[_i]))
+						using (Bitmap _oldImage_ = new Bitmap(_ZeusDataFolderLocation_ + _CentredImages_[_I_]))
 						{
-							bool _currentImageIsMap = false;
-							ushort _newImageWidth;
-							ushort _newImageHeight;
-							if (Regex.IsMatch(_centredImages[_i], "_Map(OfGreece)*[0-9][0-9].jpg$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
+							bool _currentImageIsMap_ = false;
+							ushort _newImageWidth_;
+							ushort _newImageHeight_;
+							if (Regex.IsMatch(_CentredImages_[_I_], "_Map(OfGreece)*[0-9][0-9].jpg$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
 							{
 								// Map images need to have the new images sized to fit the game's viewport.
-								_currentImageIsMap = true;
-								_newImageWidth = (ushort)(_resWidth - 180);
-								_newImageHeight = (ushort)(_resHeight - 30);
+								_currentImageIsMap_ = true;
+								_newImageWidth_ = (ushort)(_ResWidth_ - 180);
+								_newImageHeight_ = (ushort)(_ResHeight_ - 30);
 							}
 							else
 							{
-								_newImageWidth = _resWidth;
-								_newImageHeight = _resHeight;
+								_newImageWidth_ = _ResWidth_;
+								_newImageHeight_ = _ResHeight_;
 							}
 
-							using (Bitmap _newImage = new Bitmap(_newImageWidth, _newImageHeight))
+							using (Bitmap _newImage_ = new Bitmap(_newImageWidth_, _newImageHeight_))
 							{
-								using (Graphics _newImageGraphics = Graphics.FromImage(_newImage))
+								using (Graphics _newImageGraphics_ = Graphics.FromImage(_newImage_))
 								{
 									// Note to self: Don't simplify the DrawImage calls. Specifying the old image's width and height is required
-									// to work around a bug/quirk where the image's DPI is scaled to the screen's before insertion:
+									// to work around a quirk where the image's DPI is scaled to the screen's before insertion:
 									// https://stackoverflow.com/a/41189062
-									if (_currentImageIsMap)
+									if (_currentImageIsMap_)
 									{
 										// This file is one of the maps. Must be placed in the top-left corner of the new image.
 										// Also create the background colour that will be used to fill the spaces not taken by the original image.
-										_newImageGraphics.Clear(Color.FromArgb(255, 35, 88, 120));
+										_newImageGraphics_.Clear(Color.FromArgb(255, 35, 88, 120));
 
-										_newImageGraphics.DrawImage(_oldImage, 0, 0, _oldImage.Width, _oldImage.Height);
+										_newImageGraphics_.DrawImage(_oldImage_, 0, 0, _oldImage_.Width, _oldImage_.Height);
 									}
 									else
 									{
 										// A non-map image. Must be placed in the centre of the new image with a black background.
-										_newImageGraphics.Clear(Color.Black);
+										_newImageGraphics_.Clear(Color.Black);
 
-										_newImageGraphics.DrawImage(_oldImage, (_newImageWidth - _oldImage.Width) / 2, 
-											(_newImageHeight - _oldImage.Height) / 2, _oldImage.Width, _oldImage.Height);
+										_newImageGraphics_.DrawImage(_oldImage_, (_newImageWidth_ - _oldImage_.Width) / 2,
+											(_newImageHeight_ - _oldImage_.Height) / 2, _oldImage_.Width, _oldImage_.Height);
 									}
 
-									_newImage.Save(_patchedFilesFolder + @"\DATA\" + _centredImages[_i], _jpegCodecInfo, _encoderParameters);
+									_newImage_.Save(_PatchedFilesFolder_ + @"\DATA\" + _CentredImages_[_I_], _jpegCodecInfo_, _encoderParameters_);
 								}
 							}
 						}
 					}
 					else
 					{
-						MessageBox.Show("Could not find the image located at: " + _zeusDataFolderLocation + _centredImages[_i]);
+						MessageBox.Show("Could not find the image located at: " + _ZeusDataFolderLocation_ + _CentredImages_[_I_]);
 					}
 				});
 			}
@@ -129,11 +130,11 @@ namespace Zeus_and_Poseidon
 		/// <summary>
 		/// Fills a string array with a list of the images that need to be resized.
 		/// </summary>
-		/// <param name="_exeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
-		/// <param name="_imagesToResize">String array that contains a list of the images that need to be resized.</param>
-		private static void _fillImageArrays(ExeAttributes _exeAttributes, out string[] _imagesToResize)
+		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Zeus.exe</param>
+		/// <param name="_ImagesToResize_">String array that contains a list of the images that need to be resized.</param>
+		private static void _fillImageArrays(ExeAttributes _ExeAttributes_, out string[] _ImagesToResize_)
 		{
-			List<string> _imagesToResizeConstruction = new List<string>
+			List<string> _imagesToResizeConstruction_ = new List<string>
 			{
 				"scoreb.jpg",
 				"Zeus_Defeat.jpg",
@@ -161,9 +162,9 @@ namespace Zeus_and_Poseidon
 				"Zeus_Title.jpg"
 			};
 
-			if (_exeAttributes.IsPoseidonInstalled)
+			if (_ExeAttributes_._IsPoseidonInstalled)
 			{
-				_imagesToResizeConstruction.AddRange(new List<string>
+				_imagesToResizeConstruction_.AddRange(new List<string>
 				{
 					"Poseidon_FE_MainMenu.jpg",
 					"Poseidon_FE_Registry.jpg",
@@ -182,7 +183,7 @@ namespace Zeus_and_Poseidon
 				});
 			}
 
-			_imagesToResize = _imagesToResizeConstruction.ToArray();
+			_ImagesToResize_ = _imagesToResizeConstruction_.ToArray();
 		}
 	}
 }

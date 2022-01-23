@@ -1,39 +1,40 @@
-﻿// This code is part of the Impressions Resolution Customiser project
+﻿// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
 
 using System;
-using static Emperor.Emperor_ExeDefinitions;
+using static Emperor.non_UI_code.EmperorExeDefinitions;
 
-namespace Emperor
+namespace Emperor.non_UI_code
 {
 	/// <summary>
 	/// Holds code used to set the resolution that the game must run at and resize various elements of the game to account for the new resolution.
 	/// </summary>
-	class Emperor_ResolutionEdits
+	internal static class EmperorResolutionEdits
 	{
 		/// <summary>
 		/// Patches the various offsets in Emperor.exe to run at the desired resolution and scale various UI elements
 		/// to fit the new resolution.
 		/// </summary>
-		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
-		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
-		/// <param name="EmperorExeData">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
-		internal static void _hexEditExeResVals(ushort ResWidth, ushort ResHeight, ExeAttributes ExeAttributes, ref byte[] EmperorExeData)
+		/// <param name="_ResWidth_">The width value of the resolution inputted into the UI.</param>
+		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
+		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Emperor.exe</param>
+		/// <param name="_EmperorExeData_">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
+		internal static void _hexEditExeResVals(ushort _ResWidth_, ushort _ResHeight_, ExeAttributes _ExeAttributes_, ref byte[] _EmperorExeData_)
 		{
-			if (FillResHexOffsetTable(ExeAttributes, out ResHexOffsetTable _resHexOffsetTable))
+			if (_FillResHexOffsetTable(_ExeAttributes_, out ResHexOffsetTable _resHexOffsetTable_))
 			{
-				byte[] _resWidthBytes = BitConverter.GetBytes(ResWidth);
-				byte[] _resHeightBytes = BitConverter.GetBytes(ResHeight);
+				byte[] _resWidthBytes_ = BitConverter.GetBytes(_ResWidth_);
+				byte[] _resHeightBytes_ = BitConverter.GetBytes(_ResHeight_);
 
 				// These two offsets set the game's resolution to the desired amount
-				EmperorExeData[_resHexOffsetTable._resWidth + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._resWidth + 1] = _resWidthBytes[1];
-				EmperorExeData[_resHexOffsetTable._resHeight + 0] = _resHeightBytes[0];
-				EmperorExeData[_resHexOffsetTable._resHeight + 1] = _resHeightBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._ResWidth + 0] = _resWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._ResWidth + 1] = _resWidthBytes_[1];
+				_EmperorExeData_[_resHexOffsetTable_._ResHeight + 0] = _resHeightBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._ResHeight + 1] = _resHeightBytes_[1];
 
 				// These two offsets correct the game's main menu viewport to use the new resolution values.
 				// Without this fix, the game will not accept main menu images where either dimension is larger
@@ -41,27 +42,27 @@ namespace Emperor
 				// In turn, any image smaller than those dimensions will be put in the top-left corner and
 				// black bars will fill the remaining space on the bottom and right.
 				// This is all despite the fact that buttons will be in the correct locations.
-				EmperorExeData[_resHexOffsetTable._mainMenuViewportWidth + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._mainMenuViewportWidth + 1] = _resWidthBytes[1];
-				EmperorExeData[_resHexOffsetTable._mainMenuViewportHeight + 0] = _resHeightBytes[0];
-				EmperorExeData[_resHexOffsetTable._mainMenuViewportHeight + 1] = _resHeightBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._MainMenuViewportWidth + 0] = _resWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._MainMenuViewportWidth + 1] = _resWidthBytes_[1];
+				_EmperorExeData_[_resHexOffsetTable_._MainMenuViewportHeight + 0] = _resHeightBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._MainMenuViewportHeight + 1] = _resHeightBytes_[1];
 
 				// This offset corrects the position of the money, population and zodiac info in the top menu bar.
 				// Without this patch, that text will be drawn too far to the left.
-				EmperorExeData[_resHexOffsetTable._fixMoneyPopDateTextPosWidth + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._fixMoneyPopDateTextPosWidth + 1] = _resWidthBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._FixMoneyPopDateTextPosWidth + 0] = _resWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._FixMoneyPopDateTextPosWidth + 1] = _resWidthBytes_[1];
 
 				// This offset corrects the position of the top menu bar containing the above text.
 				// Without this patch, that background will be drawn too far to the left.
-				EmperorExeData[_resHexOffsetTable._fixTopMenuBarBackgroundPosWidth + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._fixTopMenuBarBackgroundPosWidth + 1] = _resWidthBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._FixTopMenuBarBackgroundPosWidth + 0] = _resWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._FixTopMenuBarBackgroundPosWidth + 1] = _resWidthBytes_[1];
 
 				// Set main game's viewport to the correct width.
 				// This means the width that will be taken by both the city view's "camera" and the right sidebar containing the city's info and
 				// buttons to build and demolish buildings and other functions.
 				// Without this patch, the view of your city will be rendered in a small square placed at the top-left corner of the main viewing area.
-				EmperorExeData[_resHexOffsetTable._viewportWidth + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._viewportWidth + 1] = _resWidthBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._ViewportWidth + 0] = _resWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._ViewportWidth + 1] = _resWidthBytes_[1];
 
 				// These next two offsets are used to determine the size of the city view's "camera".
 				// However, the game doesn't allow specifying a size. Only a multiplier can be used.
@@ -93,53 +94,53 @@ namespace Emperor
 				//
 				// After that, we also need to round our final figure down to the nearest integer.
 				// Finally, these values are signed 8-bit integers and so, must be capped at 127.
-				byte _resHeightMult;
+				byte _resHeightMult_;
 				// 2560 plugged into the formula below is equal to 127. Thus, this and any higher number must use a capped multiplier.
-				if (ResHeight >= 2560)
+				if (_ResHeight_ >= 2560)
 				{
-					_resHeightMult = 127;
+					_resHeightMult_ = 127;
 				}
 				else
 				{
-					_resHeightMult = (byte)Math.Floor((ResHeight - 40) / 20f + 1); // fs are required. Otherwise, compiler error CS0121 occurrs.
+					_resHeightMult_ = (byte)Math.Floor(((_ResHeight_ - 40) / 20f) + 1); // fs are required. Otherwise, compiler error CS0121 occurs.
 				}
-				byte _resWidthMult;
+				byte _resWidthMult_;
 				// 10380 plugged into the formula below is equal to 127. Thus, this and any higher number must use a capped multiplier.
-				if (ResWidth >= 10380)
+				if (_ResWidth_ >= 10380)
 				{
-					_resWidthMult = 127;
+					_resWidthMult_ = 127;
 				}
 				else
 				{
-					_resWidthMult = (byte)Math.Floor((ResWidth - 222 + 2) / 80f); // fs are required. Otherwise, compiler error CS0121 occurrs.
+					_resWidthMult_ = (byte)Math.Floor((_ResWidth_ - 222 + 2) / 80f); // fs are required. Otherwise, compiler error CS0121 occurs.
 				}
-				EmperorExeData[_resHexOffsetTable._viewportHeightMult] = _resHeightMult;
-				EmperorExeData[_resHexOffsetTable._viewportWidthMult]  = _resWidthMult;
+				_EmperorExeData_[_resHexOffsetTable_._ViewportHeightMult] = _resHeightMult_;
+				_EmperorExeData_[_resHexOffsetTable_._ViewportWidthMult]  = _resWidthMult_;
 
 				// This offset partially corrects the position of the game's sidebar to align with the new viewport render limit
 				// Without this change, the sidebar is drawn against the left edge of the screen and clips with the city view
-				EmperorExeData[_resHexOffsetTable._sidebarRenderLimitWidth + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._sidebarRenderLimitWidth + 1] = _resWidthBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._SidebarRenderLimitWidth + 0] = _resWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._SidebarRenderLimitWidth + 1] = _resWidthBytes_[1];
 
 				// This offset corrects the position of the rotate city view button's interaction point
 				// Without this change, the interaction point is placed too high on the sidebar (under the city map in my case).
-				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_RotateButton + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_RotateButton + 1] = _resWidthBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._FixSidebarCityMapRotateButton + 0] = _resWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._FixSidebarCityMapRotateButton + 1] = _resWidthBytes_[1];
 
 				// This offset corrects the position of the rotate city view button's icon
 				// Without this change, the icon is drawn too high on the sidebar (under the city map in my case).
-				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_RotateIcon + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_RotateIcon + 1] = _resWidthBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._FixSidebarCityMapRotateIcon + 0] = _resWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._FixSidebarCityMapRotateIcon + 1] = _resWidthBytes_[1];
 
 				// This offset corrects the position of the interaction points for the other 4 buttons below the city map
 				// Without this change, the interaction points are placed too high on the sidebar (inside the city map in my case).
-				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_GoalsOverviewWorldMapMessagesIcons + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_GoalsOverviewWorldMapMessagesIcons + 1] = _resWidthBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons + 0] = _resWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons + 1] = _resWidthBytes_[1];
 
 				// This offset corrects the position of the icons for the other 4 buttons below the city map
 				// Without this change, the icons are drawn too high on the sidebar (inside the city map in my case).
-				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_GoalsOverviewWorldMapMessagesButtons + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._fixSidebarCityMap_GoalsOverviewWorldMapMessagesButtons + 1] = _resWidthBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons + 0] = _resWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons + 1] = _resWidthBytes_[1];
 
 				// This next offset is used to determine which column of pixels in the game's window will be used as the left edge of the right sidebar.
 				// The original game uses the calculation "ResolutionWidth - 226" to find this column. However, this causes a problem.
@@ -153,9 +154,9 @@ namespace Emperor
 				// To alleviate that problem, my solution is to use the formula mentioned above to calculate the width of the city view using the
 				// appropriate multiplier calculated above. This figure is then used to designate where the left edge of the sidebar starts.
 				// This means that the sidebar will be shifted left to be next to the city view.
-				byte[] _viewportWidthBytes = BitConverter.GetBytes(Convert.ToUInt16(_resWidthMult * 80 - 2));
-				EmperorExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 0] = _viewportWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._sidebarLeftEdgeStartWidth + 1] = _viewportWidthBytes[1];
+				byte[] _viewportWidthBytes_ = BitConverter.GetBytes(Convert.ToUInt16((_resWidthMult_ * 80) - 2));
+				_EmperorExeData_[_resHexOffsetTable_._SidebarLeftEdgeStartWidth + 0] = _viewportWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._SidebarLeftEdgeStartWidth + 1] = _viewportWidthBytes_[1];
 
 
 
@@ -163,28 +164,28 @@ namespace Emperor
 				// This offset replaces a JNZ call with two NOPs
 				// It causes the bottom bar to be drawn all the way and connect to the sidebar instead of stopping at 798px in length.
 				// It does this by drawing the bar graphic twice.
-				EmperorExeData[_resHexOffsetTable._fixBottomBarLength + 0] = 0x90;
-				EmperorExeData[_resHexOffsetTable._fixBottomBarLength + 1] = 0x90;
+				_EmperorExeData_[_resHexOffsetTable_._FixBottomBarLength + 0] = 0x90;
+				_EmperorExeData_[_resHexOffsetTable_._FixBottomBarLength + 1] = 0x90;
 
 				// This offset moves the first bar created above to the bottom left corner of the window.
-				byte[] _bottomBarRowTopEdgePosBytes = BitConverter.GetBytes(Convert.ToUInt16(ResHeight - 8));
-				EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak1 + 0] = _bottomBarRowTopEdgePosBytes[0];
-				EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak1 + 1] = _bottomBarRowTopEdgePosBytes[1];
+				byte[] _bottomBarRowTopEdgePosBytes_ = BitConverter.GetBytes(Convert.ToUInt16(_ResHeight_ - 8));
+				_EmperorExeData_[_resHexOffsetTable_._UnknownBottomBarTweak1 + 0] = _bottomBarRowTopEdgePosBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._UnknownBottomBarTweak1 + 1] = _bottomBarRowTopEdgePosBytes_[1];
 
 				// This offset moves the second bar created above next to the first bar.
-				EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak2 + 0] = _bottomBarRowTopEdgePosBytes[0];
-				EmperorExeData[_resHexOffsetTable._unknownBottomBarTweak2 + 1] = _bottomBarRowTopEdgePosBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._UnknownBottomBarTweak2 + 0] = _bottomBarRowTopEdgePosBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._UnknownBottomBarTweak2 + 1] = _bottomBarRowTopEdgePosBytes_[1];
 
 
 
 
 				// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
-				EmperorExeData[_resHexOffsetTable._unknownWidth + 0] = _resWidthBytes[0];
-				EmperorExeData[_resHexOffsetTable._unknownWidth + 1] = _resWidthBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._UnknownWidth + 0] = _resWidthBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._UnknownWidth + 1] = _resWidthBytes_[1];
 
 				// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
-				EmperorExeData[_resHexOffsetTable._unknownHeight + 0] = _resHeightBytes[0];
-				EmperorExeData[_resHexOffsetTable._unknownHeight + 1] = _resHeightBytes[1];
+				_EmperorExeData_[_resHexOffsetTable_._UnknownHeight + 0] = _resHeightBytes_[0];
+				_EmperorExeData_[_resHexOffsetTable_._UnknownHeight + 1] = _resHeightBytes_[1];
 
 
 				// At this point, the only outstanding issue to be fixed is that there are two gaps in the UI that just
@@ -195,20 +196,21 @@ namespace Emperor
 				// the areas where these gaps existed. The last portion of this function will be used to replicate this insertion.
 				//
 				// First, modify a function call into a jump to our inserted code.
-				for (byte _i = 0; _i < _resHexOffsetTable._extendOriginalUiNewCodeJumpData.Length; _i++)
+				for (byte _i_ = 0; _i_ < _resHexOffsetTable_._ExtendOriginalUiNewCodeJumpData.Length; _i_++)
 				{
-					EmperorExeData[_resHexOffsetTable._extendOriginalUiNewCodeJumpOffset + _i] = _resHexOffsetTable._extendOriginalUiNewCodeJumpData[_i];
+					_EmperorExeData_[_resHexOffsetTable_._ExtendOriginalUiNewCodeJumpOffset + _i_] = _resHexOffsetTable_._ExtendOriginalUiNewCodeJumpData[_i_];
 				}
 				// After that, insert our new code.
-				for (byte _i = 0; _i < _resHexOffsetTable._extendOriginalUiNewCodeData.Length; _i++)
+				for (byte _i_ = 0; _i_ < _resHexOffsetTable_._ExtendOriginalUiNewCodeData.Length; _i_++)
 				{
-					EmperorExeData[_resHexOffsetTable._extendOriginalUiNewCodeOffset + _i] = _resHexOffsetTable._extendOriginalUiNewCodeData[_i];
+					_EmperorExeData_[_resHexOffsetTable_._ExtendOriginalUiNewCodeOffset + _i_] = _resHexOffsetTable_._ExtendOriginalUiNewCodeData[_i_];
 				}
 			}
 		}
 	}
 }
 
+// ReSharper disable CommentTypo
 /*
 	The above code I wrote was mainly thanks to a post on the Widescreen Gaming Forum written by Mario: https://www.wsgf.org/phpBB3/viewtopic.php?p=173006#p173006
 	Inside the zip file he provided, he included a guide for hex-editing Emperor.exe to make changes to the game's "1024x768" resolution option.
@@ -321,8 +323,8 @@ namespace Emperor
 	// [mh]=[35]; [mw]=[15] for 1080x1920
 	// [mh]=[47]; [mw]=[1d] for 1440x2560
 
-	[!] After it looks that the sidebar will fit you must mesure the viewport width (vw value)(just printscreen and paste it in a photo editor).
-	This will give you the sidebar left postion value.
+	[!] After it looks that the sidebar will fit you must measure the viewport width (vw value)(just printscreen and paste it in a photo editor).
+	This will give you the sidebar left position value.
 
 
 	----[Sidebar Left Position]----
@@ -396,3 +398,4 @@ namespace Emperor
 	(gog addr 1bdf68)
 	// [20] is original value; why is changed with [21] for 2560p i have no clue
  */
+// ReSharper restore CommentTypo
