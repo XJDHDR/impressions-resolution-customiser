@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="non-UI_code\Crc32\MainExeIntegrity.cs" />
     <Compile Include="non-UI_code\Crc32\SliceBy16.cs" />
+    <Compile Include="non-UI_code\EmperorSpriteLimitChanger.cs" />
     <Compile Include="non-UI_code\Emperor_ExeDefinitions.cs" />
     <Compile Include="non-UI_code\Emperor_MakeChanges.cs" />
     <Compile Include="non-UI_code\Emperor_ResizeImages.cs" />
