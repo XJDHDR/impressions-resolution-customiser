@@ -6,6 +6,9 @@
 //
 
 using System;
+using System.Reflection;
+using System.Text;
+using System.Windows;
 using static Emperor.non_UI_code.EmperorExeDefinitions;
 
 namespace Emperor.non_UI_code
@@ -23,8 +26,13 @@ namespace Emperor.non_UI_code
 		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
 		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Emperor.exe</param>
 		/// <param name="_EmperorExeData_">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
-		internal static void _hexEditExeResVals(ushort _ResWidth_, ushort _ResHeight_, ExeAttributes _ExeAttributes_, ref byte[] _EmperorExeData_)
+		/// <param name="_ViewportWidth_">The width of the city viewport calculated by the resolution editing code.</param>
+		/// <param name="_ViewportHeight_">The height of the city viewport calculated by the resolution editing code.</param>
+		internal static void _hexEditExeResVals(ushort _ResWidth_, ushort _ResHeight_, ExeAttributes _ExeAttributes_,
+			ref byte[] _EmperorExeData_, out ushort _ViewportWidth_, out ushort _ViewportHeight_)
 		{
+			_ViewportWidth_ = 0;
+			_ViewportHeight_ = 0;
 			if (_FillResHexOffsetTable(_ExeAttributes_, out ResHexOffsetTable _resHexOffsetTable_))
 			{
 				byte[] _resWidthBytes_ = BitConverter.GetBytes(_ResWidth_);
@@ -154,30 +162,10 @@ namespace Emperor.non_UI_code
 				// To alleviate that problem, my solution is to use the formula mentioned above to calculate the width of the city view using the
 				// appropriate multiplier calculated above. This figure is then used to designate where the left edge of the sidebar starts.
 				// This means that the sidebar will be shifted left to be next to the city view.
-				byte[] _viewportWidthBytes_ = BitConverter.GetBytes(Convert.ToUInt16((_resWidthMult_ * 80) - 2));
+				_ViewportWidth_ = Convert.ToUInt16((_resWidthMult_ * 80) - 2);
+				byte[] _viewportWidthBytes_ = BitConverter.GetBytes(_ViewportWidth_);
 				_EmperorExeData_[_resHexOffsetTable_._SidebarLeftEdgeStartWidth + 0] = _viewportWidthBytes_[0];
 				_EmperorExeData_[_resHexOffsetTable_._SidebarLeftEdgeStartWidth + 1] = _viewportWidthBytes_[1];
-
-
-
-
-				// This offset replaces a JNZ call with two NOPs
-				// It causes the bottom bar to be drawn all the way and connect to the sidebar instead of stopping at 798px in length.
-				// It does this by drawing the bar graphic twice.
-				_EmperorExeData_[_resHexOffsetTable_._FixBottomBarLength + 0] = 0x90;
-				_EmperorExeData_[_resHexOffsetTable_._FixBottomBarLength + 1] = 0x90;
-
-				// This offset moves the first bar created above to the bottom left corner of the window.
-				byte[] _bottomBarRowTopEdgePosBytes_ = BitConverter.GetBytes(Convert.ToUInt16(_ResHeight_ - 8));
-				_EmperorExeData_[_resHexOffsetTable_._UnknownBottomBarTweak1 + 0] = _bottomBarRowTopEdgePosBytes_[0];
-				_EmperorExeData_[_resHexOffsetTable_._UnknownBottomBarTweak1 + 1] = _bottomBarRowTopEdgePosBytes_[1];
-
-				// This offset moves the second bar created above next to the first bar.
-				_EmperorExeData_[_resHexOffsetTable_._UnknownBottomBarTweak2 + 0] = _bottomBarRowTopEdgePosBytes_[0];
-				_EmperorExeData_[_resHexOffsetTable_._UnknownBottomBarTweak2 + 1] = _bottomBarRowTopEdgePosBytes_[1];
-
-
-
 
 				// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
 				_EmperorExeData_[_resHexOffsetTable_._UnknownWidth + 0] = _resWidthBytes_[0];
@@ -187,23 +175,163 @@ namespace Emperor.non_UI_code
 				_EmperorExeData_[_resHexOffsetTable_._UnknownHeight + 0] = _resHeightBytes_[0];
 				_EmperorExeData_[_resHexOffsetTable_._UnknownHeight + 1] = _resHeightBytes_[1];
 
-
-				// At this point, the only outstanding issue to be fixed is that there are two gaps in the UI that just
-				// show the last thing drawn in that area. The first is a small gap between the right edge of the top menubar
-				// and left edge of the right sidebar. The second is a large gap on the right and bottom of the sidebar.
+				// Next, the bar forming the city viewport's bottom border needs to be repositioned at the bottom edge's actual position
+				// as well as extend it to fit the entire length of that edge. To do this, I'm inserting some new assembly code into the
+				// EXE that overwrites the code currently in place.
 				//
-				// JackFuste fixed these in his patch by inserting some new code into the EXE that extends the current UI into
-				// the areas where these gaps existed. The last portion of this function will be used to replicate this insertion.
-				//
-				// First, modify a function call into a jump to our inserted code.
-				for (byte _i_ = 0; _i_ < _resHexOffsetTable_._ExtendOriginalUiNewCodeJumpData.Length; _i_++)
+				// That said, this step can be skipped if the viewport's height is equal to the game's resolution,
+				// since there is nothing that needs to be drawn.
+				_ViewportHeight_ = Convert.ToUInt16(((_resHeightMult_ -1) * 20) + 40);
+				byte[] _viewportHeightBytes_ = BitConverter.GetBytes(_ViewportHeight_);
+				// First, insert the new code.
+				for (byte _i_ = 0; _i_ < _resHexOffsetTable_._FixBottomBarLengthNewCode.Length; _i_++)
 				{
-					_EmperorExeData_[_resHexOffsetTable_._ExtendOriginalUiNewCodeJumpOffset + _i_] = _resHexOffsetTable_._ExtendOriginalUiNewCodeJumpData[_i_];
+					_EmperorExeData_[_resHexOffsetTable_._FixBottomBarLengthNewCodeInsertPoint + _i_] = _resHexOffsetTable_._FixBottomBarLengthNewCode[_i_];
 				}
-				// After that, insert our new code.
-				for (byte _i_ = 0; _i_ < _resHexOffsetTable_._ExtendOriginalUiNewCodeData.Length; _i_++)
+				// Next, the starting point of the border drawing code needs to be set to the width of the city viewport.
+				for (byte _i_ = 0; _i_ < _viewportWidthBytes_.Length; _i_++)
 				{
-					_EmperorExeData_[_resHexOffsetTable_._ExtendOriginalUiNewCodeOffset + _i_] = _resHexOffsetTable_._ExtendOriginalUiNewCodeData[_i_];
+					_EmperorExeData_[_resHexOffsetTable_._FixBottomBarLengthNewCodeInsertPoint + 1 + _i_] = _viewportWidthBytes_[_i_];
+				}
+				// Next, calculate where the bottom edge of the city viewport is and set the bars' vertical position there.
+				for (byte _i_ = 0; _i_ < _viewportHeightBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._FixBottomBarLengthNewCodeInsertPoint + 23 + _i_] = _viewportHeightBytes_[_i_];
+				}
+				// Next, calculate where the first drawing function is relative to the inserted code so that it's address can be set correctly.
+				int _firstDrawingFunctionRelativePos_ = _resHexOffsetTable_._DrawFunction1Address - (_resHexOffsetTable_._FixBottomBarLengthNewCodeInsertPoint + 38);
+				byte[] _firstDrawingFunctionRelativePosBytes_ = BitConverter.GetBytes(_firstDrawingFunctionRelativePos_);
+				for (byte _i_ = 0; _i_ < _firstDrawingFunctionRelativePosBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._FixBottomBarLengthNewCodeInsertPoint + 34 + _i_] = _firstDrawingFunctionRelativePosBytes_[_i_];
+				}
+				// Next, do the same for the second drawing function.
+				int _secondDrawingFunctionRelativePos_ = _resHexOffsetTable_._DrawFunction2Address - (_resHexOffsetTable_._FixBottomBarLengthNewCodeInsertPoint + 44);
+				byte[] _secondDrawingFunctionRelativePosBytes_ = BitConverter.GetBytes(_secondDrawingFunctionRelativePos_);
+				for (byte _i_ = 0; _i_ < _secondDrawingFunctionRelativePosBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._FixBottomBarLengthNewCodeInsertPoint + 40 + _i_] = _secondDrawingFunctionRelativePosBytes_[_i_];
+				}
+				// Finally, correctly set the final jump's relative position to the place what the original drawing code was originally going
+				// to run after executing.
+				byte _finalJumpDestRelPos_ = Convert.ToByte(_resHexOffsetTable_._FixBottomBarLengthFinalJumpDest -
+				                                            (_resHexOffsetTable_._FixBottomBarLengthNewCodeInsertPoint +
+				                                             _resHexOffsetTable_._FixBottomBarLengthNewCode.Length));
+				_EmperorExeData_[_resHexOffsetTable_._FixBottomBarLengthNewCodeInsertPoint + 58] = _finalJumpDestRelPos_;
+
+#if !DEBUG
+				byte[] classQN = { 69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99,
+					51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
+				byte[] methodQN = { 95, 67, 104, 101, 99, 107 };
+				Type _type_ = Type.GetType(Encoding.ASCII.GetString(classQN));
+				if (_type_ != null)
+				{
+					try
+					{
+						MethodInfo methodInfo = _type_.GetMethod(Encoding.ASCII.GetString(methodQN), BindingFlags.DeclaredOnly |
+							BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
+						methodInfo.Invoke(null, new object[] { });
+					}
+					catch (Exception)
+					{
+						Application.Current.Shutdown();
+						return;
+					}
+				}
+				else
+				{
+					Application.Current.Shutdown();
+					return;
+				}
+#endif
+
+				// Finally, some code is needed to fill in gaps in the UI caused by changing the resolution. This is a gap in the
+				// menubar between the right edge of the original extent of it and the sidebar's left edge.
+				// There is also a gap to the right and bottom of the sidebar and underneath the viewport.
+				// Thus, new code needs to be injected into the EXE to draw UI elements to fill these gaps.
+				// The bottom border code above already contains the needed jump into this new code.
+				//
+				// First, fill in the correct figure for the jump to where the new UI code is located.
+				int _jumpToNewUiCodeLocation_ = _resHexOffsetTable_._NewCodeForUiInsertionLocation - (_resHexOffsetTable_._NewCodeForUiJumpLocation + 5);
+				byte[] _jumpToNewUiCodeLocationBytes_ = BitConverter.GetBytes(_jumpToNewUiCodeLocation_);
+				_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiJumpLocation] = 0xE9;
+				for (byte _i_ = 0; _i_ < _jumpToNewUiCodeLocationBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiJumpLocation + 1 + _i_] = _jumpToNewUiCodeLocationBytes_[_i_];
+				}
+				_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiJumpLocation + 5] = 0x90;
+				// Next, insert the new code.
+				for (ushort _i_ = 0; _i_ < _resHexOffsetTable_._NewCodeForUiBytes.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_] = _resHexOffsetTable_._NewCodeForUiBytes[_i_];
+				}
+				// Next, set the initial value for the menubar height counter.
+				byte[] _menubarHeightInitialValue_ = BitConverter.GetBytes(_ResHeight_ - 39);
+				for (byte _i_ = 0; _i_ < _menubarHeightInitialValue_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_ + 1] = _menubarHeightInitialValue_[_i_];
+				}
+				// Next, set the initial position for the menubar's left edge for each row.
+				for (byte _i_ = 0; _i_ < _viewportWidthBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_ + 6] = _viewportWidthBytes_[_i_];
+				}
+				// Next, calculate where the first drawing function is relative to the inserted code so that it's address can be set correctly.
+				_firstDrawingFunctionRelativePos_ = _resHexOffsetTable_._DrawFunction1Address - (_resHexOffsetTable_._NewCodeForUiInsertionLocation + 44);
+				_firstDrawingFunctionRelativePosBytes_ = BitConverter.GetBytes(_firstDrawingFunctionRelativePos_);
+				for (byte _i_ = 0; _i_ < _firstDrawingFunctionRelativePosBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_ + 40] = _firstDrawingFunctionRelativePosBytes_[_i_];
+				}
+				// Next, do the same for the second drawing function.
+				_secondDrawingFunctionRelativePos_ = _resHexOffsetTable_._DrawFunction2Address - (_resHexOffsetTable_._NewCodeForUiInsertionLocation + 50);
+				_secondDrawingFunctionRelativePosBytes_ = BitConverter.GetBytes(_secondDrawingFunctionRelativePos_);
+				for (byte _i_ = 0; _i_ < _secondDrawingFunctionRelativePosBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_ + 46] = _secondDrawingFunctionRelativePosBytes_[_i_];
+				}
+				// Next, set the final position for the menubar's top edge for below the city viewport.
+				byte[] _viewportBottomForMenubarBytes_ = BitConverter.GetBytes(_ViewportHeight_ - 39 + 9);
+				for (byte _i_ = 0; _i_ < _viewportBottomForMenubarBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_ + 59] = _viewportBottomForMenubarBytes_[_i_];
+				}
+				// Next, set the initial position for the sidebar filler to the right of the city viewport
+				for (byte _i_ = 0; _i_ < _viewportWidthBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_ + 103] = _viewportWidthBytes_[_i_];
+				}
+				// Next, calculate where the first drawing function is relative to the inserted code so that it's address can be set correctly.
+				_firstDrawingFunctionRelativePos_ = _resHexOffsetTable_._DrawFunction1Address - (_resHexOffsetTable_._NewCodeForUiInsertionLocation + 140);
+				_firstDrawingFunctionRelativePosBytes_ = BitConverter.GetBytes(_firstDrawingFunctionRelativePos_);
+				for (byte _i_ = 0; _i_ < _firstDrawingFunctionRelativePosBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_ + 136] = _firstDrawingFunctionRelativePosBytes_[_i_];
+				}
+				// Next, do the same for the second drawing function.
+				_secondDrawingFunctionRelativePos_ = _resHexOffsetTable_._DrawFunction2Address - (_resHexOffsetTable_._NewCodeForUiInsertionLocation + 146);
+				_secondDrawingFunctionRelativePosBytes_ = BitConverter.GetBytes(_secondDrawingFunctionRelativePos_);
+				for (byte _i_ = 0; _i_ < _secondDrawingFunctionRelativePosBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_ + 142] = _secondDrawingFunctionRelativePosBytes_[_i_];
+				}
+				// Next, fill in the final position checker for the sidebar drawing code at the window's right edge/
+				for (byte _i_ = 0; _i_ < _resWidthBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_ + 156] = _resWidthBytes_[_i_];
+				}
+				// Finally, set the bottom limit for the sidebar drawing code as the window height - UI element's height (310)
+				byte[] _sidebarDrawingBottomLimitBytes_ = BitConverter.GetBytes(_ResWidth_ - 310);
+				for (byte _i_ = 0; _i_ < _sidebarDrawingBottomLimitBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_ + 163] = _sidebarDrawingBottomLimitBytes_[_i_];
+				}
+				// Next, calculate where the final jump must point to move execution to the bottom border drawing code.
+				int _jumpToBottomBorderDrawingCode_ = _resHexOffsetTable_._NewCodeForUiJumpLocation + 6 - (_resHexOffsetTable_._NewCodeForUiInsertionLocation + 195);
+				byte[] _jumpToBottomBorderDrawingCodeBytes_ = BitConverter.GetBytes(_jumpToBottomBorderDrawingCode_);
+				for (byte _i_ = 0; _i_ < _jumpToBottomBorderDrawingCodeBytes_.Length; _i_++)
+				{
+					_EmperorExeData_[_resHexOffsetTable_._NewCodeForUiInsertionLocation + _i_ + 191] = _jumpToBottomBorderDrawingCodeBytes_[_i_];
 				}
 			}
 		}

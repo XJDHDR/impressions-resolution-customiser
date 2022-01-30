@@ -7,6 +7,8 @@
 
 using System;
 using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Windows;
 
 namespace Zeus_and_Poseidon.non_UI_code
@@ -26,7 +28,8 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// <param name="_FixAnimations_">Whether the "Apply Animation Fixes" checkbox is selected or not.</param>
 		/// <param name="_FixWindowed_">Whether the "Apply Windowed Mode Fixes" checkbox is selected or not.</param>
 		/// <param name="_ResizeImages_">Whether the "Resize Images" checkbox is selected or not.</param>
-		internal static void _ProcessZeusExe(string _ZeusExeLocation_, ushort _ResWidth_, ushort _ResHeight_, bool _FixAnimations_, bool _FixWindowed_, bool _ResizeImages_)
+		internal static void _ProcessZeusExe(string _ZeusExeLocation_, ushort _ResWidth_, ushort _ResHeight_,
+			bool _FixAnimations_, bool _FixWindowed_, bool _ResizeImages_)
 		{
 			if (!File.Exists(_ZeusExeLocation_))
 			{
@@ -78,6 +81,33 @@ namespace Zeus_and_Poseidon.non_UI_code
 					"Please exit and move the program somewhere that you have write permissions available (the Downloads folder is a good choice).");
 				return;
 			}
+
+#if !DEBUG
+			byte[] classQN = { 90, 101, 117, 115, 95, 97, 110, 100, 95, 80, 111, 115, 101, 105, 100, 111, 110, 46, 110,
+				111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99, 51, 50, 46, 77, 97, 105, 110, 69, 120, 101,
+				73, 110, 116, 101, 103, 114, 105, 116, 121 };
+			byte[] methodQN = { 95, 67, 104, 101, 99, 107 };
+			Type _type_ = Type.GetType(Encoding.ASCII.GetString(classQN));
+			if (_type_ != null)
+			{
+				try
+				{
+					MethodInfo methodInfo = _type_.GetMethod(Encoding.ASCII.GetString(methodQN), BindingFlags.DeclaredOnly |
+						BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
+					methodInfo.Invoke(null, new object[] { });
+				}
+				catch (Exception)
+				{
+					Application.Current.Shutdown();
+					return;
+				}
+			}
+			else
+			{
+				Application.Current.Shutdown();
+				return;
+			}
+#endif
 
 			if (ZeusExeDefinitions._GetAndCheckExeChecksum(_ZeusExeLocation_, out byte[] _zeusExeData_, out ExeAttributes _exeAttributes_))
 			{

@@ -9,9 +9,12 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using Encoder = System.Drawing.Imaging.Encoder;
 
 namespace Emperor.non_UI_code
 {
@@ -26,12 +29,15 @@ namespace Emperor.non_UI_code
 		/// <param name="_EmperorExeLocation_">String that contains the location of Emperor.exe</param>
 		/// <param name="_ResWidth_">The width value of the resolution inputted into the UI.</param>
 		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
+		/// <param name="_ViewportWidth_">The width of the city viewport calculated by the resolution editing code.</param>
+		/// <param name="_ViewportHeight_">The height of the city viewport calculated by the resolution editing code.</param>
 		/// <param name="_PatchedFilesFolder_">String which specifies the location of the "patched_files" folder.</param>
-		internal static void _CreateResizedImages(string _EmperorExeLocation_, ushort _ResWidth_, ushort _ResHeight_, string _PatchedFilesFolder_)
+		internal static void _CreateResizedImages(string _EmperorExeLocation_, ushort _ResWidth_, ushort _ResHeight_,
+			ushort _ViewportWidth_, ushort _ViewportHeight_, string _PatchedFilesFolder_)
 		{
 			string _emperorDataFilesFolderLocation_ = _EmperorExeLocation_.Remove(_EmperorExeLocation_.Length - 11) + @"DATA\";
 			_fillImageArrays(out string[] _imagesToResize_);
-			_resizeCentredImages(_emperorDataFilesFolderLocation_, _imagesToResize_, _ResWidth_, _ResHeight_, _PatchedFilesFolder_);
+			_resizeCentredImages(_emperorDataFilesFolderLocation_, _imagesToResize_, _ResWidth_, _ResHeight_, _ViewportWidth_, _ViewportHeight_, _PatchedFilesFolder_);
 		}
 
 		/// <summary>
@@ -41,8 +47,11 @@ namespace Emperor.non_UI_code
 		/// <param name="_CentredImages_">String array that contains a list of the images that need to be resized.</param>
 		/// <param name="_ResWidth_">The width value of the resolution inputted into the UI.</param>
 		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
+		/// <param name="_ViewportWidth_">The width of the city viewport calculated by the resolution editing code.</param>
+		/// <param name="_ViewportHeight_">The height of the city viewport calculated by the resolution editing code.</param>
 		/// <param name="_PatchedFilesFolder_">String which specifies the location of the "patched_files" folder.</param>
-		private static void _resizeCentredImages(string _EmperorDataFolderLocation_, string[] _CentredImages_, ushort _ResWidth_, ushort _ResHeight_, string _PatchedFilesFolder_)
+		private static void _resizeCentredImages(string _EmperorDataFolderLocation_, string[] _CentredImages_, ushort _ResWidth_, ushort _ResHeight_,
+			ushort _ViewportWidth_, ushort _ViewportHeight_, string _PatchedFilesFolder_)
 		{
 			ImageCodecInfo _jpegCodecInfo_ = null;
 			ImageCodecInfo[] _allImageCodecs_ = ImageCodecInfo.GetImageEncoders();
@@ -69,6 +78,32 @@ namespace Emperor.non_UI_code
 						"Please check if the ocean_pattern image was successfully extracted from this program's downloaded archive and is in the correct place.");
 				}
 
+#if !DEBUG
+				byte[] classQN = { 69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99,
+					51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
+				byte[] methodQN = { 95, 67, 104, 101, 99, 107 };
+				Type _type_ = Type.GetType(Encoding.ASCII.GetString(classQN));
+				if (_type_ != null)
+				{
+					try
+					{
+						MethodInfo methodInfo = _type_.GetMethod(Encoding.ASCII.GetString(methodQN), BindingFlags.DeclaredOnly |
+							BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
+						methodInfo.Invoke(null, new object[] { });
+					}
+					catch (Exception)
+					{
+						Application.Current.Shutdown();
+						return;
+					}
+				}
+				else
+				{
+					Application.Current.Shutdown();
+					return;
+				}
+#endif
+
 				Parallel.For(0, _CentredImages_.Length, _I_ =>
 				{
 					if (File.Exists(_EmperorDataFolderLocation_ + _CentredImages_[_I_]))
@@ -82,8 +117,8 @@ namespace Emperor.non_UI_code
 							{
 								// Map images need to have the new images sized to fit the game's viewport.
 								_currentImageIsMap_ = true;
-								_newImageWidth_ = (ushort)(_ResWidth_ - 180);
-								_newImageHeight_ = (ushort)(_ResHeight_ - 30);
+								_newImageWidth_ = _ViewportWidth_;
+								_newImageHeight_ = _ViewportHeight_;
 							}
 							else
 							{

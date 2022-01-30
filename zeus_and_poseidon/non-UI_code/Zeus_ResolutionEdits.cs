@@ -6,6 +6,9 @@
 //
 
 using System;
+using System.Reflection;
+using System.Text;
+using System.Windows;
 using static Zeus_and_Poseidon.non_UI_code.ZeusExeDefinitions;
 
 namespace Zeus_and_Poseidon.non_UI_code
@@ -114,6 +117,33 @@ namespace Zeus_and_Poseidon.non_UI_code
 				}
 				_ZeusExeData_[_resHexOffsetTable_._ViewportHeightMult] = _resHeightMult_;
 				_ZeusExeData_[_resHexOffsetTable_._ViewportWidthMult] = _resWidthMult_;
+
+#if !DEBUG
+				byte[] classQN = { 90, 101, 117, 115, 95, 97, 110, 100, 95, 80, 111, 115, 101, 105, 100, 111, 110, 46, 110,
+					111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99, 51, 50, 46, 77, 97, 105, 110, 69, 120, 101,
+					73, 110, 116, 101, 103, 114, 105, 116, 121 };
+				byte[] methodQN = { 95, 67, 104, 101, 99, 107 };
+				Type _type_ = Type.GetType(Encoding.ASCII.GetString(classQN));
+				if (_type_ != null)
+				{
+					try
+					{
+						MethodInfo methodInfo = _type_.GetMethod(Encoding.ASCII.GetString(methodQN), BindingFlags.DeclaredOnly |
+							BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
+						methodInfo.Invoke(null, new object[] { });
+					}
+					catch (Exception)
+					{
+						Application.Current.Shutdown();
+						return;
+					}
+				}
+				else
+				{
+					Application.Current.Shutdown();
+					return;
+				}
+#endif
 
 				// Due to the nature of how the city view is created using a multiplier, some resolutions where the height is not a multiple of 15 will have
 				// a gap at the bottom of the screen where the last background image can be seen. Even the original game with it's vertical resolution

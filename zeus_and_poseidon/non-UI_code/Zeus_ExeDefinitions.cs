@@ -10,6 +10,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
+using Zeus_and_Poseidon.non_UI_code.Crc32;
 
 namespace Zeus_and_Poseidon.non_UI_code
 {
@@ -72,25 +73,13 @@ namespace Zeus_and_Poseidon.non_UI_code
 
 			_ZeusExeData_ = File.ReadAllBytes(_ZeusExeLocation_);
 
-			// First, create an MD5 hash of the EXE's data
-			MD5 _md5_ = MD5.Create();
-			byte[] _md5HashBytes_ = _md5_.ComputeHash(_ZeusExeData_);
-			_md5_.Dispose();
+			// First, create a CRC32 Checksum of the EXE's data, excluding the first 4096 bytes.
+			uint gameExeCrc32Checksum = SliceBy16.Crc32(0x1000, _ZeusExeData_);
 
-			// Next, create a string out of the resulting byte array
-			StringBuilder _stringBuilder_ = new StringBuilder();
-			for (int _i_ = 0; _i_ < _md5HashBytes_.Length; _i_++)
-			{
-				byte _hexValue_ = _md5HashBytes_[_i_];
-				_stringBuilder_.Append(_hexStringTable_[_hexValue_]);
-			}
-
-			string _fileHashString_ = _stringBuilder_.ToString();
-
-			switch (_fileHashString_)
+			switch (gameExeCrc32Checksum)
 			{
 				// English GOG and Steam versions
-				case "7423a12681188325cab04f72b7dc64f1":
+				case 0xe5e22ec1:
 					_ExeAttributes_ = new ExeAttributes
 					{
 						_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogAndSteamEnglish,
@@ -103,11 +92,11 @@ namespace Zeus_and_Poseidon.non_UI_code
 				default:
 					string[] _messageLines_ = new string[]
 					{
-						$"Zeus.exe was not recognised (hash: {_fileHashString_}).",
+						$"Zeus.exe was not recognised.",
 						"",
 						"Only the following unmodified distributions and languages are currently supported:",
-						"- English GOG version with Poseidon expansion (hash: 7423a12681188325cab04f72b7dc64f1)",
-						"- English Steam version with Poseidon expansion (hash: 7423a12681188325cab04f72b7dc64f1)"
+						"- English GOG version with Poseidon expansion",
+						"- English Steam version with Poseidon expansion"
 					};
 					MessageBox.Show(string.Join(Environment.NewLine, _messageLines_));
 					_ExeAttributes_ = new ExeAttributes
