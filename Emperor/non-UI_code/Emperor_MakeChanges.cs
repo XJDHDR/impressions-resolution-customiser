@@ -25,7 +25,9 @@ namespace Emperor.non_UI_code
 		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
 		/// <param name="_FixWindowed_">Whether the "Apply Windowed Mode Fixes" checkbox is selected or not.</param>
 		/// <param name="_ResizeImages_">Whether the "Resize Images" checkbox is selected or not.</param>
-		internal static void _ProcessEmperorExe(string _EmperorExeLocation_, ushort _ResWidth_, ushort _ResHeight_, bool _FixWindowed_, bool _ResizeImages_)
+		/// <param name="_IncreaseSpriteLimit_">Whether the "Double Sprite Limits" checkbox is selected or not.</param>
+		internal static void _ProcessEmperorExe(string _EmperorExeLocation_, ushort _ResWidth_, ushort _ResHeight_,
+			bool _FixWindowed_, bool _ResizeImages_, bool _IncreaseSpriteLimit_)
 		{
 			if (!File.Exists(_EmperorExeLocation_))
 			{
@@ -90,6 +92,10 @@ namespace Emperor.non_UI_code
 				if (_ResizeImages_)
 				{
 					EmperorResizeImages._CreateResizedImages(_EmperorExeLocation_, _ResWidth_, _ResHeight_, _viewportWidth_, _viewportHeight_, _patchedFilesFolder_);
+				}
+				if (_IncreaseSpriteLimit_)
+				{
+					EmperorSpriteLimitChanger._MakeChanges(_exeAttributes_, ref _emperorExeData_);
 				}
 
 				File.WriteAllBytes(_patchedFilesFolder_ + "/Emperor.exe", _emperorExeData_);

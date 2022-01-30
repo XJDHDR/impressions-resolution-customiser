@@ -19,7 +19,7 @@ namespace Emperor
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		// Because _resHeightMult and _resWidthMult (in the Emperor_ResolutionEdits class) are 8 bit signed integers, they can't go higher than 127.
+		// Because _resHeightMult and _resWidthMult (in the EmperorResolutionEdits class) are 8 bit signed integers, they can't go higher than 127.
 		// The ExeDefinitions class caps these multipliers to a maximum of 127. The following formulae show what
 		// the maximum size of the game's area can be (that being the city viewport, top menubar and sidebar together):
 		// _maxResolutionHeight = (128 - 1) * 20 + 40 - 1 = 2579
@@ -88,7 +88,9 @@ namespace Emperor
 			{
 				bool _fixWindowed_ = ApplyWindowFix.IsChecked ?? false;
 				bool _resizeImages_ = ResizeImages.IsChecked ?? false;
-				EmperorMakeChanges._ProcessEmperorExe(emperorExePath, Convert.ToUInt16(_resWidthPreTests_), Convert.ToUInt16(_resHeightPreTests_), _fixWindowed_, _resizeImages_);
+				bool _increaseSpriteLimit_ = IncreaseSpriteLimits.IsChecked ?? false;
+				EmperorMakeChanges._ProcessEmperorExe(emperorExePath, Convert.ToUInt16(_resWidthPreTests_),
+					Convert.ToUInt16(_resHeightPreTests_), _fixWindowed_, _resizeImages_, _increaseSpriteLimit_);
 			}
 			exeCreationBusy = false;
 		}
@@ -118,8 +120,7 @@ namespace Emperor
 		/// </summary>
 		private void HelpMe_Click(object _Sender_, RoutedEventArgs _E_)
 		{
-			string[] _messageLines_ = new string[]
-			{
+			string[] _messageLines_ = {
 				"Help menu for the Emperor Resolution Customiser utility",
 				"",
 				"",
@@ -128,7 +129,7 @@ namespace Emperor
 				"",
 				"This program requires an unmodified copy of the game's EXE to work. It can be supplied in three ways. You can place this program in the same location " +
 				"you have installed the game. Alternatively, you can copy the required game files into the \"base_files\" folder. Finally, you can use the file picker " +
-				"button to choose where the game's files are. In any case, the modified files will be placed in the \"patched_files\" folder afterwards.",
+				"button to choose where the game's files are. In any case, the modified files will be placed in the \"patched_files\" folder afterwards. ",
 				"Do note that any existing \"patched_files\" folder and it's contents will be deleted before generating the new patched files.",
 				"",
 				"",
@@ -140,10 +141,17 @@ namespace Emperor
 				"",
 				"Apply Windowed Mode Fixes: This tickbox tells this program to fix a bug in Emperor which means that the game can't be switched into windowed mode.",
 				"",
-				"Resize Images: This tickbox tells this program to resize the various JPEGs the game uses as background images. This resizing is required for these images" +
-				"to display properly at the new resolutions. All of the images need to be in a \"DATA\" folder that is in the same place as the selected Emperor.exe.",
-				"Since this is the most computationally intensive operation this program does, it is recommended that you only keep this option enabled if you need the" +
+				"Resize Images: This tickbox tells this program to resize the various JPEGs the game uses as background images. This resizing is required for these images " +
+				"to display properly at the new resolutions. All of the images need to be in a \"DATA\" folder that is in the same place as the selected Emperor.exe. ",
+				"Since this is the most computationally intensive operation this program does, it is recommended that you only keep this option enabled if you need the " +
 				"resized images. If you already have images of the correct dimensions, feel free to disable this option.",
+				"",
+				"Double Sprite Limits: This tickbox tells the program to increase the game's sprite limit from 4000 to 8000. This is essentially the exact same patch created " +
+				"by Vadim_Panenko on Mod DB, except that it will work with any of the custom resolutions this program supports. There are two things you must be aware of:",
+				"1. The game might experience a bit of slowdown after building more buildings than the original limit permitted. Vadim also reported that the game " +
+				"\"flies out\" if the limit is raised further than double.",
+				"2. For obvious reasons, loading a save where this limit has been exceeded on an EXE that doesn't have this raised limit can cause issues.",
+				"For these reasons, this option is disabled by default and it is recommended that you only enable it if you need it.",
 				"",
 				"Select Emperor.exe: This button opens a file picker that lets you specify the location of a Emperor.exe that you want to modify.",
 				"",
