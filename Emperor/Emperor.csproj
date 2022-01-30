@@ -77,7 +77,6 @@
     <Compile Include="non-UI_code\Emperor_ResizeImages.cs" />
     <Compile Include="non-UI_code\Emperor_ResolutionEdits.cs" />
     <Compile Include="non-UI_code\Emperor_WindowFix.cs" />
-    <Compile Include="non-UI_code\FastCRC\CRC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -95,7 +94,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include=".editorconfig" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

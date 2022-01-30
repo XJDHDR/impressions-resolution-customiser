@@ -19,14 +19,18 @@ namespace Emperor
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		// Because _resHeightMult and _resWidthMult (in the Emperor_ResolutionEdits class) are 8 bit numbers, they can't go higher than 255.
-		// This means that we must cap our resolution numbers to figures that will be the highest possible that still leaves their multipliers at 255.
+		// Because _resHeightMult and _resWidthMult (in the Emperor_ResolutionEdits class) are 8 bit signed integers, they can't go higher than 127.
+		// The ExeDefinitions class caps these multipliers to a maximum of 127. The following formulae show what
+		// the maximum size of the game's area can be (that being the city viewport, top menubar and sidebar together):
+		// _maxResolutionHeight = (128 - 1) * 20 + 40 - 1 = 2579
+		// _maxResolutionWidth = 128 * 80 + 222 - 2 - 1 = 10459
 		//
-		// Thus, to copy and adapt the relevant formulas for calculating a resolution from a multiplier:
-		// _maxResolutionHeight = (256 - 1) * 20 + 40 - 1 = 5139
-		// _maxResolutionWidth = 256 * 80 + 222 - 2 - 1 = 20699
-		private const ulong MAX_RESOLUTION_HEIGHT = 5139;
-		private const ulong MAX_RESOLUTION_WIDTH = 20699;
+		// If a higher resolution than these are requested, my custom code will add some background to cover up the gaps that would be present otherwise.
+		// However, higher resolutions will cause the playable portions of the game's window to take up a progressively smaller part of the screen.
+		// As a result, I will cap these numbers at 2x higher than the calculated figures above. This means that the game's playable area will
+		// always take up at least 25% of the screen.
+		private const ulong MAX_RESOLUTION_HEIGHT = 5160;
+		private const ulong MAX_RESOLUTION_WIDTH = 20920;
 
 		private bool exeCreationBusy;
 		private string emperorExePath;

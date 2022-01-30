@@ -19,7 +19,7 @@ namespace Zeus_and_Poseidon
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		// Because _resHeightMult and _resWidthMult (in the Zeus_ResolutionEdits class) are 8 bit signed integers, which can't go higher than 127.
+		// Because _resHeightMult and _resWidthMult (in the Zeus_ResolutionEdits class) are 8 bit signed integers, they can't go higher than 127.
 		// The ExeDefinitions class caps these multipliers to a maximum of 127. The following formulae show what
 		// the maximum size of the game's area can be (that being the city viewport, top menubar and sidebar together):
 		// Max Height = (128 - 1) * 15 + 30 - 1 = 1934
@@ -27,10 +27,10 @@ namespace Zeus_and_Poseidon
 		//
 		// If a higher resolution than these are requested, my custom code will add some background to cover up the gaps that would be present otherwise.
 		// However, higher resolutions will cause the playable portions of the game's window to take up a progressively smaller part of the screen.
-		// To remedy this, I will cap these numbers at 3x higher than the calculated figures above. This means that the game's playable area will
-		// take up at least 11.1% of the screen.
-		private const ulong MAX_RESOLUTION_HEIGHT = 5802;
-		private const ulong MAX_RESOLUTION_WIDTH = 23589;
+		// As a result, I will cap these numbers at 3x higher than the calculated figures above. This means that the game's playable area will
+		// always take up at least 11.1% of the screen.
+		private const ulong MAX_RESOLUTION_HEIGHT = 5805;
+		private const ulong MAX_RESOLUTION_WIDTH = 23592;
 
 		private bool exeCreationBusy;
 		private string zeusExePath;

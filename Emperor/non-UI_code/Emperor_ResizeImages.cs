@@ -26,12 +26,15 @@ namespace Emperor.non_UI_code
 		/// <param name="_EmperorExeLocation_">String that contains the location of Emperor.exe</param>
 		/// <param name="_ResWidth_">The width value of the resolution inputted into the UI.</param>
 		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
+		/// <param name="_ViewportWidth_">The width of the city viewport calculated by the resolution editing code.</param>
+		/// <param name="_ViewportHeight_">The height of the city viewport calculated by the resolution editing code.</param>
 		/// <param name="_PatchedFilesFolder_">String which specifies the location of the "patched_files" folder.</param>
-		internal static void _CreateResizedImages(string _EmperorExeLocation_, ushort _ResWidth_, ushort _ResHeight_, string _PatchedFilesFolder_)
+		internal static void _CreateResizedImages(string _EmperorExeLocation_, ushort _ResWidth_, ushort _ResHeight_,
+			ushort _ViewportWidth_, ushort _ViewportHeight_, string _PatchedFilesFolder_)
 		{
 			string _emperorDataFilesFolderLocation_ = _EmperorExeLocation_.Remove(_EmperorExeLocation_.Length - 11) + @"DATA\";
 			_fillImageArrays(out string[] _imagesToResize_);
-			_resizeCentredImages(_emperorDataFilesFolderLocation_, _imagesToResize_, _ResWidth_, _ResHeight_, _PatchedFilesFolder_);
+			_resizeCentredImages(_emperorDataFilesFolderLocation_, _imagesToResize_, _ResWidth_, _ResHeight_, _ViewportWidth_, _ViewportHeight_, _PatchedFilesFolder_);
 		}
 
 		/// <summary>
@@ -41,8 +44,11 @@ namespace Emperor.non_UI_code
 		/// <param name="_CentredImages_">String array that contains a list of the images that need to be resized.</param>
 		/// <param name="_ResWidth_">The width value of the resolution inputted into the UI.</param>
 		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
+		/// <param name="_ViewportWidth_">The width of the city viewport calculated by the resolution editing code.</param>
+		/// <param name="_ViewportHeight_">The height of the city viewport calculated by the resolution editing code.</param>
 		/// <param name="_PatchedFilesFolder_">String which specifies the location of the "patched_files" folder.</param>
-		private static void _resizeCentredImages(string _EmperorDataFolderLocation_, string[] _CentredImages_, ushort _ResWidth_, ushort _ResHeight_, string _PatchedFilesFolder_)
+		private static void _resizeCentredImages(string _EmperorDataFolderLocation_, string[] _CentredImages_, ushort _ResWidth_, ushort _ResHeight_,
+			ushort _ViewportWidth_, ushort _ViewportHeight_, string _PatchedFilesFolder_)
 		{
 			ImageCodecInfo _jpegCodecInfo_ = null;
 			ImageCodecInfo[] _allImageCodecs_ = ImageCodecInfo.GetImageEncoders();
@@ -82,8 +88,8 @@ namespace Emperor.non_UI_code
 							{
 								// Map images need to have the new images sized to fit the game's viewport.
 								_currentImageIsMap_ = true;
-								_newImageWidth_ = (ushort)(_ResWidth_ - 180);
-								_newImageHeight_ = (ushort)(_ResHeight_ - 30);
+								_newImageWidth_ = _ViewportWidth_;
+								_newImageHeight_ = _ViewportHeight_;
 							}
 							else
 							{

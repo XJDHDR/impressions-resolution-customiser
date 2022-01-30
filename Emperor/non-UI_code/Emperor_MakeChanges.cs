@@ -80,7 +80,8 @@ namespace Emperor.non_UI_code
 
 			if (EmperorExeDefinitions._GetAndCheckExeChecksum(_EmperorExeLocation_, out byte[] _emperorExeData_, out ExeAttributes _exeAttributes_))
 			{
-				EmperorResolutionEdits._hexEditExeResVals(_ResWidth_, _ResHeight_, _exeAttributes_, ref _emperorExeData_);
+				EmperorResolutionEdits._hexEditExeResVals(_ResWidth_, _ResHeight_, _exeAttributes_, ref _emperorExeData_,
+					out ushort _viewportWidth_, out ushort _viewportHeight_);
 
 				if (_FixWindowed_)
 				{
@@ -88,7 +89,7 @@ namespace Emperor.non_UI_code
 				}
 				if (_ResizeImages_)
 				{
-					EmperorResizeImages._CreateResizedImages(_EmperorExeLocation_, _ResWidth_, _ResHeight_, _patchedFilesFolder_);
+					EmperorResizeImages._CreateResizedImages(_EmperorExeLocation_, _ResWidth_, _ResHeight_, _viewportWidth_, _viewportHeight_, _patchedFilesFolder_);
 				}
 
 				File.WriteAllBytes(_patchedFilesFolder_ + "/Emperor.exe", _emperorExeData_);
