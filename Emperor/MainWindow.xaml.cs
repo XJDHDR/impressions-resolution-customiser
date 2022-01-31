@@ -1,4 +1,4 @@
-﻿// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
@@ -88,9 +88,10 @@ namespace Emperor
 			{
 				bool _fixWindowed_ = ApplyWindowFix.IsChecked ?? false;
 				bool _resizeImages_ = ResizeImages.IsChecked ?? false;
+				bool _stretchImages_ = StretchImages.IsChecked ?? false;
 				bool _increaseSpriteLimit_ = IncreaseSpriteLimits.IsChecked ?? false;
 				EmperorMakeChanges._ProcessEmperorExe(emperorExePath, Convert.ToUInt16(_resWidthPreTests_),
-					Convert.ToUInt16(_resHeightPreTests_), _fixWindowed_, _resizeImages_, _increaseSpriteLimit_);
+					Convert.ToUInt16(_resHeightPreTests_), _fixWindowed_, _resizeImages_, _stretchImages_, _increaseSpriteLimit_);
 			}
 			exeCreationBusy = false;
 		}
@@ -146,6 +147,11 @@ namespace Emperor
 				"Since this is the most computationally intensive operation this program does, it is recommended that you only keep this option enabled if you need the " +
 				"resized images. If you already have images of the correct dimensions, feel free to disable this option.",
 				"",
+				"Stretch menu images to fit window: By default, this program keeps menu images at their original sizes and adds a black background around the images to " +
+				"fill the gaps between it and the game window's edges. This option changes that behaviour and tells this program to stretch the images to fit the window ",
+				"instead." +
+				"Note that this option can only be selected if the \"Resize Images\" tickbox is checked.",
+				"",
 				"Double Sprite Limits: This tickbox tells the program to increase the game's sprite limit from 4000 to 8000. This is essentially the exact same patch created " +
 				"by Vadim_Panenko on Mod DB, except that it will work with any of the custom resolutions this program supports. There are two things you must be aware of:",
 				"1. The game might experience a bit of slowdown after building more buildings than the original limit permitted. Vadim also reported that the game " +
@@ -164,10 +170,32 @@ namespace Emperor
 		/// <summary>
 		/// Make all text in a textbox selected when clicked on.
 		/// </summary>
-		private void AllTextBoxes_GotFocus(object _Sender_, RoutedEventArgs _E_)
+		private void AllTextBoxes_GotFocus(object _Sender_, RoutedEventArgs _EventArgs_)
 		{
 			TextBox _textBox_ = (TextBox)_Sender_;
 			_textBox_.Dispatcher.BeginInvoke(new Action(() => _textBox_.SelectAll()));
+		}
+
+		/// <summary>
+		/// Event that fires when the any time the "Resize Images" checkbox is ticked. Used to enable the "Stretch menu images" control.
+		/// </summary>
+		private void ResizeImages_Checked(object _Sender_, RoutedEventArgs _EventArgs_)
+		{
+			if (StretchImages != null)
+			{
+				StretchImages.IsEnabled = true;
+			}
+		}
+
+		/// <summary>
+		/// Event that fires when the any time the "Resize Images" checkbox is unticked. Used to disable the "Stretch menu images" control.
+		/// </summary>
+		private void ResizeImages_Unchecked(object _Sender_, RoutedEventArgs _EventArgs_) {
+			if (StretchImages != null)
+			{
+				StretchImages.IsEnabled = false;
+				StretchImages.IsChecked = false;
+			}
 		}
 	}
 }
