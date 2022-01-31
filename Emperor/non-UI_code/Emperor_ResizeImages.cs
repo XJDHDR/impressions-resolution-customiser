@@ -31,13 +31,15 @@ namespace Emperor.non_UI_code
 		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
 		/// <param name="_ViewportWidth_">The width of the city viewport calculated by the resolution editing code.</param>
 		/// <param name="_ViewportHeight_">The height of the city viewport calculated by the resolution editing code.</param>
+		/// <param name="_StretchImages_">Whether the "Stretch menu images to fit window" checkbox is selected or not.</param>
 		/// <param name="_PatchedFilesFolder_">String which specifies the location of the "patched_files" folder.</param>
 		internal static void _CreateResizedImages(string _EmperorExeLocation_, ushort _ResWidth_, ushort _ResHeight_,
-			ushort _ViewportWidth_, ushort _ViewportHeight_, string _PatchedFilesFolder_)
+			ushort _ViewportWidth_, ushort _ViewportHeight_, bool _StretchImages_, string _PatchedFilesFolder_)
 		{
 			string _emperorDataFilesFolderLocation_ = _EmperorExeLocation_.Remove(_EmperorExeLocation_.Length - 11) + @"DATA\";
 			_fillImageArrays(out string[] _imagesToResize_);
-			_resizeCentredImages(_emperorDataFilesFolderLocation_, _imagesToResize_, _ResWidth_, _ResHeight_, _ViewportWidth_, _ViewportHeight_, _PatchedFilesFolder_);
+			_resizeCentredImages(_emperorDataFilesFolderLocation_, _imagesToResize_, _ResWidth_, _ResHeight_, _ViewportWidth_, _ViewportHeight_,
+				_StretchImages_, _PatchedFilesFolder_);
 		}
 
 		/// <summary>
@@ -49,9 +51,10 @@ namespace Emperor.non_UI_code
 		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
 		/// <param name="_ViewportWidth_">The width of the city viewport calculated by the resolution editing code.</param>
 		/// <param name="_ViewportHeight_">The height of the city viewport calculated by the resolution editing code.</param>
+		/// <param name="_StretchImages_">Whether the "Stretch menu images to fit window" checkbox is selected or not.</param>
 		/// <param name="_PatchedFilesFolder_">String which specifies the location of the "patched_files" folder.</param>
 		private static void _resizeCentredImages(string _EmperorDataFolderLocation_, string[] _CentredImages_, ushort _ResWidth_, ushort _ResHeight_,
-			ushort _ViewportWidth_, ushort _ViewportHeight_, string _PatchedFilesFolder_)
+			ushort _ViewportWidth_, ushort _ViewportHeight_, bool _StretchImages_, string _PatchedFilesFolder_)
 		{
 			ImageCodecInfo _jpegCodecInfo_ = null;
 			ImageCodecInfo[] _allImageCodecs_ = ImageCodecInfo.GetImageEncoders();
@@ -154,11 +157,19 @@ namespace Emperor.non_UI_code
 									}
 									else
 									{
-										// A non-map image. Must be placed in the centre of the new image with a black background.
-										_newImageGraphics_.Clear(Color.Black);
+										if (!_StretchImages_)
+										{
+											// A non-map image. Must be placed in the centre of the new image with a black background.
+											_newImageGraphics_.Clear(Color.Black);
 
-										_newImageGraphics_.DrawImage(_oldImage_, (_newImageWidth_ - _oldImage_.Width) / 2,
-											(_newImageHeight_ - _oldImage_.Height) / 2, _oldImage_.Width, _oldImage_.Height);
+											_newImageGraphics_.DrawImage(_oldImage_, (_newImageWidth_ - _oldImage_.Width) / 2,
+												(_newImageHeight_ - _oldImage_.Height) / 2, _oldImage_.Width, _oldImage_.Height);
+										}
+										else
+										{
+											// A non-map image. Stretch it to fit the new window's dimensions.
+											_newImageGraphics_.DrawImage(_oldImage_, 0, 0, _newImageWidth_, _newImageHeight_);
+										}
 									}
 
 									_newImage_.Save(_PatchedFilesFolder_ + @"\DATA\" + _CentredImages_[_I_], _jpegCodecInfo_, _encoderParameters_);
