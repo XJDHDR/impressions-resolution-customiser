@@ -32,11 +32,12 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// <param name="_ResWidth_">The width value of the resolution inputted into the UI.</param>
 		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
 		/// <param name="_PatchedFilesFolder_">String which specifies the location of the "patched_files" folder.</param>
-		internal static void _CreateResizedImages(string _ZeusExeLocation_, ExeAttributes _ExeAttributes_, ushort _ResWidth_, ushort _ResHeight_, string _PatchedFilesFolder_)
+		internal static void _CreateResizedImages(string _ZeusExeLocation_, ExeAttributes _ExeAttributes_,
+			ushort _ResWidth_, ushort _ResHeight_, bool _StretchImages_, string _PatchedFilesFolder_)
 		{
 			string _zeusDataFolderLocation_ = _ZeusExeLocation_.Remove(_ZeusExeLocation_.Length - 8) + @"DATA\";
 			_fillImageArrays(_ExeAttributes_, out string[] _imagesToResize_);
-			_resizeCentredImages(_zeusDataFolderLocation_, _imagesToResize_, _ResWidth_, _ResHeight_, _PatchedFilesFolder_);
+			_resizeCentredImages(_zeusDataFolderLocation_, _imagesToResize_, _ResWidth_, _ResHeight_, _StretchImages_, _PatchedFilesFolder_);
 		}
 
 		/// <summary>
@@ -47,7 +48,8 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// <param name="_ResWidth_">The width value of the resolution inputted into the UI.</param>
 		/// <param name="_ResHeight_">The height value of the resolution inputted into the UI.</param>
 		/// <param name="_PatchedFilesFolder_">String which specifies the location of the "patched_files" folder.</param>
-		private static void _resizeCentredImages(string _ZeusDataFolderLocation_, string[] _CentredImages_, ushort _ResWidth_, ushort _ResHeight_, string _PatchedFilesFolder_)
+		private static void _resizeCentredImages(string _ZeusDataFolderLocation_, string[] _CentredImages_,
+			ushort _ResWidth_, ushort _ResHeight_, bool _StretchImages_, string _PatchedFilesFolder_)
 		{
 			ImageCodecInfo _jpegCodecInfo_ = null;
 			ImageCodecInfo[] _allImageCodecs_ = ImageCodecInfo.GetImageEncoders();
@@ -133,11 +135,18 @@ namespace Zeus_and_Poseidon.non_UI_code
 									}
 									else
 									{
-										// A non-map image. Must be placed in the centre of the new image with a black background.
-										_newImageGraphics_.Clear(Color.Black);
+										if (!_StretchImages_)
+										{
+											// A non-map image. Must be placed in the centre of the new image with a black background.
+											_newImageGraphics_.Clear(Color.Black);
 
-										_newImageGraphics_.DrawImage(_oldImage_, (_newImageWidth_ - _oldImage_.Width) / 2,
-											(_newImageHeight_ - _oldImage_.Height) / 2, _oldImage_.Width, _oldImage_.Height);
+											_newImageGraphics_.DrawImage(_oldImage_, (_newImageWidth_ - _oldImage_.Width) / 2,
+												(_newImageHeight_ - _oldImage_.Height) / 2, _oldImage_.Width, _oldImage_.Height);
+										}
+										else
+										{
+											_newImageGraphics_.DrawImage(_oldImage_, 0, 0, _newImageWidth_, _newImageHeight_);
+										}
 									}
 
 									_newImage_.Save(_PatchedFilesFolder_ + @"\DATA\" + _CentredImages_[_I_], _jpegCodecInfo_, _encoderParameters_);

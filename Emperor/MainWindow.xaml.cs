@@ -22,15 +22,15 @@ namespace Emperor
 		// Because _resHeightMult and _resWidthMult (in the EmperorResolutionEdits class) are 8 bit signed integers, they can't go higher than 127.
 		// The ExeDefinitions class caps these multipliers to a maximum of 127. The following formulae show what
 		// the maximum size of the game's area can be (that being the city viewport, top menubar and sidebar together):
-		// _maxResolutionHeight = (128 - 1) * 20 + 40 - 1 = 2579
-		// _maxResolutionWidth = 128 * 80 + 222 - 2 - 1 = 10459
+		// _maxResolutionHeight = (127 - 1) * 20 + 40 = 2560
+		// _maxResolutionWidth = 127 * 80 + 226 - 2 = 10384
 		//
 		// If a higher resolution than these are requested, my custom code will add some background to cover up the gaps that would be present otherwise.
 		// However, higher resolutions will cause the playable portions of the game's window to take up a progressively smaller part of the screen.
 		// As a result, I will cap these numbers at 2x higher than the calculated figures above. This means that the game's playable area will
 		// always take up at least 25% of the screen.
-		private const ulong MAX_RESOLUTION_HEIGHT = 5160;
-		private const ulong MAX_RESOLUTION_WIDTH = 20920;
+		private const ulong MAX_RESOLUTION_HEIGHT = 5120;
+		private const ulong MAX_RESOLUTION_WIDTH = 20768;
 
 		private bool exeCreationBusy;
 		private string emperorExePath;
@@ -149,7 +149,7 @@ namespace Emperor
 				"",
 				"Stretch menu images to fit window: By default, this program keeps menu images at their original sizes and adds a black background around the images to " +
 				"fill the gaps between it and the game window's edges. This option changes that behaviour and tells this program to stretch the images to fit the window ",
-				"instead." +
+				"instead.",
 				"Note that this option can only be selected if the \"Resize Images\" tickbox is checked.",
 				"",
 				"Double Sprite Limits: This tickbox tells the program to increase the game's sprite limit from 4000 to 8000. This is essentially the exact same patch created " +
