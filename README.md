@@ -21,16 +21,15 @@ Finally, though I don't do this with the intention of getting money and my work 
 # FAQ
 **What is your current progress?**
 - Right now, the Zeus & Poseidon Customiser is pretty much feature complete but only supports the Steam and GOG versions of the game. The only work that really still needs to be done is to add support for additional languages and distributions of the game.
-- The Emperor Customiser is mostly finished in terms of supporting the GOG version of the game. It still needs some work and testing before I can start releasing it.
+- The Emperor Customiser is pretty much feature complete but only supports the GOG version of the game. The only work that really still needs to be done is to add support for additional languages and distributions of the game.
 
 **Where are the binaries/files that players can use?**
 - The binaries are uploaded to Nexus Mods and can be downloaded from there. Please see the readmes above to find links to these files.
-- This repository only holds the source code for my utilities. The various releases only mark the state of the repository after releasing a new version of a program.
+- This repository only holds the source code for my utilities. The various releases only mark the state of the repository at the time of releasing a new binary version.
 
 **What are your future plans?**
-- For Zeus and Poseidon, just adding support for additional versions of the game to my utility whenever I gain access to those versions.
-- In the meantime, I am working on finishing the Emperor Customiser in terms of adding GOG version support. After that, I plan on adding additional versions to that as well.
-- Finally, I would also like to create a Resolution Customiser for Pharaoh and Cleopatra. I haven't started on this yet though.
+- For Zeus & Poseidon as well as Emperor, just adding support for additional versions of the game to my utility whenever I gain access to those versions.
+- At some point in the future, I would also like to create a Resolution Customiser for Pharaoh and Cleopatra. I haven't started on this yet though.
 
 **What about Caesar 3?**
 - I might make a resolution patcher for that game as well. This would mostly be for completion sake though. The [Julius](https://github.com/bvschaik/julius) engine replacement pretty much removes the need for any patchers I could make.
