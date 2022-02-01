@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Zeus_and_Poseidon"
         mc:Ignorable="d"
-        Title="Zeus &amp; Poseidon Resolution Customiser" Height="350" Width="500" Icon="Zeus.ico" Background="#E0E0E0"
+        Title="Zeus &amp; Poseidon Resolution Customiser" Height="380" Width="500" Icon="Zeus.ico" Background="#E0E0E0"
         WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -29,6 +29,7 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="20"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="8"/>
@@ -36,34 +37,34 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Border BorderBrush="Black" BorderThickness="2" Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="2" Grid.RowSpan="10"/>
+        <Border BorderBrush="Black" BorderThickness="2" Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="2" Grid.RowSpan="11"/>
 
         <Border BorderBrush="Black" BorderThickness="2" Grid.Column="3" Grid.Row="3" Width="340" Height="52">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Width="332" Height="46" 
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Width="332" Height="46"
                        TextAlignment="Left" TextWrapping="Wrap" Text="Resolution Width:" FontSize="32"/>
         </Border>
         <Border BorderBrush="Black" BorderThickness="2" Grid.Column="4" Grid.Row="3" Width="112" Height="52">
-            <TextBox x:Name="ResWidth" HorizontalAlignment="Center" VerticalAlignment="Center" 
+            <TextBox x:Name="ResWidth" HorizontalAlignment="Center" VerticalAlignment="Center"
                      TextAlignment="Right" TextWrapping="Wrap" Text="1024" FontSize="32" Width="108" Height="48" GotFocus="AllTextBoxes_GotFocus"/>
         </Border>
 
         <Border BorderBrush="Black" BorderThickness="2" Grid.Column="3" Grid.Row="4" Width="340" Height="52">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Width="332" Height="46" 
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Width="332" Height="46"
                        TextAlignment="Left" TextWrapping="Wrap" Text="Resolution Height:" FontSize="32"/>
         </Border>
         <Border BorderBrush="Black" BorderThickness="2" Grid.Column="4" Grid.Row="4" Width="112" Height="52">
-            <TextBox x:Name="ResHeight" HorizontalAlignment="Center" VerticalAlignment="Center" 
+            <TextBox x:Name="ResHeight" HorizontalAlignment="Center" VerticalAlignment="Center"
                      TextAlignment="Right" TextWrapping="Wrap" Text="768" FontSize="32" Width="108" Height="48" GotFocus="AllTextBoxes_GotFocus"/>
         </Border>
 
-        <CheckBox x:Name="ApplyAnimationFix" Content="Apply Animation Fixes" IsChecked="True" 
+        <CheckBox x:Name="ApplyAnimationFix" Content="Apply Animation Fixes" IsChecked="True"
             Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="6" VerticalAlignment="Center">
             <CheckBox.RenderTransform>
                 <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
             </CheckBox.RenderTransform>
         </CheckBox>
 
-        <CheckBox x:Name="ApplyWindowFix" Content="Apply Windowed Mode Fixes" IsChecked="True" 
+        <CheckBox x:Name="ApplyWindowFix" Content="Apply Windowed Mode Fixes" IsChecked="True"
             Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="7" VerticalAlignment="Center">
             <CheckBox.RenderTransform>
                 <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
@@ -71,25 +72,34 @@
         </CheckBox>
 
         <CheckBox x:Name="ResizeImages" Content="Resize Images" IsChecked="True"
-            Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="8" VerticalAlignment="Center">
+            Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="8" VerticalAlignment="Center"
+            Checked="ResizeImages_Checked" Unchecked="ResizeImages_Unchecked">
             <CheckBox.RenderTransform>
                 <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
             </CheckBox.RenderTransform>
         </CheckBox>
 
-        <Button x:Name="SelectExe" Content="Select Zeus.exe" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="10" 
+        <CheckBox x:Name="StretchImages" Content="Stretch menu images to fit window" IsChecked="False"
+                  Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="9" VerticalAlignment="Center"
+                  Margin="16,0,0,0">
+	        <CheckBox.RenderTransform>
+		        <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
+	        </CheckBox.RenderTransform>
+        </CheckBox>
+
+        <Button x:Name="SelectExe" Content="Select Zeus.exe" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="11"
                 HorizontalAlignment="Left" VerticalAlignment="Center" Click="SelectExe_Click" Background="#C0C0C0">
             <Button.RenderTransform>
                 <ScaleTransform CenterY="10" ScaleX="2" ScaleY="2" />
             </Button.RenderTransform>
         </Button>
-        <Button x:Name="HelpMe" Content="?" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="10" 
+        <Button x:Name="HelpMe" Content="?" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="11"
                 HorizontalAlignment="Center" VerticalAlignment="Center" Click="HelpMe_Click" Background="#C0C0C0">
             <Button.RenderTransform>
                 <ScaleTransform CenterX="-9" CenterY="10" ScaleX="2" ScaleY="2" />
             </Button.RenderTransform>
         </Button>
-        <Button x:Name="GenerateExe" Content="Generate EXE" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="10" 
+        <Button x:Name="GenerateExe" Content="Generate EXE" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="11"
                 HorizontalAlignment="Right" VerticalAlignment="Center" Click="GenerateExe_Click" Background="#C0C0C0">
             <Button.RenderTransform>
                 <ScaleTransform CenterX="75" CenterY="10" ScaleX="2" ScaleY="2" />

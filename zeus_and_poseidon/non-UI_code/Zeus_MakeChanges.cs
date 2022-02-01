@@ -26,7 +26,9 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// <param name="_FixAnimations_">Whether the "Apply Animation Fixes" checkbox is selected or not.</param>
 		/// <param name="_FixWindowed_">Whether the "Apply Windowed Mode Fixes" checkbox is selected or not.</param>
 		/// <param name="_ResizeImages_">Whether the "Resize Images" checkbox is selected or not.</param>
-		internal static void _ProcessZeusExe(string _ZeusExeLocation_, ushort _ResWidth_, ushort _ResHeight_, bool _FixAnimations_, bool _FixWindowed_, bool _ResizeImages_)
+		/// <param name="_StretchImages_">Whether the "Stretch menu images to fit window" checkbox is selected or not.</param>
+		internal static void _ProcessZeusExe(string _ZeusExeLocation_, ushort _ResWidth_, ushort _ResHeight_,
+			bool _FixAnimations_, bool _FixWindowed_, bool _ResizeImages_, bool _StretchImages_)
 		{
 			if (!File.Exists(_ZeusExeLocation_))
 			{
@@ -93,7 +95,7 @@ namespace Zeus_and_Poseidon.non_UI_code
 				}
 				if (_ResizeImages_)
 				{
-					ZeusResizeImages._CreateResizedImages(_ZeusExeLocation_, _exeAttributes_, _ResWidth_, _ResHeight_, _patchedFilesFolder_);
+					ZeusResizeImages._CreateResizedImages(_ZeusExeLocation_, _exeAttributes_, _ResWidth_, _ResHeight_, _StretchImages_, _patchedFilesFolder_);
 				}
 
 				File.WriteAllBytes(_patchedFilesFolder_ + "/Zeus.exe", _zeusExeData_);

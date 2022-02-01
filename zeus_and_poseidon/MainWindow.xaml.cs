@@ -22,15 +22,15 @@ namespace Zeus_and_Poseidon
 		// Because _resHeightMult and _resWidthMult (in the Zeus_ResolutionEdits class) are 8 bit signed integers, they can't go higher than 127.
 		// The ExeDefinitions class caps these multipliers to a maximum of 127. The following formulae show what
 		// the maximum size of the game's area can be (that being the city viewport, top menubar and sidebar together):
-		// Max Height = (128 - 1) * 15 + 30 - 1 = 1934
-		// Max Width = 128 * 60 + 186 - 2 - 1 = 7863
+		// Max Height = (127 - 1) * 15 + 30 = 1920
+		// Max Width = 127 * 60 + 186 - 2 = 7804
 		//
 		// If a higher resolution than these are requested, my custom code will add some background to cover up the gaps that would be present otherwise.
 		// However, higher resolutions will cause the playable portions of the game's window to take up a progressively smaller part of the screen.
 		// As a result, I will cap these numbers at 3x higher than the calculated figures above. This means that the game's playable area will
 		// always take up at least 11.1% of the screen.
-		private const ulong MAX_RESOLUTION_HEIGHT = 5805;
-		private const ulong MAX_RESOLUTION_WIDTH = 23592;
+		private const ulong MAX_RESOLUTION_HEIGHT = 5760;
+		private const ulong MAX_RESOLUTION_WIDTH = 23412;
 
 		private bool exeCreationBusy;
 		private string zeusExePath;
@@ -89,8 +89,9 @@ namespace Zeus_and_Poseidon
 				bool _fixAnimations_ = ApplyAnimationFix.IsChecked ?? false;
 				bool _fixWindowed_ = ApplyWindowFix.IsChecked ?? false;
 				bool _resizeImages_ = ResizeImages.IsChecked ?? false;
+				bool _stretchImages_ = StretchImages.IsChecked ?? false;
 				ZeusMakeChanges._ProcessZeusExe(zeusExePath, Convert.ToUInt16(_resWidthPreTests_),
-					Convert.ToUInt16(_resHeightPreTests_), _fixAnimations_, _fixWindowed_, _resizeImages_);
+					Convert.ToUInt16(_resHeightPreTests_), _fixAnimations_, _fixWindowed_, _resizeImages_, _stretchImages_);
 			}
 			exeCreationBusy = false;
 		}
@@ -148,6 +149,11 @@ namespace Zeus_and_Poseidon
 				"Since this is the most computationally intensive operation this program does, it is recommended that you only keep this option enabled if you need the" +
 				"resized images. If you already have images of the correct dimensions, feel free to disable this option.",
 				"",
+				"Stretch menu images to fit window: By default, this program keeps menu images at their original sizes and adds a black background around the images to " +
+				"fill the gaps between it and the game window's edges. This option changes that behaviour and tells this program to stretch the images to fit the window ",
+				"instead.",
+				"Note that this option can only be selected if the \"Resize Images\" tickbox is checked.",
+				"",
 				"Select Zeus.exe: This button opens a file picker that lets you specify the location of a Zeus.exe that you want to modify.",
 				"",
 				"Generate EXE: Once you have provided all the required information and selected the desired options, click on this button to generate a patched Zeus.exe " +
@@ -163,6 +169,28 @@ namespace Zeus_and_Poseidon
 		{
 			TextBox _textBox_ = (TextBox)_Sender_;
 			_textBox_.Dispatcher.BeginInvoke(new Action(() => _textBox_.SelectAll()));
+		}
+
+		/// <summary>
+		/// Event that fires when the any time the "Resize Images" checkbox is ticked. Used to enable the "Stretch menu images" control.
+		/// </summary>
+		private void ResizeImages_Checked(object _Sender_, RoutedEventArgs _EventArgs_)
+		{
+			if (StretchImages != null)
+			{
+				StretchImages.IsEnabled = true;
+			}
+		}
+
+		/// <summary>
+		/// Event that fires when the any time the "Resize Images" checkbox is unticked. Used to disable the "Stretch menu images" control.
+		/// </summary>
+		private void ResizeImages_Unchecked(object _Sender_, RoutedEventArgs _EventArgs_) {
+			if (StretchImages != null)
+			{
+				StretchImages.IsEnabled = false;
+				StretchImages.IsChecked = false;
+			}
 		}
 	}
 }
