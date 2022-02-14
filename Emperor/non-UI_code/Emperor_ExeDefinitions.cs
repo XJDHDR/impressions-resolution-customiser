@@ -42,16 +42,16 @@ namespace Emperor.non_UI_code
 		/// Copies the contents of Emperor.exe into a byte array for editing then calculates a CRC32 hash for the contents of that array.
 		/// After that, compares that CRC to a list of known CRCs to determine which distribution of this game is being patched.
 		/// </summary>
-		/// <param name="_EmperorExeLocation_">String that defines the location of Emperor.exe</param>
-		/// <param name="_EmperorExeData_">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
-		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Emperor.exe</param>
+		/// <param name="EmperorExeLocation">String that defines the location of Emperor.exe</param>
+		/// <param name="EmperorExeData">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
+		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
 		/// <returns>
 		/// True if the CRC for the selected Emperor.exe matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool _GetAndCheckExeChecksum(string _EmperorExeLocation_, out byte[] _EmperorExeData_, out ExeAttributes _ExeAttributes_)
+		internal static bool _GetAndCheckExeChecksum(string EmperorExeLocation, out byte[] EmperorExeData, out ExeAttributes ExeAttributes)
 		{
-			string[] _hexStringTable_ = {
+			string[] hexStringTable = {
 				"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
 				"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
 				"20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f",
@@ -70,16 +70,20 @@ namespace Emperor.non_UI_code
 				"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
 			};
 
-			_EmperorExeData_ = File.ReadAllBytes(_EmperorExeLocation_);
+			EmperorExeData = File.ReadAllBytes(EmperorExeLocation);
 
 			// First, create a CRC32 Checksum of the EXE's data, excluding the first 4096 bytes.
-			uint gameExeCrc32Checksum = SliceBy16.Crc32(0x1000, _EmperorExeData_);
+			uint gameExeCrc32Checksum = SliceBy16.Crc32(0x1000, EmperorExeData);
 
+			// Please note that as per the software license, you are not permitted to modify this code to add the MD5 hash for any
+			// "cracked" or pirated versions of Emperor. Nor are you permitted to modify this method or any other method for the purpose of
+			// allowing the program to continue the patching process if the "default" case runs or "ExeLangAndDistrib" is set to "NotRecognised".
+			// Nor are you permitted to make any other changes that would allow or cause a pirated version of Emperor to be patched.
 			switch (gameExeCrc32Checksum)
 			{
 				// English GOG version
 				case 0x8bc98c83:
-					_ExeAttributes_ = new ExeAttributes
+					ExeAttributes = new ExeAttributes
 					{
 						_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogEnglish,
 						_IsDiscVersion = false,
@@ -97,14 +101,13 @@ namespace Emperor.non_UI_code
 
 				// Unrecognised EXE
 				default:
-					string[] _messageLines_ = new string[]
-					{
+					string[] messageLines = {
 						"Emperor.exe was not recognised. Only the following unmodified distributions and languages are currently supported:",
 						"- English GOG version"
 						//,"- English CD version"	// Comment this out until CD version works
 					};
-					MessageBox.Show(string.Join(Environment.NewLine, _messageLines_));
-					_ExeAttributes_ = new ExeAttributes
+					MessageBox.Show(string.Join(Environment.NewLine, messageLines));
+					ExeAttributes = new ExeAttributes
 					{
 						_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised,
 						_IsDiscVersion = false,
@@ -116,18 +119,18 @@ namespace Emperor.non_UI_code
 		/// <summary>
 		/// Supplies a ResHexOffsetTable struct specifying the offsets that need to be patched, based on which version of Emperor.exe was supplied.
 		/// </summary>
-		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Emperor.exe</param>
-		/// <param name="_ResHexOffsetTable_">Struct containing the offset for the supplied Emperor.exe that needs patching.</param>
+		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
+		/// <param name="ResHexOffsetTable">Struct containing the offset for the supplied Emperor.exe that needs patching.</param>
 		/// <returns>
 		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool _FillResHexOffsetTable(ExeAttributes _ExeAttributes_, out ResHexOffsetTable _ResHexOffsetTable_)
+		internal static bool _FillResHexOffsetTable(ExeAttributes ExeAttributes, out ResHexOffsetTable ResHexOffsetTable)
 		{
-			switch (_ExeAttributes_._SelectedExeLangAndDistrib)
+			switch (ExeAttributes._SelectedExeLangAndDistrib)
 			{
 				case ExeLangAndDistrib.GogEnglish:
-					_ResHexOffsetTable_ = new ResHexOffsetTable(
+					ResHexOffsetTable = new ResHexOffsetTable(
 						0x12AA6D,
 						0x12AA72,
 
@@ -271,7 +274,7 @@ namespace Emperor.non_UI_code
 					return true;
 
 				case ExeLangAndDistrib.CdEnglish:
-					_ResHexOffsetTable_ = new ResHexOffsetTable(
+					ResHexOffsetTable = new ResHexOffsetTable(
 						0x12B66D,
 						0x12B672,
 
@@ -369,34 +372,7 @@ namespace Emperor.non_UI_code
 				// Unrecognised EXE
 				case ExeLangAndDistrib.NotRecognised:
 				default:
-					_ResHexOffsetTable_ = new ResHexOffsetTable();
-					return false;
-			}
-		}
-
-		/// <summary>
-		/// Supplies an int specifying the offset that needs to be patched, based on which version of Emperor.exe was supplied.
-		/// </summary>
-		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Emperor.exe</param>
-		/// <param name="_WinFixOffset_">Int containing the offset for the supplied Emperor.exe that needs patching.</param>
-		/// <returns>
-		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
-		/// False if the EXE is not recognised.
-		/// </returns>
-		internal static bool _IdentifyWinFixOffset(ExeAttributes _ExeAttributes_, out int _WinFixOffset_)
-		{
-			switch ((byte)_ExeAttributes_._SelectedExeLangAndDistrib)
-			{
-				case 1:         // English GOG version
-					_WinFixOffset_ = 0x4C62E;
-					return true;
-
-				case 3:         // English CD version
-					_WinFixOffset_ = 0x4D22E;
-					return true;
-
-				default:        // Unrecognised EXE
-					_WinFixOffset_ = 0;
+					ResHexOffsetTable = new ResHexOffsetTable();
 					return false;
 			}
 		}

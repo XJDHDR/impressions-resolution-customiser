@@ -44,7 +44,7 @@ namespace Emperor
 		/// Code that runs when the "Generate EXE" button is clicked. Checks whether the two inputted resolution values are valid.
 		/// If they are, pass them and the state of the checkboxes to the "ProcessEmperorExe" function.
 		/// </summary>
-		private void GenerateExe_Click(object _Sender_, RoutedEventArgs _E_)
+		private void GenerateExe_Click(object Sender, RoutedEventArgs EventArgs)
 		{
 			if (exeCreationBusy)
 			{
@@ -52,46 +52,46 @@ namespace Emperor
 			}
 
 			exeCreationBusy = true;
-			if (!float.TryParse(ResWidth.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resWidthPreTests_))
+			if (!float.TryParse(ResWidth.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float resWidthPreTests))
 			{
 				MessageBox.Show("An error occurred while trying to convert the typed in Horizontal Resolution from a string. Make sure you only typed in digits.");
 			}
-			else if (!float.TryParse(ResHeight.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resHeightPreTests_))
+			else if (!float.TryParse(ResHeight.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float resHeightPreTests))
 			{
 				MessageBox.Show("An error occurred while trying to convert the typed in Vertical Resolution from a string. Make sure you only typed in digits.");
 			}
-			else if (_resWidthPreTests_ < 800)
+			else if (resWidthPreTests < 800)
 			{
 				MessageBox.Show("The desired Horizontal Resolution is less than 800, which is the absolute minimum width the game's window can be. " +
 				                "Please type in a number which is at least 800.");
 			}
-			else if (_resWidthPreTests_ > MAX_RESOLUTION_WIDTH)
+			else if (resWidthPreTests > MAX_RESOLUTION_WIDTH)
 			{
 				MessageBox.Show("The desired Horizontal Resolution is greater than " + MAX_RESOLUTION_WIDTH + ", which is not allowed. Please type in a number " +
 				                "which is less than " + MAX_RESOLUTION_WIDTH + ".");
 			}
-			else if (_resWidthPreTests_ % 4 != 0)
+			else if (resWidthPreTests % 4 != 0)
 			{
 				MessageBox.Show("The desired Horizontal Resolution is not divisible by 4. Please type in a number which is.");
 			}
-			else if (_resHeightPreTests_ < 600)
+			else if (resHeightPreTests < 600)
 			{
 				MessageBox.Show("The desired Vertical Resolution is less than 600, which is the absolute minimum height the game's window can be. " +
 				                "Please type in a number which is at least 600.");
 			}
-			else if (_resHeightPreTests_ > MAX_RESOLUTION_HEIGHT)
+			else if (resHeightPreTests > MAX_RESOLUTION_HEIGHT)
 			{
 				MessageBox.Show("The desired Vertical Resolution is greater than " + MAX_RESOLUTION_HEIGHT + ", which is not allowed. Please type in a number " +
 				                "which is less than " + MAX_RESOLUTION_HEIGHT + ".");
 			}
 			else
 			{
-				bool _fixWindowed_ = ApplyWindowFix.IsChecked ?? false;
-				bool _resizeImages_ = ResizeImages.IsChecked ?? false;
-				bool _stretchImages_ = StretchImages.IsChecked ?? false;
-				bool _increaseSpriteLimit_ = IncreaseSpriteLimits.IsChecked ?? false;
-				EmperorMakeChanges._ProcessEmperorExe(emperorExePath, Convert.ToUInt16(_resWidthPreTests_),
-					Convert.ToUInt16(_resHeightPreTests_), _fixWindowed_, _resizeImages_, _stretchImages_, _increaseSpriteLimit_);
+				bool fixWindowed = ApplyWindowFix.IsChecked ?? false;
+				bool resizeImages = ResizeImages.IsChecked ?? false;
+				bool stretchImages = StretchImages.IsChecked ?? false;
+				bool increaseSpriteLimit = IncreaseSpriteLimits.IsChecked ?? false;
+				EmperorMakeChanges._ProcessEmperorExe(emperorExePath, Convert.ToUInt16(resWidthPreTests),
+					Convert.ToUInt16(resHeightPreTests), fixWindowed, resizeImages, stretchImages, increaseSpriteLimit);
 			}
 			exeCreationBusy = false;
 		}
@@ -100,18 +100,50 @@ namespace Emperor
 		/// Code that runs when the "Select Emperor.exe" button is clicked.
 		/// Opens a file selection dialog to allow the user to select a Emperor.exe to patch.
 		/// </summary>
-		private void SelectExe_Click(object _Sender_, RoutedEventArgs _E_)
+		private void SelectExe_Click(object Sender, RoutedEventArgs EventArgs)
 		{
-			OpenFileDialog _openFileDialog_ = new OpenFileDialog
+			OpenFileDialog openFileDialog = new OpenFileDialog
 			{
 				CheckFileExists = true,
 				CheckPathExists = true,
 				Filter = "Emperor.exe|Emperor.exe|All files (*.*)|*.*",
 				Title = "Please select the Emperor.exe you want to patch."
 			};
-			if (_openFileDialog_.ShowDialog() == true)
+			if (openFileDialog.ShowDialog() == true)
 			{
-				emperorExePath = _openFileDialog_.FileName;
+				emperorExePath = openFileDialog.FileName;
+			}
+		}
+
+		/// <summary>
+		/// Make all text in a textbox selected when clicked on.
+		/// </summary>
+		private void AllTextBoxes_GotFocus(object Sender, RoutedEventArgs EventArgs)
+		{
+			TextBox textBox = (TextBox)Sender;
+			textBox.Dispatcher.BeginInvoke(new Action(() => textBox.SelectAll()));
+		}
+
+		/// <summary>
+		/// Event that fires when the any time the "Resize Images" checkbox is ticked. Used to enable the "Stretch menu images" control.
+		/// </summary>
+		private void ResizeImages_Checked(object Sender, RoutedEventArgs EventArgs)
+		{
+			if (StretchImages != null)
+			{
+				StretchImages.IsEnabled = true;
+			}
+		}
+
+		/// <summary>
+		/// Event that fires when the any time the "Resize Images" checkbox is unticked. Used to disable the "Stretch menu images" control.
+		/// </summary>
+		private void ResizeImages_Unchecked(object Sender, RoutedEventArgs EventArgs)
+		{
+			if (StretchImages != null)
+			{
+				StretchImages.IsEnabled = false;
+				StretchImages.IsChecked = false;
 			}
 		}
 
@@ -119,9 +151,9 @@ namespace Emperor
 		/// Code that runs when the "HelpMe" button is clicked.
 		/// Opens a MessageBox containing helpful information for the user.
 		/// </summary>
-		private void HelpMe_Click(object _Sender_, RoutedEventArgs _E_)
+		private void HelpMe_Click(object Sender, RoutedEventArgs EventArgs)
 		{
-			string[] _messageLines_ = {
+			string[] messageLines = {
 				"Help menu for the Emperor Resolution Customiser utility",
 				"",
 				"",
@@ -140,62 +172,62 @@ namespace Emperor
 				"Resolution Height: This text box allows you to specify the vertical component of your desired resolution. If your screen is in landscape, " +
 				$"this is the smaller number. Note that this number must be between 600 and {MAX_RESOLUTION_HEIGHT}, both inclusive.",
 				"",
-				"Apply Windowed Mode Fixes: This tickbox tells this program to fix a bug in Emperor which means that the game can't be switched into windowed mode.",
-				"",
-				"Resize Images: This tickbox tells this program to resize the various JPEGs the game uses as background images. This resizing is required for these images " +
-				"to display properly at the new resolutions. All of the images need to be in a \"DATA\" folder that is in the same place as the selected Emperor.exe. ",
-				"Since this is the most computationally intensive operation this program does, it is recommended that you only keep this option enabled if you need the " +
-				"resized images. If you already have images of the correct dimensions, feel free to disable this option.",
-				"",
-				"Stretch menu images to fit window: By default, this program keeps menu images at their original sizes and adds a black background around the images to " +
-				"fill the gaps between it and the game window's edges. This option changes that behaviour and tells this program to stretch the images to fit the window ",
-				"instead.",
-				"Note that this option can only be selected if the \"Resize Images\" tickbox is checked.",
-				"",
-				"Double Sprite Limits: This tickbox tells the program to increase the game's sprite limit from 4000 to 8000. This is essentially the exact same patch created " +
-				"by Vadim_Panenko on Mod DB, except that it will work with any of the custom resolutions this program supports. There are two things you must be aware of:",
-				"1. The game might experience a bit of slowdown after building more buildings than the original limit permitted. Vadim also reported that the game " +
-				"\"flies out\" if the limit is raised further than double.",
-				"2. For obvious reasons, loading a save where this limit has been exceeded on an EXE that doesn't have this raised limit can cause issues.",
-				"For these reasons, this option is disabled by default and it is recommended that you only enable it if you need it.",
-				"",
 				"Select Emperor.exe: This button opens a file picker that lets you specify the location of a Emperor.exe that you want to modify.",
 				"",
 				"Generate EXE: Once you have provided all the required information and selected the desired options, click on this button to generate a patched Emperor.exe " +
 				"and optionally resized images. All of these will be placed in the \"patched_files\" folder next to this program."
 			};
-			MessageBox.Show(string.Join(Environment.NewLine, _messageLines_));
+			MessageBox.Show(string.Join(Environment.NewLine, messageLines));
 		}
 
 		/// <summary>
-		/// Make all text in a textbox selected when clicked on.
+		/// Code that runs when the "ApplyWindowFix_Help" button is clicked. Describes what the "ApplyWindowFix" option does.
 		/// </summary>
-		private void AllTextBoxes_GotFocus(object _Sender_, RoutedEventArgs _EventArgs_)
+		private void ApplyWindowFix_Help_Click(object Sender, RoutedEventArgs EventArgs)
 		{
-			TextBox _textBox_ = (TextBox)_Sender_;
-			_textBox_.Dispatcher.BeginInvoke(new Action(() => _textBox_.SelectAll()));
+			string[] messageLines = {
+				"Apply Windowed Mode Fixes:",
+				"This tickbox tells this program to fix a bug in Emperor which means that the game can't be switched into windowed mode.",
+			};
+			MessageBox.Show(string.Join(Environment.NewLine, messageLines));
 		}
 
-		/// <summary>
-		/// Event that fires when the any time the "Resize Images" checkbox is ticked. Used to enable the "Stretch menu images" control.
-		/// </summary>
-		private void ResizeImages_Checked(object _Sender_, RoutedEventArgs _EventArgs_)
+		private void ResizeImages_Help_Click(object Sender, RoutedEventArgs EventArgs)
 		{
-			if (StretchImages != null)
-			{
-				StretchImages.IsEnabled = true;
-			}
+			string[] messageLines = {
+				"Resize Images:",
+				"This tickbox tells this program to resize the various JPEGs the game uses as background images. This resizing is required for these images " +
+				"to display properly at the new resolutions. All of the images need to be in a \"DATA\" folder that is in the same place as the selected Emperor.exe. ",
+				"Since this is the most computationally intensive operation this program does, it is recommended that you only keep this option enabled if you need the " +
+				"resized images. If you already have images of the correct dimensions, feel free to disable this option.",
+			};
+			MessageBox.Show(string.Join(Environment.NewLine, messageLines));
 		}
 
-		/// <summary>
-		/// Event that fires when the any time the "Resize Images" checkbox is unticked. Used to disable the "Stretch menu images" control.
-		/// </summary>
-		private void ResizeImages_Unchecked(object _Sender_, RoutedEventArgs _EventArgs_) {
-			if (StretchImages != null)
-			{
-				StretchImages.IsEnabled = false;
-				StretchImages.IsChecked = false;
-			}
+		private void StretchImages_Help_Click(object Sender, RoutedEventArgs EventArgs)
+		{
+			string[] messageLines = {
+				"Stretch menu images to fit window:",
+				"By default, this program keeps menu images at their original sizes and adds a black background around the images to " +
+				"fill the gaps between it and the game window's edges. This option changes that behaviour and tells this program to stretch the images to fit the window ",
+				"instead.",
+				"Note that this option can only be selected if the \"Resize Images\" tickbox is checked.",
+			};
+			MessageBox.Show(string.Join(Environment.NewLine, messageLines));
+		}
+
+		private void IncreaseSpriteLimits_Help_Click(object Sender, RoutedEventArgs EventArgs)
+		{
+			string[] messageLines = {
+				"Double Sprite Limits:",
+				"This tickbox tells the program to increase the game's sprite limit from 4000 to 8000. This is essentially the exact same patch created " +
+				"by Vadim_Panenko on Mod DB, except that it will work with any of the custom resolutions this program supports. There are two things you must be aware of:",
+				"1. The game might experience a bit of slowdown after building more buildings than the original limit permitted. Vadim also reported that the game " +
+				"\"flies out\" if the limit is raised further than double.",
+				"2. For obvious reasons, loading a save where this limit has been exceeded on an EXE that doesn't have this raised limit can cause issues.",
+				"For these reasons, this option is disabled by default and it is recommended that you only enable it if you need it.",
+			};
+			MessageBox.Show(string.Join(Environment.NewLine, messageLines));
 		}
 	}
 }

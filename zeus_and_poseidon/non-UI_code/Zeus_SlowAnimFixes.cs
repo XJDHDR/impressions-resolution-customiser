@@ -15,11 +15,11 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// <summary>
 		/// Gets the list of offsets that need to be patched to fix the animation bugs then patches them.
 		/// </summary>
-		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Zeus.exe</param>
-		/// <param name="_ZeusExeData_">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
-		internal static void _hexEditExeAnims(ExeAttributes _ExeAttributes_, ref byte[] _ZeusExeData_)
+		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
+		/// <param name="ZeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
+		internal static void _hexEditExeAnims(ExeAttributes ExeAttributes, ref byte[] ZeusExeData)
 		{
-			if (ZeusExeDefinitions._FillAnimHexOffsetTable(_ExeAttributes_, out int[] _animHexOffsetTable_))
+			if (ZeusExeDefinitions._FillAnimHexOffsetTable(ExeAttributes, out int[] animHexOffsetTable))
 			{
 				// To explain what this code does, I'll quote what Pecunia (who discovered how to fix these bugs) said to me:
 				// https://www.wsgf.org/phpBB3/viewtopic.php?p=172648#p172648
@@ -37,9 +37,9 @@ namespace Zeus_and_Poseidon.non_UI_code
 				// so it was an easy patch to make. Finding this quirk, however, took me about half a year of reading assembly, plus a year of trying to get GOG to incorporate
 				// my fixes in the official distribution ("our techs will look at it soon", "really, it'll be soon"), before giving up and releasing it myself.
 				//
-				for (byte _i_ = 0; _i_ < _animHexOffsetTable_.Length; _i_++)
+				for (byte i = 0; i < animHexOffsetTable.Length; i++)
 				{
-					_ZeusExeData_[_animHexOffsetTable_[_i_]] = 0x00;
+					ZeusExeData[animHexOffsetTable[i]] = 0x00;
 				}
 			}
 		}

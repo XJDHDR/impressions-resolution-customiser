@@ -15,17 +15,17 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// <summary>
 		/// Gets the offset that needs to be patched to fix the windowed mode bug then patches it.
 		/// </summary>
-		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Zeus.exe</param>
-		/// <param name="_ZeusExeData_">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
-		internal static void _hexEditWindowFix(ExeAttributes _ExeAttributes_, ref byte[] _ZeusExeData_)
+		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
+		/// <param name="ZeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
+		internal static void _hexEditWindowFix(ExeAttributes ExeAttributes, ref byte[] ZeusExeData)
 		{
 			// At this address, the original code had a conditional jump (jl) that activates if the value stored in the EAX register is less than the value stored in the ECX.
 			// This patch changes this byte into an unconditional jump.
 			// I have no idea what the values represent, what code runs if the condition is false (EAX is greater than ECX) or why the widescreen mods cause
 			// EAX to be greater than ECX. All I know is that it makes Windowed mode work.
-			if (ZeusExeDefinitions._IdentifyWinFixOffset(_ExeAttributes_, out int _winFixOffset_))
+			if (ZeusExeDefinitions._IdentifyWinFixOffset(ExeAttributes, out int winFixOffset))
 			{
-				_ZeusExeData_[_winFixOffset_] = 0xEB;
+				ZeusExeData[winFixOffset] = 0xEB;
 			}
 		}
 	}

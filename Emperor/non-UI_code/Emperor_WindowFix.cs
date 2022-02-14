@@ -15,17 +15,49 @@ namespace Emperor.non_UI_code
 		/// <summary>
 		/// Gets the offset that needs to be patched to fix the windowed mode quirk then patches it.
 		/// </summary>
-		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Emperor.exe</param>
-		/// <param name="_EmperorExeData_">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
-		internal static void _hexEditWindowFix(ExeAttributes _ExeAttributes_, ref byte[] _EmperorExeData_)
+		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
+		/// <param name="EmperorExeData">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
+		internal static void _hexEditWindowFix(ExeAttributes ExeAttributes, ref byte[] EmperorExeData)
 		{
 			// At this address, the original code had a conditional jump (jl) that activates if the value stored in the EAX register is less than the value stored in the ECX.
 			// This patch changes this byte into an unconditional jump.
 			// I have no idea what the values represent, what code runs if the condition is false (EAX is greater than ECX) or why the widescreen mods cause
 			// EAX to be greater than ECX. All I know is that it makes Windowed mode work.
-			if (EmperorExeDefinitions._IdentifyWinFixOffset(_ExeAttributes_, out int _winFixOffset_))
+			EmperorWindowFixData emperorWindowFixData = new EmperorWindowFixData(ExeAttributes, out bool wasSuccessful);
+			if (wasSuccessful)
 			{
-				_EmperorExeData_[_winFixOffset_] = 0xEB;
+				EmperorExeData[emperorWindowFixData._WinFixOffset] = emperorWindowFixData._WinFixNewByte;
+			}
+		}
+
+		private struct EmperorWindowFixData
+		{
+			internal readonly int _WinFixOffset;
+			internal readonly byte _WinFixNewByte;
+
+			internal EmperorWindowFixData(ExeAttributes ExeAttributes, out bool WasSuccessful)
+			{
+				switch (ExeAttributes._SelectedExeLangAndDistrib)
+				{
+					case ExeLangAndDistrib.GogEnglish:
+						_WinFixOffset = 0x4C62E;
+						_WinFixNewByte = 0xEB;
+						WasSuccessful = true;
+						return;
+
+					case ExeLangAndDistrib.CdEnglish:
+						_WinFixOffset = 0x4D22E;
+						_WinFixNewByte = 0xEB;
+						WasSuccessful = true;
+						return;
+
+					case ExeLangAndDistrib.NotRecognised:
+					default:
+						_WinFixOffset = 0;
+						_WinFixNewByte = 0;
+						WasSuccessful = false;
+						return;
+				}
 			}
 		}
 	}

@@ -15,18 +15,18 @@ namespace Emperor.non_UI_code
 		/// <summary>
 		/// Used to make the required changes to the EXE.
 		/// </summary>
-		/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Emperor.exe</param>
-		/// <param name="_EmperorExeData_">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
-		internal static void _MakeChanges(ExeAttributes _ExeAttributes_, ref byte[] _EmperorExeData_)
+		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
+		/// <param name="EmperorExeData">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
+		internal static void _MakeChanges(ExeAttributes ExeAttributes, ref byte[] EmperorExeData)
 		{
-			LimitOffsets _limitOffsets_ = new LimitOffsets(_ExeAttributes_, out bool _wasSuccessful_);
+			LimitOffsets limitOffsets = new LimitOffsets(ExeAttributes, out bool wasSuccessful);
 
-			if (_wasSuccessful_)
+			if (wasSuccessful)
 			{
-				_EmperorExeData_[_limitOffsets_._LimitOffset1 + 0] = 0xA0;
-				_EmperorExeData_[_limitOffsets_._LimitOffset1 + 1] = 0x0F;
-				_EmperorExeData_[_limitOffsets_._LimitOffset2 + 0] = 0xA0;
-				_EmperorExeData_[_limitOffsets_._LimitOffset2 + 1] = 0x0F;
+				EmperorExeData[limitOffsets._LimitOffset1 + 0] = 0xA0;
+				EmperorExeData[limitOffsets._LimitOffset1 + 1] = 0x0F;
+				EmperorExeData[limitOffsets._LimitOffset2 + 0] = 0xA0;
+				EmperorExeData[limitOffsets._LimitOffset2 + 1] = 0x0F;
 			}
 		}
 
@@ -41,30 +41,30 @@ namespace Emperor.non_UI_code
 			/// <summary>
 			/// Test which version of the game is being patched and set the offset values appropriately.
 			/// </summary>
-			/// <param name="_ExeAttributes_">Struct that specifies various details about the detected Emperor.exe</param>
-			/// <param name="_WasSuccessful_">Set to True if the EXE edition was recognised. False otherwise.</param>
-			internal LimitOffsets(ExeAttributes _ExeAttributes_, out bool _WasSuccessful_)
+			/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
+			/// <param name="WasSuccessful">Set to True if the EXE edition was recognised. False otherwise.</param>
+			internal LimitOffsets(ExeAttributes ExeAttributes, out bool WasSuccessful)
 			{
-				switch (_ExeAttributes_._SelectedExeLangAndDistrib)
+				switch (ExeAttributes._SelectedExeLangAndDistrib)
 				{
 					case ExeLangAndDistrib.GogEnglish:
 						_LimitOffset1 = 0x2CD20;
 						_LimitOffset2 = 0x2CD64;
-						_WasSuccessful_ = true;
-						break;
+						WasSuccessful = true;
+						return;
 
 					case ExeLangAndDistrib.CdEnglish:
 						_LimitOffset1 = 0;
 						_LimitOffset2 = 0;
-						_WasSuccessful_ = true;
-						break;
+						WasSuccessful = true;
+						return;
 
 					case ExeLangAndDistrib.NotRecognised:
 					default:
 						_LimitOffset1 = 0;
 						_LimitOffset2 = 0;
-						_WasSuccessful_ = false;
-						break;
+						WasSuccessful = false;
+						return;
 				}
 			}
 		}

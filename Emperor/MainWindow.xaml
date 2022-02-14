@@ -5,15 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Emperor"
         mc:Ignorable="d"
-        Title="Emperor Resolution Customiser" Height="400" Width="500" Icon="Exe_Resources\Emperor.ico" Background="#E0E0E0"
+        Title="Emperor Resolution Customiser" Height="400" Width="530" Icon="Exe_Resources\Emperor.ico" Background="#E0E0E0"
         WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="10"/>
             <ColumnDefinition Width="8"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="330"/>
+            <ColumnDefinition Width="120"/>
             <ColumnDefinition Width="8"/>
             <ColumnDefinition Width="10"/>
             <ColumnDefinition Width="*"/>
@@ -23,8 +24,8 @@
             <RowDefinition/>
             <RowDefinition Height="10"/>
             <RowDefinition Height="8"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="52"/>
+            <RowDefinition Height="52"/>
             <RowDefinition Height="20"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
@@ -37,73 +38,101 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Border BorderBrush="Black" BorderThickness="2" Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="2" Grid.RowSpan="11"/>
+        <Border BorderBrush="Black" BorderThickness="2" Grid.Column="2" Grid.ColumnSpan="5" Grid.Row="2" Grid.RowSpan="11"/>
 
-        <Border BorderBrush="Black" BorderThickness="2" Grid.Column="3" Grid.Row="3" Width="340" Height="52">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Width="332" Height="46"
-                       TextAlignment="Left" TextWrapping="Wrap" Text="Resolution Width:" FontSize="32"/>
-        </Border>
-        <Border BorderBrush="Black" BorderThickness="2" Grid.Column="4" Grid.Row="3" Width="112" Height="52">
-            <TextBox x:Name="ResWidth" HorizontalAlignment="Center" VerticalAlignment="Center"
-                     TextAlignment="Right" TextWrapping="Wrap" Text="1024" FontSize="32" Width="108" Height="48" GotFocus="AllTextBoxes_GotFocus"/>
-        </Border>
+        <Grid Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="3">
+	        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="2">
+		        <TextBlock TextAlignment="Left" TextWrapping="Wrap" Text="Resolution Width:" FontSize="32" Padding="3,0,0,0"/>
+	        </Border>
+	        <Border HorizontalAlignment="Right" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="2" Width="120">
+		        <TextBox x:Name="ResWidth" TextAlignment="Right" TextWrapping="Wrap" Text="1024" FontSize="32"
+		                 GotFocus="AllTextBoxes_GotFocus" Padding="0,0,2,0"/>
+	        </Border>
+        </Grid>
 
-        <Border BorderBrush="Black" BorderThickness="2" Grid.Column="3" Grid.Row="4" Width="340" Height="52">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Width="332" Height="46"
-                       TextAlignment="Left" TextWrapping="Wrap" Text="Resolution Height:" FontSize="32"/>
-        </Border>
-        <Border BorderBrush="Black" BorderThickness="2" Grid.Column="4" Grid.Row="4" Width="112" Height="52">
-            <TextBox x:Name="ResHeight" HorizontalAlignment="Center" VerticalAlignment="Center"
-                     TextAlignment="Right" TextWrapping="Wrap" Text="768" FontSize="32" Width="108" Height="48" GotFocus="AllTextBoxes_GotFocus"/>
-        </Border>
+        <Grid Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="4">
+	        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="2">
+	            <TextBlock TextAlignment="Left" TextWrapping="Wrap" Text="Resolution Height:" FontSize="32" Padding="3,0,0,0"/>
+	        </Border>
+	        <Border HorizontalAlignment="Right" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="2" Width="120">
+	            <TextBox x:Name="ResHeight" TextAlignment="Right" TextWrapping="Wrap" Text="768" FontSize="32"
+	                     GotFocus="AllTextBoxes_GotFocus" Padding="0,0,2,0"/>
+	        </Border>
+        </Grid>
 
+        <Button Click="ApplyWindowFix_Help_Click" Grid.Column="3" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center"
+                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#C0C0C0">
+	        <Button.RenderTransform>
+		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
+	        </Button.RenderTransform>
+        </Button>
         <CheckBox x:Name="ApplyWindowFix" Content="Apply Windowed Mode Fixes" IsChecked="True"
-            Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="6" VerticalAlignment="Center">
+            Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="6" VerticalAlignment="Center">
             <CheckBox.RenderTransform>
                 <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
             </CheckBox.RenderTransform>
         </CheckBox>
 
+        <Button Click="ResizeImages_Help_Click" Grid.Column="3" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center"
+                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#C0C0C0">
+	        <Button.RenderTransform>
+		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
+	        </Button.RenderTransform>
+        </Button>
         <CheckBox x:Name="ResizeImages" Content="Resize Images" IsChecked="True"
-            Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="7" VerticalAlignment="Center"
-            Checked="ResizeImages_Checked" Unchecked="ResizeImages_Unchecked">
+                  Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="7" VerticalAlignment="Center"
+                  Checked="ResizeImages_Checked" Unchecked="ResizeImages_Unchecked">
             <CheckBox.RenderTransform>
                 <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
             </CheckBox.RenderTransform>
         </CheckBox>
 
+        <Button Click="StretchImages_Help_Click" Grid.Column="3" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center"
+                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#C0C0C0">
+	        <Button.RenderTransform>
+		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
+	        </Button.RenderTransform>
+        </Button>
         <CheckBox x:Name="StretchImages" Content="Stretch menu images to fit window" IsChecked="False"
-			Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="8" VerticalAlignment="Center"
-			Margin="16,0,0,0">
+                  Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="8" VerticalAlignment="Center"
+                  Margin="16,0,0,0">
 	        <CheckBox.RenderTransform>
 		        <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
 	        </CheckBox.RenderTransform>
         </CheckBox>
 
+        <Button Click="IncreaseSpriteLimits_Help_Click" Grid.Column="3" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center"
+                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#C0C0C0">
+	        <Button.RenderTransform>
+		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
+	        </Button.RenderTransform>
+        </Button>
         <CheckBox x:Name="IncreaseSpriteLimits" Content="Double Sprite Limits (warning: see ?)" IsChecked="False"
-                  Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="9" VerticalAlignment="Center">
+                  Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="9" VerticalAlignment="Center">
 	        <CheckBox.RenderTransform>
 		        <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
 	        </CheckBox.RenderTransform>
         </CheckBox>
 
-        <Button x:Name="SelectExe" Content="Select Emperor.exe" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="11"
-                HorizontalAlignment="Left" VerticalAlignment="Center" Click="SelectExe_Click" Background="#C0C0C0">
-            <Button.RenderTransform>
-                <ScaleTransform CenterY="10" ScaleX="2" ScaleY="2" />
-            </Button.RenderTransform>
-        </Button>
-        <Button x:Name="HelpMe" Content="?" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="11"
-                HorizontalAlignment="Center" VerticalAlignment="Center" Click="HelpMe_Click" Background="#C0C0C0">
-            <Button.RenderTransform>
-                <ScaleTransform CenterX="-9" CenterY="10" ScaleX="2" ScaleY="2" />
-            </Button.RenderTransform>
-        </Button>
-        <Button x:Name="GenerateExe" Content="Generate EXE" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="11"
-                HorizontalAlignment="Right" VerticalAlignment="Center" Click="GenerateExe_Click" Background="#C0C0C0">
-            <Button.RenderTransform>
-                <ScaleTransform CenterX="75" CenterY="10" ScaleX="2" ScaleY="2" />
-            </Button.RenderTransform>
-        </Button>
+        <Grid Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="11">
+	        <Button x:Name="SelectExe" Content="Select Emperor.exe"
+	                HorizontalAlignment="Left" VerticalAlignment="Center" Click="SelectExe_Click" Background="#C0C0C0">
+	            <Button.RenderTransform>
+	                <ScaleTransform CenterY="10" ScaleX="2" ScaleY="2" />
+	            </Button.RenderTransform>
+	        </Button>
+	        <Button x:Name="HelpMe" Content="?" Width="20" FontSize="12" FontWeight="Bold"
+	                HorizontalAlignment="Center" VerticalAlignment="Center" Click="HelpMe_Click" Background="#C0C0C0">
+	            <Button.RenderTransform>
+	                <ScaleTransform CenterX="-9" CenterY="10" ScaleX="2" ScaleY="2" />
+	            </Button.RenderTransform>
+	        </Button>
+	        <Button x:Name="GenerateExe" Content="Generate EXE"
+	                HorizontalAlignment="Right" VerticalAlignment="Center" Click="GenerateExe_Click" Background="#C0C0C0">
+	            <Button.RenderTransform>
+	                <ScaleTransform CenterX="75" CenterY="10" ScaleX="2" ScaleY="2" />
+	            </Button.RenderTransform>
+	        </Button>
+        </Grid>
     </Grid>
 </Window>

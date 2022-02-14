@@ -44,7 +44,7 @@ namespace Zeus_and_Poseidon
 		/// Code that runs when the "Generate EXE" button is clicked. Checks whether the two inputted resolution values are valid.
 		/// If they are, pass them and the state of the checkboxes to the "ProcessZeusExe" function.
 		/// </summary>
-		private void GenerateExe_Click(object _Sender_, RoutedEventArgs _E_)
+		private void GenerateExe_Click(object Sender, RoutedEventArgs EventArgs)
 		{
 			if (exeCreationBusy)
 			{
@@ -52,46 +52,47 @@ namespace Zeus_and_Poseidon
 			}
 
 			exeCreationBusy = true;
-			if (!float.TryParse(ResWidth.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resWidthPreTests_))
+			if (!float.TryParse(ResWidth.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float resWidthPreTests
+			))
 			{
 				MessageBox.Show("An error occurred while trying to convert the typed in Horizontal Resolution from a string. Make sure you only typed in digits.");
 			}
-			else if (!float.TryParse(ResHeight.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float _resHeightPreTests_))
+			else if (!float.TryParse(ResHeight.Text, NumberStyles.None, CultureInfo.InvariantCulture, out float resHeightPreTests))
 			{
 				MessageBox.Show("An error occurred while trying to convert the typed in Vertical Resolution from a string. Make sure you only typed in digits.");
 			}
-			else if (_resWidthPreTests_ < 800)
+			else if (resWidthPreTests < 800)
 			{
 				MessageBox.Show("The desired Horizontal Resolution is less than 800, which is the absolute minimum width the game's window can be. " +
 				                "Please type in a number which is at least 800.");
 			}
-			else if (_resWidthPreTests_ > MAX_RESOLUTION_WIDTH)
+			else if (resWidthPreTests > MAX_RESOLUTION_WIDTH)
 			{
 				MessageBox.Show($"The desired Horizontal Resolution is greater than {MAX_RESOLUTION_WIDTH}, which is not allowed. Please type in a number " +
 				                $"which is less than {MAX_RESOLUTION_WIDTH}.");
 			}
-			else if (_resWidthPreTests_ % 4 != 0)
+			else if (resWidthPreTests % 4 != 0)
 			{
 				MessageBox.Show("The desired Horizontal Resolution is not divisible by 4. Please type in a number which is.");
 			}
-			else if (_resHeightPreTests_ < 600)
+			else if (resHeightPreTests < 600)
 			{
 				MessageBox.Show("The desired Vertical Resolution is less than 600, which is the absolute minimum height the game's window can be. " +
 				                "Please type in a number which is at least 600.");
 			}
-			else if (_resHeightPreTests_ > MAX_RESOLUTION_HEIGHT)
+			else if (resHeightPreTests > MAX_RESOLUTION_HEIGHT)
 			{
 				MessageBox.Show($"The desired Vertical Resolution is greater than {MAX_RESOLUTION_HEIGHT}, which is not allowed. Please type in a number " +
 				                $"which is less than {MAX_RESOLUTION_HEIGHT}.");
 			}
 			else
 			{
-				bool _fixAnimations_ = ApplyAnimationFix.IsChecked ?? false;
-				bool _fixWindowed_ = ApplyWindowFix.IsChecked ?? false;
-				bool _resizeImages_ = ResizeImages.IsChecked ?? false;
-				bool _stretchImages_ = StretchImages.IsChecked ?? false;
-				ZeusMakeChanges._ProcessZeusExe(zeusExePath, Convert.ToUInt16(_resWidthPreTests_),
-					Convert.ToUInt16(_resHeightPreTests_), _fixAnimations_, _fixWindowed_, _resizeImages_, _stretchImages_);
+				bool fixAnimations = ApplyAnimationFix.IsChecked ?? false;
+				bool fixWindowed = ApplyWindowFix.IsChecked ?? false;
+				bool resizeImages = ResizeImages.IsChecked ?? false;
+				bool stretchImages = StretchImages.IsChecked ?? false;
+				ZeusMakeChanges._ProcessZeusExe(zeusExePath, Convert.ToUInt16(resWidthPreTests),
+					Convert.ToUInt16(resHeightPreTests), fixAnimations, fixWindowed, resizeImages, stretchImages);
 			}
 			exeCreationBusy = false;
 		}
@@ -100,18 +101,18 @@ namespace Zeus_and_Poseidon
 		/// Code that runs when the "Select Zeus.exe" button is clicked.
 		/// Opens a file selection dialog to allow the user to select a Zeus.exe to patch.
 		/// </summary>
-		private void SelectExe_Click(object _Sender_, RoutedEventArgs _E_)
+		private void SelectExe_Click(object Sender, RoutedEventArgs EventArgs)
 		{
-			OpenFileDialog _openFileDialog_ = new OpenFileDialog
+			OpenFileDialog openFileDialog = new OpenFileDialog
 			{
 				CheckFileExists = true,
 				CheckPathExists = true,
 				Filter = "Zeus.exe|Zeus.exe|All files (*.*)|*.*",
 				Title = "Please select the Zeus.exe you want to patch."
 			};
-			if (_openFileDialog_.ShowDialog() == true)
+			if (openFileDialog.ShowDialog() == true)
 			{
-				zeusExePath = _openFileDialog_.FileName;
+				zeusExePath = openFileDialog.FileName;
 			}
 		}
 
@@ -119,9 +120,9 @@ namespace Zeus_and_Poseidon
 		/// Code that runs when the "HelpMe" button is clicked.
 		/// Opens a MessageBox containing helpful information for the user.
 		/// </summary>
-		private void HelpMe_Click(object _Sender_, RoutedEventArgs _E_)
+		private void HelpMe_Click(object Sender, RoutedEventArgs EventArgs)
 		{
-			string[] _messageLines_ = {
+			string[] messageLines = {
 				"Help menu for the Zeus & Poseidon Resolution Customiser utility",
 				"",
 				"",
@@ -159,22 +160,22 @@ namespace Zeus_and_Poseidon
 				"Generate EXE: Once you have provided all the required information and selected the desired options, click on this button to generate a patched Zeus.exe " +
 				"and optionally resized images. All of these will be placed in the \"patched_files\" folder next to this program."
 			};
-			MessageBox.Show(string.Join(Environment.NewLine, _messageLines_));
+			MessageBox.Show(string.Join(Environment.NewLine, messageLines));
 		}
 
 		/// <summary>
 		/// Make all text in a textbox selected when clicked on.
 		/// </summary>
-		private void AllTextBoxes_GotFocus(object _Sender_, RoutedEventArgs _E_)
+		private void AllTextBoxes_GotFocus(object Sender, RoutedEventArgs EventArgs)
 		{
-			TextBox _textBox_ = (TextBox)_Sender_;
-			_textBox_.Dispatcher.BeginInvoke(new Action(() => _textBox_.SelectAll()));
+			TextBox textBox = (TextBox)Sender;
+			textBox.Dispatcher.BeginInvoke(new Action(() => textBox.SelectAll()));
 		}
 
 		/// <summary>
 		/// Event that fires when the any time the "Resize Images" checkbox is ticked. Used to enable the "Stretch menu images" control.
 		/// </summary>
-		private void ResizeImages_Checked(object _Sender_, RoutedEventArgs _EventArgs_)
+		private void ResizeImages_Checked(object Sender, RoutedEventArgs EventArgs)
 		{
 			if (StretchImages != null)
 			{
@@ -185,7 +186,7 @@ namespace Zeus_and_Poseidon
 		/// <summary>
 		/// Event that fires when the any time the "Resize Images" checkbox is unticked. Used to disable the "Stretch menu images" control.
 		/// </summary>
-		private void ResizeImages_Unchecked(object _Sender_, RoutedEventArgs _EventArgs_) {
+		private void ResizeImages_Unchecked(object Sender, RoutedEventArgs EventArgs) {
 			if (StretchImages != null)
 			{
 				StretchImages.IsEnabled = false;

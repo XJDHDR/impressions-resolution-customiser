@@ -212,8 +212,8 @@ dotnet_naming_symbols.parameter_naming_symbol.applicable_kinds = parameter
 dotnet_naming_symbols.parameter_naming_symbol.applicable_accessibilities = *
 dotnet_naming_symbols.parameter_naming_symbol.required_modifiers =
 
-dotnet_naming_style.parameter_naming_style.required_prefix = _
-dotnet_naming_style.parameter_naming_style.required_suffix = _
+dotnet_naming_style.parameter_naming_style.required_prefix =
+dotnet_naming_style.parameter_naming_style.required_suffix =
 dotnet_naming_style.parameter_naming_style.word_separator =
 dotnet_naming_style.parameter_naming_style.capitalization = pascal_case
 
@@ -235,8 +235,8 @@ dotnet_naming_symbols.local_symbols_naming_symbol.applicable_kinds = *
 dotnet_naming_symbols.local_symbols_naming_symbol.applicable_accessibilities = local
 dotnet_naming_symbols.local_symbols_naming_symbol.required_modifiers =
 
-dotnet_naming_style.local_naming_style.required_prefix = _
-dotnet_naming_style.local_naming_style.required_suffix = _
+dotnet_naming_style.local_naming_style.required_prefix =
+dotnet_naming_style.local_naming_style.required_suffix =
 dotnet_naming_style.local_naming_style.word_separator =
 dotnet_naming_style.local_naming_style.capitalization = camel_case
 
