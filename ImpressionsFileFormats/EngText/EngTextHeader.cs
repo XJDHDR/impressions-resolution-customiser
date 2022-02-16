@@ -7,11 +7,10 @@
 //
 
 namespace ImpressionsFileFormats.EngText {
-
 	/// <summary>
-	/// Storage class for <see cref="EngText"/> header data.
+	/// Storage class for <see cref="EngTextReaderWriter"/> header data.
 	/// </summary>
-	public class EngHeader {
+	public class EngTextHeader {
 
 		/// <summary>
 		/// Magic string that identifies the file.
@@ -19,7 +18,7 @@ namespace ImpressionsFileFormats.EngText {
 		public string Magic { get; set; }
 
 		/// <summary>
-		/// Number of in-use <see cref="EngTextGroup"/>s in the file.
+		/// Number of in-use <see cref="EngTextStringGroup"/>s in the file.
 		/// </summary>
 		public int GroupCount { get; set; }
 
