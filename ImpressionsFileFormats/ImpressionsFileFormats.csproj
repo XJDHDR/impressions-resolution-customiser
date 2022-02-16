@@ -7,8 +7,8 @@
     <ProjectGuid>{71A34440-1163-46EF-AEAF-06ACB63BAF2A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Impressions.Formats</RootNamespace>
-    <AssemblyName>Impressions.Formats</AssemblyName>
+    <RootNamespace>ImpressionsFileFormats</RootNamespace>
+    <AssemblyName>ImpressionsFileFormats</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,9 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Text\EngText.cs" />
-    <Compile Include="Text\EngTextGroup.cs" />
-    <Compile Include="Text\EngTextHeader.cs" />
+    <Compile Include="EngText\EngText.cs" />
+    <Compile Include="EngText\EngTextGroup.cs" />
+    <Compile Include="EngText\EngTextHeader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
