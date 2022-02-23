@@ -314,3 +314,9 @@ dotnet_naming_style.member_and_value_container_naming_style.required_prefix =
 dotnet_naming_style.member_and_value_container_naming_style.required_suffix =
 dotnet_naming_style.member_and_value_container_naming_style.word_separator =
 dotnet_naming_style.member_and_value_container_naming_style.capitalization = pascal_case
+
+
+#### JetBrains specific rules ####
+# https://www.jetbrains.com/help/rider/EditorConfig_Index.html
+resharper_for_can_be_converted_to_foreach_highlighting = none
+resharper_loop_can_be_converted_to_query_highlighting = none

@@ -41,10 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EngText\EngText.cs" />
-    <Compile Include="EngText\EngTextString.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EngText\EngTextReaderWriter.cs" />
-    <Compile Include="EngText\EngTextStringGroup.cs" />
+    <Compile Include="EngText\EngTextStringGroupAndData.cs" />
     <Compile Include="EngText\EngTextHeader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
