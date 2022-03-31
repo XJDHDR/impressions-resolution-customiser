@@ -6,6 +6,7 @@
 //
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -98,6 +99,7 @@ namespace Zeus_and_Poseidon.non_UI_code
 				}
 #endif
 
+				ConcurrentBag<string> allErrorMessages = new ConcurrentBag<string>();
 				Parallel.For(0, CentredImages.Length, I =>
 				{
 					if (File.Exists(ZeusDataFolderLocation + CentredImages[I]))
@@ -158,9 +160,27 @@ namespace Zeus_and_Poseidon.non_UI_code
 					}
 					else
 					{
-						MessageBox.Show("Could not find the image located at: " + ZeusDataFolderLocation + CentredImages[I]);
+						// Drop the missing image's name into a ConcurrentBag to put in an error message later.
+						allErrorMessages.Add(ZeusDataFolderLocation + CentredImages[I] + "\n");
 					}
 				});
+
+				// If the ConcurrentBag has entries in it, create a message listing all of these missing images.
+				if (allErrorMessages.IsEmpty == false)
+				{
+					StringBuilder messageText = new StringBuilder();
+					messageText.Append("Could not find the following images :\n\n");
+
+					while (allErrorMessages.IsEmpty == false)
+					{
+						if (allErrorMessages.TryTake(out string extractedText))
+						{
+							messageText.Append(extractedText);
+						}
+					}
+
+					MessageBox.Show(messageText.ToString());
+				}
 			}
 			else
 			{
