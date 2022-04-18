@@ -67,8 +67,8 @@ namespace Emperor
 			}
 			else if (resWidthPreTests > MAX_RESOLUTION_WIDTH)
 			{
-				MessageBox.Show("The desired Horizontal Resolution is greater than " + MAX_RESOLUTION_WIDTH + ", which is not allowed. Please type in a number " +
-				                "which is less than " + MAX_RESOLUTION_WIDTH + ".");
+				MessageBox.Show($"The desired Horizontal Resolution is greater than {MAX_RESOLUTION_WIDTH.ToString()}, which is not allowed. Please type in a number " +
+				                $"which is less than {MAX_RESOLUTION_WIDTH.ToString()}.");
 			}
 			else if (resWidthPreTests % 4 != 0)
 			{
@@ -81,8 +81,8 @@ namespace Emperor
 			}
 			else if (resHeightPreTests > MAX_RESOLUTION_HEIGHT)
 			{
-				MessageBox.Show("The desired Vertical Resolution is greater than " + MAX_RESOLUTION_HEIGHT + ", which is not allowed. Please type in a number " +
-				                "which is less than " + MAX_RESOLUTION_HEIGHT + ".");
+				MessageBox.Show($"The desired Vertical Resolution is greater than {MAX_RESOLUTION_HEIGHT.ToString()}, which is not allowed. Please type in a number " +
+				                $"which is less than {MAX_RESOLUTION_HEIGHT.ToString()}.");
 			}
 			else
 			{
@@ -125,7 +125,7 @@ namespace Emperor
 		}
 
 		/// <summary>
-		/// Event that fires when the any time the "Resize Images" checkbox is ticked. Used to enable the "Stretch menu images" control.
+		/// Event that fires any time the "Resize Images" checkbox is ticked. Used to enable the "Stretch menu images" control.
 		/// </summary>
 		private void ResizeImages_Checked(object Sender, RoutedEventArgs EventArgs)
 		{
@@ -167,10 +167,10 @@ namespace Emperor
 				"",
 				"",
 				"Resolution Width: This text box allows you to specify the horizontal component of your desired resolution. If your screen is in landscape, " +
-				$"this is the bigger number. Note that this number must be divisible by 4 as well as between 800 and {MAX_RESOLUTION_WIDTH}, both inclusive.",
+				$"this is the bigger number. Note that this number must be divisible by 4 as well as between 800 and {MAX_RESOLUTION_WIDTH.ToString()}, both inclusive.",
 				"",
 				"Resolution Height: This text box allows you to specify the vertical component of your desired resolution. If your screen is in landscape, " +
-				$"this is the smaller number. Note that this number must be between 600 and {MAX_RESOLUTION_HEIGHT}, both inclusive.",
+				$"this is the smaller number. Note that this number must be between 600 and {MAX_RESOLUTION_HEIGHT.ToString()}, both inclusive.",
 				"",
 				"Select Emperor.exe: This button opens a file picker that lets you specify the location of a Emperor.exe that you want to modify.",
 				"",

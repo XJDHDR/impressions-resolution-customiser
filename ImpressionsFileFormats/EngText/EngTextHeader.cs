@@ -58,7 +58,7 @@ namespace ImpressionsFileFormats.EngText {
 			if (GroupCount > 1001)
 			{
 				IsNewFileFormat = false;
-				ErrorMessages += $"The Eng file's header indicates that it has {GroupCount} String Groups present, " +
+				ErrorMessages += $"The Eng file's header indicates that it has {GroupCount.ToString()} String Groups present, " +
 				                 "which is more than the permitted count of 1001.";
 				WasSuccessful = false;
 				return;
