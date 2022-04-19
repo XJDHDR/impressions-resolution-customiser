@@ -48,6 +48,7 @@ namespace ImpressionsFileFormats.EngText {
 		/// </summary>
 		public Encoding StringCharEncoding;
 
+
 		/// <summary>
 		/// Populate the struct's fields by reading them from a BinaryReader.
 		/// </summary>

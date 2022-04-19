@@ -45,7 +45,11 @@ namespace ImpressionsFileFormats.EngText
 						string[] emptyArray = new string[0];
 						for (int i = 0; i < 1000; ++i)
 						{
-							Strings[i] = new EngTextGroupStrings(binaryReader, in emptyArray,
+							int nextGroupOffset = i == 999 ?
+								(int)binaryReader.BaseStream.Length :
+								StringGroups[i + 1].StringDataOffset + 8028;
+
+							Strings[i] = new EngTextGroupStrings(binaryReader, nextGroupOffset, in emptyArray,
 								ref FileHeader, ref StringGroups[i], ref numStringsRead, ref numWordsRead);
 						}
 
@@ -54,6 +58,7 @@ namespace ImpressionsFileFormats.EngText
 					else
 					{
 						StringGroups = new EngTextGroupIndex[0];
+						Strings = new EngTextGroupStrings[0];
 						WasSuccessful = false;
 					}
 				}

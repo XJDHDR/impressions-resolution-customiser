@@ -18,17 +18,16 @@ namespace ImpressionsFileFormats.EngText
 		/// </summary>
 		public string[] GroupStrings;
 
-		public EngTextGroupStrings(BinaryReader BinaryReader, in string[] EmptyArray,
+		public EngTextGroupStrings(BinaryReader BinaryReader, int NextGroupOffset, in string[] EmptyArray,
 			ref EngTextHeader Header, ref EngTextGroupIndex GroupIndex,
-			ref uint NumStringsRead, ref uint NumWordsRead, ref uint ExcessNullsRead)
+			ref uint NumStringsRead, ref uint NumWordsRead)
 		{
-			// NOTE: DO NOT MODIFY ANYTHING IN Header OR GroupIndex. The Ref keyword is there for performance reasons.
 			List<string> tempGroupStringsContainer;
 
 			switch (GroupIndex.StringCountOrIsGroupUsed)
 			{
 				case 0:
-					// There are no strings in this group. Therefore, use the provided 0 length array and stop.
+					// There are no strings in this group. Therefore, use the provided 0 length array and immediately stop.
 					GroupStrings = EmptyArray;
 					return;
 
@@ -52,15 +51,15 @@ namespace ImpressionsFileFormats.EngText
 			for (int i = 0; i < numberOfStringsInGroup; ++i)
 			{
 				readStringUntilNullEncountered(BinaryReader, Header, ref NumStringsRead,
-					ref NumWordsRead, ref ExcessNullsRead, out string readString);
+					ref NumWordsRead, ref GroupIndex.ExcessNullsRead, out string readString);
 				tempGroupStringsContainer.Add(readString);
 
 				// If this is the old format, check for when the end of the group has been reached.
 				if (!Header.IsNewFileFormat)
 				{
-					// TODO: Correct this
-					if (BinaryReader.BaseStream.Position == GroupIndex.StringDataOffset + 8028)
+					if (BinaryReader.BaseStream.Position == NextGroupOffset)
 					{
+						// The start of the next group has been encountered. Thus, stop reading strings for this group.
 						break;
 					}
 				}

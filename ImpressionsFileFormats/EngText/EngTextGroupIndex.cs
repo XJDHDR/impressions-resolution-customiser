@@ -29,10 +29,19 @@ namespace ImpressionsFileFormats.EngText {
 		/// </summary>
 		public int StringCountOrIsGroupUsed;
 
+		/// <summary>
+		/// Records the number of excess NULLs encountered while reading this group's strings.
+		/// Note: This data is not part of the EngText specification. It is used to indicate how much each
+		/// group's <see cref="StringDataOffset"/> needs to be adjusted when writing the group.
+		/// </summary>
+		public uint ExcessNullsRead;
+
+
 		public EngTextGroupIndex(BinaryReader BinaryReader)
 		{
 			StringDataOffset = BinaryReader.ReadInt32();
 			StringCountOrIsGroupUsed = BinaryReader.ReadInt32();
+			ExcessNullsRead = 0;
 		}
 	}
 }
