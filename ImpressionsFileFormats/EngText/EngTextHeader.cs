@@ -21,7 +21,7 @@ namespace ImpressionsFileFormats.EngText {
 		public readonly byte[] FileSignature;
 
 		/// <summary>
-		/// Number of in-use <see cref="EngTextStringGroupAndData"/>s in the file.
+		/// Number of in-use <see cref="EngTextGroupIndex"/>s in the file.
 		/// </summary>
 		public int GroupCount;
 
@@ -38,32 +38,65 @@ namespace ImpressionsFileFormats.EngText {
 		/// <summary>
 		/// False if the file is in the old format used by Caesar 3 and Pharaoh.
 		/// True if it is in the new format used by Zeus and Emperor.
+		/// This data is not part of the EngText specification. It is to assist with reading & writing the string groups.
 		/// </summary>
 		public readonly bool IsNewFileFormat;
+
+		/// <summary>
+		/// The <see cref="Encoding"/> used for the strings in this EngText file.
+		/// Note that this data is not part of the Eng Text specification. It is here to assist with reading & writing the strings.
+		/// </summary>
+		public Encoding StringCharEncoding;
 
 		/// <summary>
 		/// Populate the struct's fields by reading them from a BinaryReader.
 		/// </summary>
 		/// <param name="BinaryReader">The BinaryReader that points to the start of the Eng file's data.</param>
 		/// <param name="GameName">Used to indicate the name of the game that is being patched.</param>
+		/// <param name="GameCharEncoding">Indicates the string encoding used for this EngText file.</param>
 		/// <param name="ErrorMessages">If an error occurred, contains messages indicating the error(s) that occurred.</param>
 		/// <param name="WasSuccessful">True if the constructor completed without errors. False otherwise.</param>
-		public EngTextHeader(BinaryReader BinaryReader, GameName GameName, ref string ErrorMessages, out bool WasSuccessful)
+		public EngTextHeader(BinaryReader BinaryReader, GameName GameName, CharEncodingTables GameCharEncoding,
+			ref string ErrorMessages, out bool WasSuccessful)
 		{
 			FileSignature = BinaryReader.ReadBytes(16);
 			GroupCount = BinaryReader.ReadInt32();
 			StringCount = BinaryReader.ReadInt32();
 			WordCount = BinaryReader.ReadInt32();
 
+			// Are there more than 1000 groups present (not supported)?
 			if (GroupCount > 1001)
 			{
 				IsNewFileFormat = false;
 				ErrorMessages += $"The Eng file's header indicates that it has {GroupCount.ToString()} String Groups present, " +
 				                 "which is more than the permitted count of 1001.";
 				WasSuccessful = false;
+				StringCharEncoding = Encoding.Default;
 				return;
 			}
 
+			// Assign the encoding used for this EngText file's strings.
+			switch (GameCharEncoding)
+			{
+				case CharEncodingTables.Win1252:
+				default:
+					StringCharEncoding = Encoding.GetEncoding(1252);
+					break;
+
+				case CharEncodingTables.Win1250:
+					StringCharEncoding = Encoding.GetEncoding(1250);
+					break;
+
+				case CharEncodingTables.Win1251:
+					StringCharEncoding = Encoding.GetEncoding(1251);
+					break;
+
+				case CharEncodingTables.Win0950:
+					StringCharEncoding = Encoding.GetEncoding(950);
+					break;
+			}
+
+			// Test whether the EngText FileSignature matches that of the game currently being processed.
 			switch (FileSignature[0])
 			{
 				case 0x43:	// if first letter of Signature = "C" for C3

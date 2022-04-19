@@ -25,10 +25,10 @@ namespace ImpressionsFileFormats.EngText {
 		/// <summary>
 		/// All available groups in this <see cref="ENG"/>.
 		/// </summary>
-		public List<EngTextStringGroupAndData> Groups { get; } = new List<EngTextStringGroupAndData>();
+		public List<EngTextGroupIndex> Groups { get; } = new List<EngTextGroupIndex>();
 
 		/// <summary>
-		/// Determines if the <see cref="EngTextStringGroupAndData.StringCountOrIsGroupUsed"/> actually stores the number of strings instead of just being 0 or 1 (Caesar 3).
+		/// Determines if the <see cref="EngTextGroupIndex.StringCountOrIsGroupUsed"/> actually stores the number of strings instead of just being 0 or 1 (Caesar 3).
 		/// </summary>
 		public bool IndexWithCounts = false;
 
@@ -41,7 +41,7 @@ namespace ImpressionsFileFormats.EngText {
 		/// <param name="EngText"></param>
 		/// <param name="GameCharacterEncoding"></param>
 		/// <returns></returns>
-		public static EngTextReaderWriter LoadEng(Stream Input, GameName GameName, GameCharacterEncoding GameCharacterEncoding,
+		public static EngTextReaderWriter LoadEng(Stream Input, GameName GameName, CharEncodingTables GameCharacterEncoding,
 			ref string ErrorMessages, out EngText EngText)
 		{
 			EngTextReaderWriter eng = new EngTextReaderWriter();
@@ -54,14 +54,14 @@ namespace ImpressionsFileFormats.EngText {
 				// Strings
 				for (int i = 0; i < eng.Groups.Count; i++)
 				{
-					EngTextStringGroupAndData stringGroupAndData = eng.Groups[i];
+					EngTextGroupIndex groupIndex = eng.Groups[i];
 					long nextGroupOffset = i < eng.Groups.Count - 1 ?
 						eng.Groups[i + 1].FileOffset :
 						textSize;
 
 					// TODO: If the reading code is working 100% properly this line should have no effect.
 					// Testing is required before it is removed.
-					binaryReader.BaseStream.Position = baseOffset + stringGroupAndData.FileOffset;
+					binaryReader.BaseStream.Position = baseOffset + groupIndex.FileOffset;
 
 					// Engage Caesar 3 string reading loop.
 					if (!eng.IndexWithCounts)
@@ -80,13 +80,13 @@ namespace ImpressionsFileFormats.EngText {
 							if (bytes.Count > 0)
 							{
 								// TODO: Encoding support for the various game language versions will need to be implemented as this is currently only ASCII compatible.
-								stringGroupAndData.Strings.Add(Encoding.ASCII.GetString(bytes.ToArray()));
+								groupIndex.Strings.Add(Encoding.ASCII.GetString(bytes.ToArray()));
 							}
 						}
 					}
 					else // Handle all of the others much more simply.
 					{
-						for (int j = 0; j < stringGroupAndData.StringCountOrIsGroupUsed; j++)
+						for (int j = 0; j < groupIndex.StringCountOrIsGroupUsed; j++)
 						{
 							List<byte> bytes = new List<byte>();
 							byte currentByte = binaryReader.ReadByte();
@@ -99,7 +99,7 @@ namespace ImpressionsFileFormats.EngText {
 							if (bytes.Count > 0)
 							{
 								// TODO: Encoding support for the various game language versions will need to be implemented as this is currently only ASCII compatible.
-								stringGroupAndData.Strings.Add(Encoding.ASCII.GetString(bytes.ToArray()));
+								groupIndex.Strings.Add(Encoding.ASCII.GetString(bytes.ToArray()));
 							}
 						}
 					}

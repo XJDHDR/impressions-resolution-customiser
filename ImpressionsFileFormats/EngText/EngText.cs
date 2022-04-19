@@ -5,6 +5,7 @@
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
 
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -13,107 +14,50 @@ namespace ImpressionsFileFormats.EngText
 	public struct EngText
 	{
 		public EngTextHeader FileHeader;
-		public EngTextStringGroupAndData[] StringGroups;
+		public EngTextGroupIndex[] StringGroups;
+		public EngTextGroupStrings[] Strings;
 
-		public EngText(Stream InputData, GameName GameName, GameCharacterEncoding GameCharacterEncoding, ref string ErrorMessages, out bool WasSuccessful)
+		public EngText(Stream InputData, GameName GameName, CharEncodingTables GameCharEncoding,
+			ref string ErrorMessages, out bool WasSuccessful)
 		{
 			using (BufferedStream bufferedStream = new BufferedStream(InputData, 8192))
 			{
 				using (BinaryReader binaryReader = new BinaryReader(bufferedStream))
 				{
-					FileHeader = new EngTextHeader(binaryReader, GameName, ref ErrorMessages, out bool wasSuccessful);
+					// Create the header.
+					FileHeader = new EngTextHeader(binaryReader, GameName, GameCharEncoding, ref ErrorMessages,
+						out bool wasSuccessful);
 
 					if (wasSuccessful)
 					{
-						StringGroups = new EngTextStringGroupAndData[1000];
-						for (int i = 0; i < StringGroups.Length; ++i)
+						// Create a GroupIndex struct for each of the 1000 String Groups.
+						StringGroups = new EngTextGroupIndex[1000];
+						for (int i = 0; i < 1000; ++i)
 						{
-							StringGroups[i] = new EngTextStringGroupAndData(binaryReader, GameCharacterEncoding, in FileHeader.IsNewFileFormat);
+							StringGroups[i] = new EngTextGroupIndex(binaryReader);
 						}
 
+						// Next, create a Strings struct for each of the 1000 Groups.
+						// Also, keep track of the total number of strings and words, to check header's accuracy.
 						uint numStringsRead = 0;
 						uint numWordsRead = 0;
-						for (int i = 0; i < StringGroups.Length; ++i)
+						Strings = new EngTextGroupStrings[1000];
+						string[] emptyArray = new string[0];
+						for (int i = 0; i < 1000; ++i)
 						{
-							if (StringGroups[i].StringCountOrIsGroupUsed == 0)
-							{
-								continue;
-							}
-
-							int numberOfStringsInGroup;
-							if (FileHeader.IsNewFileFormat)
-							{
-								numberOfStringsInGroup = StringGroups[i].StringCountOrIsGroupUsed;
-							}
-							else
-							{
-								numberOfStringsInGroup = int.MaxValue;
-							}
-
-							for (int j = 0; j < numberOfStringsInGroup; ++j)
-							{
-								readStringUntilNullEncountered(binaryReader, StringGroups[i], ref numStringsRead, ref numWordsRead, out string readString);
-								StringGroups[i].Strings.Add(readString);
-							}
+							Strings[i] = new EngTextGroupStrings(binaryReader, in emptyArray,
+								ref FileHeader, ref StringGroups[i], ref numStringsRead, ref numWordsRead);
 						}
 
 						WasSuccessful = true;
 					}
 					else
 					{
-						StringGroups = new EngTextStringGroupAndData[0];
+						StringGroups = new EngTextGroupIndex[0];
 						WasSuccessful = false;
 					}
 				}
 			}
-		}
-
-		private void readStringUntilNullEncountered(BinaryReader BinaryReader, EngTextStringGroupAndData CurrentGroup,
-			ref uint NumStringsRead, ref uint NumWordsRead, out string ReadString)
-		{
-			StringBuilder stringBuilder = new StringBuilder();
-			bool lastCharacterWasSpace = false;
-			bool haveReachedNullCharacters = false;
-
-			for (int i = 0; i < int.MaxValue; ++i)
-			{
-				byte[] readByte = BinaryReader.ReadBytes(1);
-
-				if (haveReachedNullCharacters)
-				{
-					// It's possible for a string to be terminated by multiple NULLs. Therefore, keep reading until the next non-NULL is found.
-					if (readByte[0] != 0x00)
-					{
-						BinaryReader.BaseStream.Position -= 1;
-						break;
-					}
-				}
-				else
-				{
-					if (readByte[0] == 0x00)
-					{
-						haveReachedNullCharacters = true;
-					}
-					else
-					{
-						if (readByte[0] == 0x20)
-						{
-							lastCharacterWasSpace = true;
-						}
-						else if (lastCharacterWasSpace)
-						{
-							++NumWordsRead;
-							lastCharacterWasSpace = false;
-						}
-
-						stringBuilder.Append(CurrentGroup.StringCharacterEncoding.GetChars(readByte));
-					}
-				}
-			}
-
-			ReadString = stringBuilder.ToString();
-			++NumWordsRead;
-			++NumStringsRead;
 		}
 	}
 
@@ -125,7 +69,7 @@ namespace ImpressionsFileFormats.EngText
 		Emperor = 4
 	}
 
-	public enum GameCharacterEncoding : byte
+	public enum CharEncodingTables : byte
 	{
 		Win1252 = 1,
 		Win1250 = 2,
