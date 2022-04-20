@@ -18,9 +18,9 @@ namespace ImpressionsFileFormats.EngText
 		/// </summary>
 		public string[] GroupStrings;
 
-		public EngTextGroupStrings(BinaryReader BinaryReader, int NextGroupOffset, in string[] EmptyArray,
-			ref EngTextHeader Header, ref EngTextGroupIndex GroupIndex,
-			ref uint NumStringsRead, ref uint NumWordsRead)
+		public EngTextGroupStrings(BinaryReader BinaryReader, StringBuilder Messages, int NextGroupOffset, in string[] EmptyArray,
+			ref EngTextHeader Header, ref EngTextGroupIndex GroupIndex, ref int NumStringsRead, ref int NumWordsRead,
+			out bool WasSuccessful)
 		{
 			List<string> tempGroupStringsContainer;
 
@@ -29,6 +29,7 @@ namespace ImpressionsFileFormats.EngText
 				case 0:
 					// There are no strings in this group. Therefore, use the provided 0 length array and immediately stop.
 					GroupStrings = EmptyArray;
+					WasSuccessful = true;
 					return;
 
 				case 1:
@@ -45,31 +46,64 @@ namespace ImpressionsFileFormats.EngText
 			}
 
 			int numberOfStringsInGroup = Header.IsNewFileFormat ?
-				GroupIndex.StringCountOrIsGroupUsed :
-				int.MaxValue;
+				GroupIndex.StringCountOrIsGroupUsed :				// If new format, Index has number of strings in group.
+				int.MaxValue;										// If old format, just read strings until next offset.
 
 			for (int i = 0; i < numberOfStringsInGroup; ++i)
 			{
-				readStringUntilNullEncountered(BinaryReader, Header, ref NumStringsRead,
+				readStringUntilNullEncountered(BinaryReader, ref Header, ref NumStringsRead,
 					ref NumWordsRead, ref GroupIndex.ExcessNullsRead, out string readString);
 				tempGroupStringsContainer.Add(readString);
 
-				// If this is the old format, check for when the end of the group has been reached.
+				// Check whether the stream reader has moved past the next group's offset
+				if (BinaryReader.BaseStream.Position > NextGroupOffset)
+				{
+					// The reader has gone past the offset for the next group, meaning
+					// the string that was just read runs past the group's boundary.
+					// This means the EngText file is not in a working state.
+					// Therefore, stop reading strings and report the error.
+
+					if (Header.IsNewFileFormat)
+					{
+						Messages.Append($"Error: The string reading code went past the start of the next String Group (at offset: {NextGroupOffset.ToString()}) ");
+						Messages.Append($"after reading {i} strings, and is currently at offset {BinaryReader.BaseStream.Position.ToString()}. ");
+						Messages.Append("The last string was supposed to end at the start of the next group at ");
+						Messages.Append($"offset {NextGroupOffset.ToString()}, not after that offset.\n");
+						Messages.Append("This indicates a corrupt EngText file and reading can not continue.\n\n");
+					}
+					else
+					{
+						Messages.Append($"Error: The string reading code went past the start of the next String Group (at offset: {NextGroupOffset.ToString()}) ");
+						Messages.Append("before reading the number of strings that are supposed to be in this group ");
+						Messages.Append($"({i} of {numberOfStringsInGroup.ToString()} strings have been read so far), ");
+						Messages.Append($"and is currently at offset {BinaryReader.BaseStream.Position.ToString()}.\n");
+						Messages.Append("This indicates a corrupt EngText file and reading can not continue.\n\n");
+					}
+
+					GroupStrings = tempGroupStringsContainer.ToArray();
+					WasSuccessful = false;
+					return;
+				}
+
 				if (!Header.IsNewFileFormat)
 				{
+					// If this is the old format, check for when the end of the group has been reached.
 					if (BinaryReader.BaseStream.Position == NextGroupOffset)
 					{
-						// The start of the next group has been encountered. Thus, stop reading strings for this group.
+						// The start of the next group has been encountered.
+						// Thus, stop reading strings for this group and move on to the next.
 						break;
 					}
 				}
 			}
 
 			GroupStrings = tempGroupStringsContainer.ToArray();
+			WasSuccessful = true;
 		}
 
-		private static void readStringUntilNullEncountered(BinaryReader BinaryReader, EngTextHeader Header,
-			ref uint NumStringsRead, ref uint NumWordsRead, ref uint ExcessNullsRead, out string ReadString)
+		private static void readStringUntilNullEncountered(BinaryReader BinaryReader, ref EngTextHeader Header,
+			ref int NumStringsRead, ref int NumWordsRead, ref uint ExcessNullsRead,
+			out string ReadString)
 		{
 			StringBuilder stringBuilder = new StringBuilder();
 			bool lastCharacterWasSpace = false;

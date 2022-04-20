@@ -55,10 +55,10 @@ namespace ImpressionsFileFormats.EngText {
 		/// <param name="BinaryReader">The BinaryReader that points to the start of the Eng file's data.</param>
 		/// <param name="GameName">Used to indicate the name of the game that is being patched.</param>
 		/// <param name="GameCharEncoding">Indicates the string encoding used for this EngText file.</param>
-		/// <param name="ErrorMessages">If an error occurred, contains messages indicating the error(s) that occurred.</param>
+		/// <param name="Messages">If an error occurred, contains messages indicating the error(s) that occurred.</param>
 		/// <param name="WasSuccessful">True if the constructor completed without errors. False otherwise.</param>
-		public EngTextHeader(BinaryReader BinaryReader, GameName GameName, CharEncodingTables GameCharEncoding,
-			ref string ErrorMessages, out bool WasSuccessful)
+		public EngTextHeader(BinaryReader BinaryReader, Game GameName, CharEncodingTables GameCharEncoding,
+			ref StringBuilder Messages, out bool WasSuccessful)
 		{
 			FileSignature = BinaryReader.ReadBytes(16);
 			GroupCount = BinaryReader.ReadInt32();
@@ -69,8 +69,8 @@ namespace ImpressionsFileFormats.EngText {
 			if (GroupCount > 1001)
 			{
 				IsNewFileFormat = false;
-				ErrorMessages += $"The Eng file's header indicates that it has {GroupCount.ToString()} String Groups present, " +
-				                 "which is more than the permitted count of 1001.";
+				Messages.Append($"The Eng file's header indicates that it has {GroupCount.ToString()} String Groups present, " +
+				                 "which is more than the permitted count of 1001.");
 				WasSuccessful = false;
 				StringCharEncoding = Encoding.Default;
 				return;
@@ -102,9 +102,9 @@ namespace ImpressionsFileFormats.EngText {
 			{
 				case 0x43:	// if first letter of Signature = "C" for C3
 					// Is Caesar 3 the game being worked on?
-					if (GameName != GameName.Caesar3)
+					if (GameName != Game.Caesar3)
 					{
-						fileSignatureErrorMessageCreation(1, ref ErrorMessages, out IsNewFileFormat, out WasSuccessful);
+						fileSignatureErrorMessageCreation(1, ref Messages, out IsNewFileFormat, out WasSuccessful);
 						return;
 					}
 
@@ -118,7 +118,7 @@ namespace ImpressionsFileFormats.EngText {
 					{
 						if (FileSignature[i] != caesar3Signature[i])
 						{
-							fileSignatureErrorMessageCreation(2, ref ErrorMessages, out IsNewFileFormat, out WasSuccessful);
+							fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
 							return;
 						}
 					}
@@ -127,9 +127,9 @@ namespace ImpressionsFileFormats.EngText {
 
 				case 0x50:	// if first letter of Signature = "P" for Pharaoh
 					// Is Pharaoh the game being worked on?
-					if (GameName != GameName.Pharaoh)
+					if (GameName != Game.Pharaoh)
 					{
-						fileSignatureErrorMessageCreation(1, ref ErrorMessages, out IsNewFileFormat, out WasSuccessful);
+						fileSignatureErrorMessageCreation(1, ref Messages, out IsNewFileFormat, out WasSuccessful);
 						return;
 					}
 
@@ -143,7 +143,7 @@ namespace ImpressionsFileFormats.EngText {
 					{
 						if (FileSignature[i] != pharaohSignature[i])
 						{
-							fileSignatureErrorMessageCreation(2, ref ErrorMessages, out IsNewFileFormat, out WasSuccessful);
+							fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
 							return;
 						}
 					}
@@ -152,9 +152,9 @@ namespace ImpressionsFileFormats.EngText {
 
 				case 0x5A:	// if first letter of Signature = "Z" for Zeus
 					// Is Zeus the game being worked on?
-					if (GameName != GameName.Zeus)
+					if (GameName != Game.Zeus)
 					{
-						fileSignatureErrorMessageCreation(1, ref ErrorMessages, out IsNewFileFormat, out WasSuccessful);
+						fileSignatureErrorMessageCreation(1, ref Messages, out IsNewFileFormat, out WasSuccessful);
 						return;
 					}
 
@@ -168,7 +168,7 @@ namespace ImpressionsFileFormats.EngText {
 					{
 						if (FileSignature[i] != zeusSignature[i])
 						{
-							fileSignatureErrorMessageCreation(2, ref ErrorMessages, out IsNewFileFormat, out WasSuccessful);
+							fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
 							return;
 						}
 					}
@@ -177,9 +177,9 @@ namespace ImpressionsFileFormats.EngText {
 
 				case 0x45:	// if first letter of Signature = "E" for Emperor
 					// Is Emperor the game being worked on?
-					if (GameName != GameName.Emperor)
+					if (GameName != Game.Emperor)
 					{
-						fileSignatureErrorMessageCreation(1, ref ErrorMessages, out IsNewFileFormat, out WasSuccessful);
+						fileSignatureErrorMessageCreation(1, ref Messages, out IsNewFileFormat, out WasSuccessful);
 						return;
 					}
 
@@ -193,7 +193,7 @@ namespace ImpressionsFileFormats.EngText {
 					{
 						if (FileSignature[i] != emperorSignature[i])
 						{
-							fileSignatureErrorMessageCreation(2, ref ErrorMessages, out IsNewFileFormat, out WasSuccessful);
+							fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
 							return;
 						}
 					}
@@ -201,7 +201,7 @@ namespace ImpressionsFileFormats.EngText {
 					break;
 
 				default:
-					fileSignatureErrorMessageCreation(2, ref ErrorMessages, out IsNewFileFormat, out WasSuccessful);
+					fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
 					return;
 			}
 
@@ -212,19 +212,21 @@ namespace ImpressionsFileFormats.EngText {
 		/// Common code for creating an error message
 		/// </summary>
 		/// <param name="MessageNumber"></param>
-		/// <param name="ErrorMessages"></param>
+		/// <param name="Messages"></param>
 		/// <param name="IsNewFileFormatParam"></param>
 		/// <param name="WasSuccessful"></param>
-		private static void fileSignatureErrorMessageCreation(byte MessageNumber, ref string ErrorMessages, out bool IsNewFileFormatParam, out bool WasSuccessful)
+		private static void fileSignatureErrorMessageCreation(byte MessageNumber, ref StringBuilder Messages, out bool IsNewFileFormatParam, out bool WasSuccessful)
 		{
 			switch (MessageNumber)
 			{
 				case 1:
-					ErrorMessages += "The Eng file's File Signature does not match one used by C3, Pharaoh, Zeus or Emperor. This could indicate a corrupt file.";
+					Messages.Append("The Eng file's File Signature does not match one used by C3, Pharaoh, Zeus or Emperor.\n");
+					Messages.Append("This could indicate a corrupt file.\n\n");
 					break;
 
 				case 2:
-					ErrorMessages += "The Eng file's File Signature does not match one used by the game being patched. Please supply the correct Text Eng for the game.";
+					Messages.Append("The Eng file's File Signature does not match one used by the game being patched.\n");
+					Messages.Append("Please supply the correct Text Eng for the game.\n\n");
 					break;
 			}
 			IsNewFileFormatParam = false;
