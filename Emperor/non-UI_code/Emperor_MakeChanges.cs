@@ -26,30 +26,33 @@ namespace Emperor.non_UI_code
 		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
 		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
 		/// <param name="FixWindowed">Whether the "Apply Windowed Mode Fixes" checkbox is selected or not.</param>
+		/// <param name="PatchEngText">Whether the "Patch EmperorText.eng" checkbox is selected or not.</param>
 		/// <param name="ResizeImages">Whether the "Resize Images" checkbox is selected or not.</param>
 		/// <param name="StretchImages">Whether the "Stretch menu images to fit window" checkbox is selected or not.</param>
 		/// <param name="IncreaseSpriteLimit">Whether the "Double Sprite Limits" checkbox is selected or not.</param>
 		internal static void _ProcessEmperorExe(string EmperorExeLocation, ushort ResWidth, ushort ResHeight,
-			bool FixWindowed, bool ResizeImages, bool StretchImages, bool IncreaseSpriteLimit)
+			bool FixWindowed, bool PatchEngText, bool ResizeImages, bool StretchImages, bool IncreaseSpriteLimit)
 		{
-			if (!File.Exists(EmperorExeLocation))
+			if (!File.Exists(EmperorExeLocation + "Emperor.exe"))
 			{
 				// User didn't select a folder using the selection button.
-				if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"base_files\Emperor.exe"))
+				if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "base_files/Emperor.exe"))
 				{
-					// Check if the user has placed the Zeus data files in the "base_files" folder.
-					EmperorExeLocation = AppDomain.CurrentDomain.BaseDirectory + @"base_files\Emperor.exe";
+					// Check if the user has placed the game's data files in the "base_files" folder.
+					EmperorExeLocation = AppDomain.CurrentDomain.BaseDirectory + "base_files";
 				}
 				else if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Emperor.exe") && (AppDomain.CurrentDomain.FriendlyName != "Emperor.exe"))
 				{
-					// As a last resort, check if the Zeus data files are in the same folder as this program.
-					EmperorExeLocation = AppDomain.CurrentDomain.BaseDirectory + "Emperor.exe";
+					// As a last resort, check if the game's data files are in the same folder as this program.
+					EmperorExeLocation = AppDomain.CurrentDomain.BaseDirectory;
 				}
 				else
 				{
-					MessageBox.Show("Emperor.exe does not exist in either the selected location or either of the automatically scanned locations. " +
-						"Please ensure that you have either selected the correct place, placed this program in the correct place or " +
-						"placed the correct files in the \"base_files\" folder.");
+					MessageBox.Show("Emperor.exe does not exist in either the selected location or either of the automatically scanned locations.\n" +
+						"Please ensure that you have done one of the following:\n" +
+						"- Selected the correct location using the \"Select Emperor.exe\" button,\n" +
+						"- Placed this program in the folder you installed Emperor, or\n" +
+						"- Placed the correct files in the \"base_files\" folder.");
 					return;
 				}
 			}
@@ -117,6 +120,10 @@ namespace Emperor.non_UI_code
 				if (FixWindowed)
 				{
 					EmperorWindowFix._hexEditWindowFix(exeAttributes, ref emperorExeData);
+				}
+				if (PatchEngText)
+				{
+					EmperorEngTextEdit._EditResolutionString(EmperorExeLocation, patchedFilesFolder, exeAttributes, ResWidth, ResHeight);
 				}
 				if (ResizeImages)
 				{

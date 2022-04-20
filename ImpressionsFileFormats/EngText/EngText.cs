@@ -65,6 +65,7 @@ namespace ImpressionsFileFormats.EngText
 
 							if (!wasSuccessful)
 							{
+								// Since the last string reader run encountered an error, cancel reading the remaining strings.
 								Messages = messagesSb.ToString();
 								WasSuccessful = false;
 								return;
@@ -122,9 +123,13 @@ namespace ImpressionsFileFormats.EngText
 
 	public enum CharEncodingTables : byte
 	{
-		Win1252 = 1,	// West European languages
-		Win1250 = 2,	// Polish
-		Win1251 = 3,	// Russian
-		Win0950 = 4		// Korean
+		/// <summary> West European languages </summary>
+		Win1252 = 1,
+		/// <summary> Polish </summary>
+		Win1250 = 2,
+		/// <summary> Russian </summary>
+		Win1251 = 3,
+		/// <summary> Korean </summary>
+		Win0950 = 4
 	}
 }

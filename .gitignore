@@ -1,5 +1,7 @@
 *.7z
+*.dll
 *.exe
+*.eng
 *.jpg
 *.pdb
 /.idea/.idea.impressions-resolution-customiser/.idea/workspace.xml

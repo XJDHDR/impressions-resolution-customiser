@@ -87,11 +87,13 @@ namespace Emperor
 			else
 			{
 				bool fixWindowed = ApplyWindowFix.IsChecked ?? false;
+				// TODO: Add GUI option for this
+				bool patchEngTxt = true;
 				bool resizeImages = ResizeImages.IsChecked ?? false;
 				bool stretchImages = StretchImages.IsChecked ?? false;
 				bool increaseSpriteLimit = IncreaseSpriteLimits.IsChecked ?? false;
 				EmperorMakeChanges._ProcessEmperorExe(emperorExePath, Convert.ToUInt16(resWidthPreTests),
-					Convert.ToUInt16(resHeightPreTests), fixWindowed, resizeImages, stretchImages, increaseSpriteLimit);
+					Convert.ToUInt16(resHeightPreTests), fixWindowed, patchEngTxt, resizeImages, stretchImages, increaseSpriteLimit);
 			}
 			exeCreationBusy = false;
 		}
@@ -111,7 +113,7 @@ namespace Emperor
 			};
 			if (openFileDialog.ShowDialog() == true)
 			{
-				emperorExePath = openFileDialog.FileName;
+				emperorExePath = openFileDialog.FileName.Replace(openFileDialog.SafeFileName, "");
 			}
 		}
 

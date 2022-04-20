@@ -37,7 +37,7 @@ namespace Emperor.non_UI_code
 		internal static void _CreateResizedImages(string EmperorExeLocation, ushort ResWidth, ushort ResHeight,
 			ushort ViewportWidth, ushort ViewportHeight, bool StretchImages, string PatchedFilesFolder)
 		{
-			string emperorDataFilesFolderLocation = EmperorExeLocation.Remove(EmperorExeLocation.Length - 11) + @"DATA\";
+			string emperorDataFilesFolderLocation = EmperorExeLocation + "DATA/";
 			_fillImageArrays(out string[] imagesToResize);
 			_resizeCentredImages(emperorDataFilesFolderLocation, imagesToResize, ResWidth, ResHeight, ViewportWidth, ViewportHeight,
 				StretchImages, PatchedFilesFolder);
