@@ -11,7 +11,7 @@ using System.Text;
 
 namespace ImpressionsFileFormats.EngText {
 	/// <summary>
-	/// Storage class for <see cref="EngTextReaderWriter"/> header data.
+	/// Storage class for <see cref="EngText"/> header data.
 	/// </summary>
 	public struct EngTextHeader
 	{
@@ -21,7 +21,7 @@ namespace ImpressionsFileFormats.EngText {
 		public readonly byte[] FileSignature;
 
 		/// <summary>
-		/// Number of in-use <see cref="EngTextGroupIndex"/>s in the file.
+		/// Number of in-use <see cref="EngTextGroupIndex"/>es in the file.
 		/// </summary>
 		public int GroupCount;
 
@@ -38,7 +38,7 @@ namespace ImpressionsFileFormats.EngText {
 		/// <summary>
 		/// False if the file is in the old format used by Caesar 3 and Pharaoh.
 		/// True if it is in the new format used by Zeus and Emperor.
-		/// This data is not part of the EngText specification. It is to assist with reading & writing the string groups.
+		/// Note that this data is not part of the EngText specification. It is to assist with reading & writing the string groups.
 		/// </summary>
 		public readonly bool IsNewFileFormat;
 
@@ -108,6 +108,7 @@ namespace ImpressionsFileFormats.EngText {
 						return;
 					}
 
+					// ReSharper disable once CommentTypo
 					// This is a C3 Signature. Create a comparison array which says: "C3 textfile.<NULL><NULL><NULL><NULL>"
 					byte[] caesar3Signature = {
 						0x43, 0x33, 0x20, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65, 0x2E, 0x00, 0x00, 0x00, 0x00
@@ -133,6 +134,7 @@ namespace ImpressionsFileFormats.EngText {
 						return;
 					}
 
+					// ReSharper disable once CommentTypo
 					// This is a Pharaoh Signature. Create a comparison array which says: "Pharaoh textfile"
 					byte[] pharaohSignature = {
 						0x50, 0x68, 0x61, 0x72, 0x61, 0x6F, 0x68, 0x20, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65
@@ -158,6 +160,7 @@ namespace ImpressionsFileFormats.EngText {
 						return;
 					}
 
+					// ReSharper disable once CommentTypo
 					// This is a Zeus Signature. Create a comparison array which says: "Zeus textfile.<NULL><NULL>"
 					byte[] zeusSignature = {
 						0x5A, 0x65, 0x75, 0x73, 0x0, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65, 0x2E, 0x00, 0x00
@@ -183,6 +186,7 @@ namespace ImpressionsFileFormats.EngText {
 						return;
 					}
 
+					// ReSharper disable once CommentTypo
 					// This is a Emperor Signature. Create a comparison array which says: "Emperor textfile"
 					byte[] emperorSignature = {
 						0x45, 0x6D, 0x70, 0x65, 0x72, 0x6F, 0x72, 0x20, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65

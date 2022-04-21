@@ -11,7 +11,7 @@ using System.IO;
 namespace ImpressionsFileFormats.EngText {
 
 	/// <summary>
-	/// Storage class for <see cref="EngTextReaderWriter"/> group data.
+	/// Storage class for <see cref="EngText"/> group data.
 	/// </summary>
 	public struct EngTextGroupIndex
 	{
@@ -32,7 +32,7 @@ namespace ImpressionsFileFormats.EngText {
 		/// Note: This data is not part of the EngText specification. It is used to indicate how much each
 		/// group's <see cref="StringDataOffset"/> needs to be adjusted when writing the group.
 		/// </summary>
-		public uint ExcessNullsRead;
+		public int ExcessNullsRead;
 
 
 		public EngTextGroupIndex(BinaryReader BinaryReader)

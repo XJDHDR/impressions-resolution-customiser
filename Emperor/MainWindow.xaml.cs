@@ -87,8 +87,7 @@ namespace Emperor
 			else
 			{
 				bool fixWindowed = ApplyWindowFix.IsChecked ?? false;
-				// TODO: Add GUI option for this
-				bool patchEngTxt = true;
+				bool patchEngTxt = PatchEngText.IsChecked ?? false;
 				bool resizeImages = ResizeImages.IsChecked ?? false;
 				bool stretchImages = StretchImages.IsChecked ?? false;
 				bool increaseSpriteLimit = IncreaseSpriteLimits.IsChecked ?? false;
@@ -190,6 +189,21 @@ namespace Emperor
 			string[] messageLines = {
 				"Apply Windowed Mode Fixes:",
 				"This tickbox tells this program to fix a bug in Emperor which means that the game can't be switched into windowed mode.",
+			};
+			MessageBox.Show(string.Join(Environment.NewLine, messageLines));
+		}
+
+		private void PatchEngText_Help_Click(object Sender, RoutedEventArgs EventArgs)
+		{
+			string[] messageLines = {
+				"Patch EmperorText.eng:",
+				"The game populates the Display Settings menu using strings from EmperorText.eng.",
+				"By default, the string for the modified resolution option says \"1024 x 768 resolution\" and the menu option will continue " +
+				"saying this even after the EXE has been patched to use a different resolution. When this option is ticked, the string read from " +
+				"this file will be modified to instead identify the setting as the patched resolution (e.g. it will say \"1920 x 1080 resolution\" " +
+				"if you typed in those numbers).",
+				"To use this option, you need to have a copy of \"EmperorText.eng\" in the same folder as the \"Emperor.exe\" file " +
+				"you selected for patching."
 			};
 			MessageBox.Show(string.Join(Environment.NewLine, messageLines));
 		}

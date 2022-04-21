@@ -28,7 +28,7 @@ namespace Emperor.non_UI_code
 		/// <param name="EmperorExeData">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
 		/// <param name="ViewportWidth">The width of the city viewport calculated by the resolution editing code.</param>
 		/// <param name="ViewportHeight">The height of the city viewport calculated by the resolution editing code.</param>
-		internal static void _hexEditExeResVals(ushort ResWidth, ushort ResHeight, ExeAttributes ExeAttributes,
+		internal static void _hexEditExeResVals(ushort ResWidth, ushort ResHeight, in ExeAttributes ExeAttributes,
 			ref byte[] EmperorExeData, out ushort ViewportWidth, out ushort ViewportHeight)
 		{
 			ViewportWidth = 0;

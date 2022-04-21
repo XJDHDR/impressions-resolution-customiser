@@ -11,14 +11,14 @@ using System.Text;
 
 namespace ImpressionsFileFormats.EngText
 {
-	public struct EngTextGroupStrings
+	public struct EngTextStringTable
 	{
 		/// <summary>
 		/// The strings stored in the likewise indexed <see cref="EngTextGroupIndex"/>.
 		/// </summary>
-		public string[] GroupStrings;
+		public string[] StringsInGroup;
 
-		public EngTextGroupStrings(BinaryReader BinaryReader, StringBuilder Messages, int NextGroupOffset, in string[] EmptyArray,
+		public EngTextStringTable(BinaryReader BinaryReader, StringBuilder Messages, int NextGroupOffset, in string[] EmptyArray,
 			ref EngTextHeader Header, ref EngTextGroupIndex GroupIndex, ref int NumStringsRead, ref int NumWordsRead,
 			out bool WasSuccessful)
 		{
@@ -28,7 +28,7 @@ namespace ImpressionsFileFormats.EngText
 			{
 				case 0:
 					// There are no strings in this group. Therefore, use the provided 0 length array and immediately stop.
-					GroupStrings = EmptyArray;
+					StringsInGroup = EmptyArray;
 					WasSuccessful = true;
 					return;
 
@@ -80,7 +80,7 @@ namespace ImpressionsFileFormats.EngText
 						Messages.Append("This indicates a corrupt EngText file and reading can not continue.\n\n");
 					}
 
-					GroupStrings = tempGroupStringsContainer.ToArray();
+					StringsInGroup = tempGroupStringsContainer.ToArray();
 					WasSuccessful = false;
 					return;
 				}
@@ -97,12 +97,12 @@ namespace ImpressionsFileFormats.EngText
 				}
 			}
 
-			GroupStrings = tempGroupStringsContainer.ToArray();
+			StringsInGroup = tempGroupStringsContainer.ToArray();
 			WasSuccessful = true;
 		}
 
 		private static void readStringUntilNullEncountered(BinaryReader BinaryReader, ref EngTextHeader Header,
-			ref int NumStringsRead, ref int NumWordsRead, ref uint ExcessNullsRead,
+			ref int NumStringsRead, ref int NumWordsRead, ref int ExcessNullsRead,
 			out string ReadString)
 		{
 			StringBuilder stringBuilder = new StringBuilder();
@@ -111,6 +111,12 @@ namespace ImpressionsFileFormats.EngText
 
 			for (int i = 0; i < int.MaxValue; ++i)
 			{
+				// Immediately abort if the end of the stream has been encountered
+				if (BinaryReader.BaseStream.Position >= BinaryReader.BaseStream.Length)
+				{
+					break;
+				}
+
 				byte[] readByte = BinaryReader.ReadBytes(1);
 
 				if (haveReachedNullCharacters)
@@ -122,7 +128,7 @@ namespace ImpressionsFileFormats.EngText
 						break;
 					}
 
-					// If there are excess NULLs, count the number so that the Group Index values can be adjusted.
+					// If there is more than 1 NULL, count the number so that the Group Index values can be adjusted.
 					++ExcessNullsRead;
 				}
 				else

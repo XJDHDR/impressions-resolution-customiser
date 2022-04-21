@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EngText\EngText.cs" />
-    <Compile Include="EngText\EngTextGroupStrings.cs" />
+    <Compile Include="EngText\EngTextStringTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EngText\EngTextGroupIndex.cs" />
     <Compile Include="EngText\EngTextHeader.cs" />

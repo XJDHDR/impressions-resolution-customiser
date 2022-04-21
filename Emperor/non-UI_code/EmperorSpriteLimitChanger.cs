@@ -17,7 +17,7 @@ namespace Emperor.non_UI_code
 		/// </summary>
 		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
 		/// <param name="EmperorExeData">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
-		internal static void _MakeChanges(ExeAttributes ExeAttributes, ref byte[] EmperorExeData)
+		internal static void _MakeChanges(in ExeAttributes ExeAttributes, ref byte[] EmperorExeData)
 		{
 			LimitOffsets limitOffsets = new LimitOffsets(ExeAttributes, out bool wasSuccessful);
 

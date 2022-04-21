@@ -18,11 +18,23 @@ namespace Emperor.non_UI_code
 	/// <summary>
 	/// Struct that specifies various details about the Emperor.exe given to the program.
 	/// </summary>
-	internal struct ExeAttributes
+	internal readonly struct ExeAttributes
 	{
-		internal ExeLangAndDistrib _SelectedExeLangAndDistrib;
-		internal bool _IsDiscVersion;
-		internal CharEncodingTables _CharEncoding;
+		internal readonly ExeLangAndDistrib _SelectedExeLangAndDistrib;
+		internal readonly bool _IsDiscVersion;
+		internal readonly CharEncodingTables _CharEncoding;
+		internal readonly int _EngTextDefaultStringCount;
+		internal readonly int _EngTextDefaultWordCount;
+
+		internal ExeAttributes(ExeLangAndDistrib ExeLangAndDistrib, bool IsDiscVersion, CharEncodingTables CharEncoding,
+			int DefaultStringCount, int DefaultWordCount)
+		{
+		_SelectedExeLangAndDistrib = ExeLangAndDistrib;
+		_IsDiscVersion = IsDiscVersion;
+		_CharEncoding = CharEncoding;
+		_EngTextDefaultStringCount = DefaultStringCount;
+		_EngTextDefaultWordCount = DefaultWordCount;
+		}
 	}
 
 	/// <summary>
@@ -67,11 +79,13 @@ namespace Emperor.non_UI_code
 				// English GOG version
 				case 0x8bc98c83:
 					ExeAttributes = new ExeAttributes
-					{
-						_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogEnglish,
-						_IsDiscVersion = false,
-						_CharEncoding = CharEncodingTables.Win1252
-					};
+					(
+						ExeLangAndDistrib.GogEnglish,
+						false,
+						CharEncodingTables.Win1252,
+						7240,
+						33574
+					);
 					return true;
 
 				/*// English CD version
@@ -80,7 +94,9 @@ namespace Emperor.non_UI_code
 					{
 						SelectedExeLangAndDistrib = ExeLangAndDistrib.CD_English,
 						IsDiscVersion = true,
-						_CharEncoding = CharEncodingTables.Win1252
+						_CharEncoding = CharEncodingTables.Win1252,
+						_EngTextDefaultStringCount = ??,
+						_EngTextDefaultWordCount = ??
 					};
 					return true;*/		// Comment this out until CD version is working
 
@@ -89,18 +105,20 @@ namespace Emperor.non_UI_code
 					string[] messageLines = {
 						"Emperor.exe was not recognised. Only the following unmodified distributions and languages are currently supported:",
 						"- English GOG version",
-						//,"- English CD version",	// Comment this out until CD version works
+						//,"- English CD version",	// TODO: Comment this out until CD version works
 						"",
 						"If you are using one of the listed versions, please ensure that the EXE has not been modified.",
 						"If you are not, please do request that support be added, especially if you can provide info on how I can get a copy of your version."
 					};
 					MessageBox.Show(string.Join(Environment.NewLine, messageLines));
 					ExeAttributes = new ExeAttributes
-					{
-						_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised,
-						_IsDiscVersion = false,
-						_CharEncoding = CharEncodingTables.Win1252
-					};
+					(
+						ExeLangAndDistrib.NotRecognised,
+						false,
+						CharEncodingTables.Win1252,
+						0,
+						0
+					);
 					return false;
 			}
 		}

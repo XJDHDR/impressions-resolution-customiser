@@ -4,6 +4,8 @@
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+// ReSharper disable HeuristicUnreachableCode
 
 using System;
 using System.IO;
@@ -86,44 +88,57 @@ namespace Emperor.non_UI_code
 				return;
 			}
 
-#if !DEBUG
-			byte[] classQN = { 69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99,
-				51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
-			byte[] methodQN = { 95, 67, 104, 101, 99, 107 };
-			Type _type_ = Type.GetType(Encoding.ASCII.GetString(classQN));
-			if (_type_ != null)
+			// ReSharper disable RedundantAssignment
+			bool shouldRun = true;
+			#if DEBUG
+			shouldRun = false;
+			#endif
+
+			if (shouldRun)
 			{
-				try
+				byte[] classQn =
 				{
-					MethodInfo methodInfo = _type_.GetMethod(Encoding.ASCII.GetString(methodQN), BindingFlags.DeclaredOnly |
-						BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
-					methodInfo.Invoke(null, new object[] { });
+					69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114,
+					99,
+					51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121
+				};
+				byte[] methodQn = {95, 67, 104, 101, 99, 107};
+				Type type = Type.GetType(Encoding.ASCII.GetString(classQn));
+				if (type != null)
+				{
+					try
+					{
+						MethodInfo methodInfo = type.GetMethod(Encoding.ASCII.GetString(methodQn),
+							BindingFlags.DeclaredOnly |
+							BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
+						methodInfo.Invoke(null, new object[] { });
+					}
+					catch (Exception)
+					{
+						Application.Current.Shutdown();
+						return;
+					}
 				}
-				catch (Exception)
+				else
 				{
 					Application.Current.Shutdown();
 					return;
 				}
 			}
-			else
-			{
-				Application.Current.Shutdown();
-				return;
-			}
-#endif
 
 			if (EmperorExeDefinitions._GetAndCheckExeChecksum(EmperorExeLocation, out byte[] emperorExeData, out ExeAttributes exeAttributes))
 			{
-				EmperorResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, exeAttributes, ref emperorExeData,
+				EmperorResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, in exeAttributes, ref emperorExeData,
 					out ushort viewportWidth, out ushort viewportHeight);
 
 				if (FixWindowed)
 				{
-					EmperorWindowFix._hexEditWindowFix(exeAttributes, ref emperorExeData);
+					EmperorWindowFix._hexEditWindowFix(in exeAttributes, ref emperorExeData);
 				}
 				if (PatchEngText)
 				{
-					EmperorEngTextEdit._EditResolutionString(EmperorExeLocation, patchedFilesFolder, exeAttributes, ResWidth, ResHeight);
+					EmperorEngTextEdit._EditResolutionString(EmperorExeLocation, patchedFilesFolder, ResWidth, ResHeight,
+						in exeAttributes);
 				}
 				if (ResizeImages)
 				{
@@ -132,7 +147,7 @@ namespace Emperor.non_UI_code
 				}
 				if (IncreaseSpriteLimit)
 				{
-					EmperorSpriteLimitChanger._MakeChanges(exeAttributes, ref emperorExeData);
+					EmperorSpriteLimitChanger._MakeChanges(in exeAttributes, ref emperorExeData);
 				}
 
 				File.WriteAllBytes(patchedFilesFolder + "/Emperor.exe", emperorExeData);
