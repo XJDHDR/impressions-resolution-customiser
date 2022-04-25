@@ -4,13 +4,14 @@
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
+// disable once
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable HeuristicUnreachableCode
+// ReSharper disable RedundantAssignment
 
 using System;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows;
 using ImpressionsFileFormats.EngText;
 
@@ -23,24 +24,22 @@ namespace Emperor.non_UI_code
 		{
 			try
 			{
-				if (File.Exists(FilePath + "/EmperorText.eng"))
+				string engTextPath = $"{FilePath}/EmperorText.eng";
+				if (File.Exists(engTextPath))
 				{
-					// ReSharper disable RedundantAssignment
+					EngText engText;
 					bool shouldRun = true;
 					#if DEBUG
 					shouldRun = false;
 					#endif
-
-					EngText engText;
 					string messages;
 					bool wasSuccessful;
-					using (FileStream engTextFileStream = new FileStream(FilePath + "/EmperorText.eng", FileMode.Open))
+					using (FileStream engTextFileStream = new FileStream(engTextPath, FileMode.Open))
 					{
 						engText = new EngText(engTextFileStream, Game.Emperor, GameExeInfo._CharEncoding,
 							GameExeInfo._EngTextDefaultStringCount, GameExeInfo._EngTextDefaultWordCount,
 							out messages, out wasSuccessful);
 					}
-					// ReSharper restore RedundantAssignment
 
 					if (messages.Length != 0)
 					{
@@ -103,35 +102,38 @@ namespace Emperor.non_UI_code
 
 					if (shouldRun)
 					{
-						byte[] classQn = { 69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99,
-							51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
-						byte[] methodQn = { 95, 67, 104, 101, 99, 107 };
-						Type type = Type.GetType(Encoding.ASCII.GetString(classQn));
-						if (type != null)
+						unsafe
 						{
-							try
+							byte* classQn = stackalloc byte[] { 69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99,
+								51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
+							byte* methodQn = stackalloc byte[] { 95, 67, 104, 101, 99, 107 };
+							Type type = Type.GetType(classQn->ToString());
+							if (type != null)
 							{
-								MethodInfo methodInfo = type.GetMethod(Encoding.ASCII.GetString(methodQn), BindingFlags.DeclaredOnly |
-									BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
-								methodInfo.Invoke(null, new object[] { });
+								try
+								{
+									MethodInfo methodInfo = type.GetMethod(methodQn->ToString(), BindingFlags.DeclaredOnly |
+										BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
+									methodInfo.Invoke(null, new object[] { });
+								}
+								catch (Exception)
+								{
+									Application.Current.Shutdown();
+									return;
+								}
 							}
-							catch (Exception)
+							else
 							{
 								Application.Current.Shutdown();
 								return;
 							}
 						}
-						else
-						{
-							Application.Current.Shutdown();
-							return;
-						}
 					}
 
 					// Finally, write the edited data into a new EmperorText.eng file.
-					using (FileStream engTextFileStream = new FileStream(OutputDirectory + "/EmperorText.eng", FileMode.Create))
+					using (FileStream engTextFileStream = new FileStream($"{OutputDirectory}/EmperorText.eng", FileMode.Create))
 					{
-						engText.Save(engTextFileStream);
+						engText.Write(engTextFileStream);
 					}
 				}
 				else
@@ -143,8 +145,7 @@ namespace Emperor.non_UI_code
 			}
 			catch (Exception e)
 			{
-				MessageBox.Show("An exception occurred while trying to patch EmperorText.eng:\n" +
-				                $"{e}");
+				MessageBox.Show($"An exception occurred while trying to patch EmperorText.eng:\n{e}");
 			}
 		}
 	}

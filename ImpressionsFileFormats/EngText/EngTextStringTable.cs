@@ -11,12 +11,12 @@ using System.Text;
 
 namespace ImpressionsFileFormats.EngText
 {
-	public struct EngTextStringTable
+	public readonly struct EngTextStringTable
 	{
 		/// <summary>
 		/// The strings stored in the likewise indexed <see cref="EngTextGroupIndex"/>.
 		/// </summary>
-		public string[] StringsInGroup;
+		public readonly string[] StringsInGroup;
 
 		public EngTextStringTable(BinaryReader BinaryReader, StringBuilder Messages, int NextGroupOffset, in string[] EmptyArray,
 			ref EngTextHeader Header, ref EngTextGroupIndex GroupIndex, ref int NumStringsRead, ref int NumWordsRead,
@@ -46,8 +46,8 @@ namespace ImpressionsFileFormats.EngText
 			}
 
 			int numberOfStringsInGroup = Header.IsNewFileFormat ?
-				GroupIndex.StringCountOrIsGroupUsed :				// If new format, Index has number of strings in group.
-				int.MaxValue;										// If old format, just read strings until next offset.
+				GroupIndex.StringCountOrIsGroupUsed :				// If new format, the Index for this group tells us the number of strings present.
+				int.MaxValue;										// If old format, just read strings until next offset is encountered.
 
 			for (int i = 0; i < numberOfStringsInGroup; ++i)
 			{

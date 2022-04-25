@@ -25,7 +25,7 @@ namespace ImpressionsFileFormats.EngText {
 		/// If the game is "Caesar 3" or "Pharaoh", this will be 0 if the group is unused and 1 if it is used.
 		/// If the game is "Zeus" or "Emperor", this will be equal to the number of strings in the group.
 		/// </summary>
-		public int StringCountOrIsGroupUsed;
+		public readonly int StringCountOrIsGroupUsed;
 
 		/// <summary>
 		/// Records the number of excess NULLs encountered while reading this group's strings.

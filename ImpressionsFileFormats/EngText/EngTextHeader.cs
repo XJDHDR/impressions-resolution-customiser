@@ -23,7 +23,7 @@ namespace ImpressionsFileFormats.EngText {
 		/// <summary>
 		/// Number of in-use <see cref="EngTextGroupIndex"/>es in the file.
 		/// </summary>
-		public int GroupCount;
+		public readonly int GroupCount;
 
 		/// <summary>
 		/// Number of individual strings in the file.
@@ -46,7 +46,7 @@ namespace ImpressionsFileFormats.EngText {
 		/// The <see cref="Encoding"/> used for the strings in this EngText file.
 		/// Note that this data is not part of the Eng Text specification. It is here to assist with reading & writing the strings.
 		/// </summary>
-		public Encoding StringCharEncoding;
+		public readonly Encoding StringCharEncoding;
 
 
 		/// <summary>
@@ -108,19 +108,25 @@ namespace ImpressionsFileFormats.EngText {
 						return;
 					}
 
-					// ReSharper disable once CommentTypo
-					// This is a C3 Signature. Create a comparison array which says: "C3 textfile.<NULL><NULL><NULL><NULL>"
-					byte[] caesar3Signature = {
-						0x43, 0x33, 0x20, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65, 0x2E, 0x00, 0x00, 0x00, 0x00
-					};
-
-					// Check if the arrays are equal.
-					for (int i = 0; i < FileSignature.Length; ++i)
+					unsafe
 					{
-						if (FileSignature[i] != caesar3Signature[i])
+						// ReSharper disable once CommentTypo
+						// This is a C3 Signature. Create a comparison array which says: "C3 textfile.<NULL><NULL><NULL><NULL>"
+						byte* caesar3Signature = stackalloc byte[] {
+							0x43, 0x33, 0x20, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65, 0x2E, 0x00, 0x00, 0x00, 0x00
+						};
+						//byte[] caesar3Signature = {
+						//	0x43, 0x33, 0x20, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65, 0x2E, 0x00, 0x00, 0x00, 0x00
+						//};
+
+						// Check if the arrays are equal.
+						for (int i = 0; i < FileSignature.Length; ++i)
 						{
-							fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
-							return;
+							if (FileSignature[i] != caesar3Signature[i])
+							{
+								fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
+								return;
+							}
 						}
 					}
 					IsNewFileFormat = false;
@@ -134,21 +140,26 @@ namespace ImpressionsFileFormats.EngText {
 						return;
 					}
 
-					// ReSharper disable once CommentTypo
-					// This is a Pharaoh Signature. Create a comparison array which says: "Pharaoh textfile"
-					byte[] pharaohSignature = {
-						0x50, 0x68, 0x61, 0x72, 0x61, 0x6F, 0x68, 0x20, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65
-					};
-
-					// Check if the arrays are equal.
-					for (int i = 0; i < FileSignature.Length; ++i)
+					unsafe
 					{
-						if (FileSignature[i] != pharaohSignature[i])
+						// ReSharper disable once CommentTypo
+						// This is a Pharaoh Signature. Create a comparison array which says: "Pharaoh textfile"
+						byte* pharaohSignature = stackalloc byte[] {
+							0x50, 0x68, 0x61, 0x72, 0x61, 0x6F, 0x68, 0x20, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65
+						};
+
+						// Check if the arrays are equal.
+						for (int i = 0; i < FileSignature.Length; ++i)
 						{
-							fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
-							return;
+							if (FileSignature[i] != pharaohSignature[i])
+							{
+								fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat,
+									out WasSuccessful);
+								return;
+							}
 						}
 					}
+
 					IsNewFileFormat = false;
 					break;
 
@@ -160,19 +171,22 @@ namespace ImpressionsFileFormats.EngText {
 						return;
 					}
 
-					// ReSharper disable once CommentTypo
-					// This is a Zeus Signature. Create a comparison array which says: "Zeus textfile.<NULL><NULL>"
-					byte[] zeusSignature = {
-						0x5A, 0x65, 0x75, 0x73, 0x0, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65, 0x2E, 0x00, 0x00
-					};
-
-					// Check if the arrays are equal.
-					for (int i = 0; i < FileSignature.Length; ++i)
+					unsafe
 					{
-						if (FileSignature[i] != zeusSignature[i])
+						// ReSharper disable once CommentTypo
+						// This is a Zeus Signature. Create a comparison array which says: "Zeus textfile.<NULL><NULL>"
+						byte* zeusSignature = stackalloc byte[] {
+							0x5A, 0x65, 0x75, 0x73, 0x0, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65, 0x2E, 0x00, 0x00
+						};
+
+						// Check if the arrays are equal.
+						for (int i = 0; i < FileSignature.Length; ++i)
 						{
-							fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
-							return;
+							if (FileSignature[i] != zeusSignature[i])
+							{
+								fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
+								return;
+							}
 						}
 					}
 					IsNewFileFormat = true;
@@ -186,19 +200,22 @@ namespace ImpressionsFileFormats.EngText {
 						return;
 					}
 
-					// ReSharper disable once CommentTypo
-					// This is a Emperor Signature. Create a comparison array which says: "Emperor textfile"
-					byte[] emperorSignature = {
-						0x45, 0x6D, 0x70, 0x65, 0x72, 0x6F, 0x72, 0x20, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65
-					};
-
-					// Check if the arrays are equal.
-					for (int i = 0; i < FileSignature.Length; ++i)
+					unsafe
 					{
-						if (FileSignature[i] != emperorSignature[i])
+						// ReSharper disable once CommentTypo
+						// This is a Emperor Signature. Create a comparison array which says: "Emperor textfile"
+						byte* emperorSignature = stackalloc byte[] {
+							0x45, 0x6D, 0x70, 0x65, 0x72, 0x6F, 0x72, 0x20, 0x74, 0x65, 0x78, 0x74, 0x66, 0x69, 0x6C, 0x65
+						};
+
+						// Check if the arrays are equal.
+						for (int i = 0; i < FileSignature.Length; ++i)
 						{
-							fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
-							return;
+							if (FileSignature[i] != emperorSignature[i])
+							{
+								fileSignatureErrorMessageCreation(2, ref Messages, out IsNewFileFormat, out WasSuccessful);
+								return;
+							}
 						}
 					}
 					IsNewFileFormat = true;
