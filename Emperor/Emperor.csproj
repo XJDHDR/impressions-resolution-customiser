@@ -78,11 +78,12 @@
     <Compile Include="non-UI_code\Crc32\SliceBy16.cs" />
     <Compile Include="non-UI_code\EmperorSpriteLimitChanger.cs" />
     <Compile Include="non-UI_code\EmperorEngTextEdit.cs" />
-    <Compile Include="non-UI_code\Emperor_ExeDefinitions.cs" />
+    <Compile Include="non-UI_code\EmperorResHexOffsetTable.cs" />
     <Compile Include="non-UI_code\Emperor_MakeChanges.cs" />
     <Compile Include="non-UI_code\Emperor_ResizeImages.cs" />
     <Compile Include="non-UI_code\Emperor_ResolutionEdits.cs" />
     <Compile Include="non-UI_code\Emperor_WindowFix.cs" />
+    <Compile Include="non-UI_code\EmperorExeAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

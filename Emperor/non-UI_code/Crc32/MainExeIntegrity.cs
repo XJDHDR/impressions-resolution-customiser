@@ -1,6 +1,8 @@
 // This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser
 //
+// ReSharper disable UnusedType.Global
+// ReSharper disable UnusedMember.Global
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
@@ -17,7 +19,7 @@ namespace Emperor.non_UI_code.Crc32
 		private const int CHECKSUM_ADDRESS = 0x1000;
 		private const int IGNORE_LENGTH = 1;
 
-		private static byte[] mainExeData = new byte[] {};
+		private static byte[] mainExeData = {};
 
 		// Please note that, as per the repo's license noted above, you are not permitted to modify anything in this class
 		// in any way that violates the terms and conditions of the license.

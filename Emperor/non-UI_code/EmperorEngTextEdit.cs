@@ -20,7 +20,7 @@ namespace Emperor.non_UI_code
 	internal static class EmperorEngTextEdit
 	{
 		internal static void _EditResolutionString(string FilePath, string OutputDirectory, ushort ResWidth, ushort ResHeight,
-			in ExeAttributes GameExeInfo)
+			in EmperorExeAttributes EmperorExeAttributes)
 		{
 			try
 			{
@@ -36,8 +36,8 @@ namespace Emperor.non_UI_code
 					bool wasSuccessful;
 					using (FileStream engTextFileStream = new FileStream(engTextPath, FileMode.Open))
 					{
-						engText = new EngText(engTextFileStream, Game.Emperor, GameExeInfo._CharEncoding,
-							GameExeInfo._EngTextDefaultStringCount, GameExeInfo._EngTextDefaultWordCount,
+						engText = new EngText(engTextFileStream, Game.Emperor, EmperorExeAttributes._CharEncoding,
+							EmperorExeAttributes._EngTextDefaultStringCount, EmperorExeAttributes._EngTextDefaultWordCount,
 							out messages, out wasSuccessful);
 					}
 
@@ -63,25 +63,23 @@ namespace Emperor.non_UI_code
 							break;
 						}
 
-						if (engText.StringGroupIndexes[i].ExcessNullsRead != 0)
+						if (engText.StringGroupIndexes[i].ExcessNullsRead == 0)
+							continue;
+
+						// If there are excess NULLs, adjust the offset of every group in use backwards by the number of NULLs removed.
+						for (int j = i; j < 1000; ++j)
 						{
-							// If there are excess NULLs, adjust the offset of every group in use backwards by the number of NULLs removed.
-							for (int j = i; j < 1000; ++j)
-							{
-								if (engText.StringGroupIndexes[j].StringCountOrIsGroupUsed != 0)
-								{
-									if (j >= engText.FileHeader.GroupCount)
-									{
-										break;
-									}
+							if (engText.StringGroupIndexes[j].StringCountOrIsGroupUsed == 0)
+								continue;
 
-									engText.StringGroupIndexes[j].StringDataOffset -= engText.StringGroupIndexes[i].ExcessNullsRead;
-								}
-							}
+							if (j >= engText.FileHeader.GroupCount)
+								break;
 
-							// Zero the Excess NULLs value, as it is no longer needed and may cause confusion.
-							engText.StringGroupIndexes[i].ExcessNullsRead = 0;
+							engText.StringGroupIndexes[j].StringDataOffset -= engText.StringGroupIndexes[i].ExcessNullsRead;
 						}
+
+						// Zero the Excess NULLs value, as it is no longer needed and may cause confusion.
+						engText.StringGroupIndexes[i].ExcessNullsRead = 0;
 					}
 
 					// Replace the resolution option's string with the new resolution values, and note the difference in lengths.
@@ -93,9 +91,7 @@ namespace Emperor.non_UI_code
 					for (int i = 43; i < 1000; ++i)
 					{
 						if (i >= engText.FileHeader.GroupCount)
-						{
 							break;
-						}
 
 						engText.StringGroupIndexes[i].StringDataOffset += stringLengthChange;
 					}

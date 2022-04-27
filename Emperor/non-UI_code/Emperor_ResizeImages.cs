@@ -1,4 +1,5 @@
 ﻿// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// ReSharper disable RedundantUsingDirective
 // https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
@@ -82,31 +83,41 @@ namespace Emperor.non_UI_code
 						"Please check if the ocean_pattern image was successfully extracted from this program's downloaded archive and is in the correct place.");
 				}
 
-#if !DEBUG
-				byte[] classQN = { 69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99,
-					51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
-				byte[] methodQN = { 95, 67, 104, 101, 99, 107 };
-				Type _type_ = Type.GetType(Encoding.ASCII.GetString(classQN));
-				if (_type_ != null)
+				#if !DEBUG
+				unsafe
 				{
-					try
+					byte* classQn = stackalloc byte[] { 69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99,
+						51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
+					byte* methodQn = stackalloc byte[] { 95, 67, 104, 101, 99, 107 };
+					Type type = Type.GetType(classQn->ToString());
+					if (type != null)
 					{
-						MethodInfo methodInfo = _type_.GetMethod(Encoding.ASCII.GetString(methodQN), BindingFlags.DeclaredOnly |
-							BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
-						methodInfo.Invoke(null, new object[] { });
+						try
+						{
+							MethodInfo methodInfo = type.GetMethod(methodQn->ToString(), BindingFlags.DeclaredOnly |
+								BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
+							if (methodInfo != null)
+								methodInfo.Invoke(null, new object[] { });
+
+							else
+							{
+								Application.Current.Shutdown();
+								return;
+							}
+						}
+						catch (Exception)
+						{
+							Application.Current.Shutdown();
+							return;
+						}
 					}
-					catch (Exception)
+					else
 					{
 						Application.Current.Shutdown();
 						return;
 					}
 				}
-				else
-				{
-					Application.Current.Shutdown();
-					return;
-				}
-#endif
+				#endif
 
 				ConcurrentBag<string> allErrorMessages = new ConcurrentBag<string>();
 				Parallel.For(0, CentredImages.Length, I =>
@@ -214,8 +225,7 @@ namespace Emperor.non_UI_code
 		/// Fills a string array with a list of the images that need to be resized.
 		/// </summary>
 		/// <param name="ImagesToResize">String array that contains a list of the images that need to be resized.</param>
-		private static void _fillImageArrays(out string[] ImagesToResize)
-		{
+		private static void _fillImageArrays(out string[] ImagesToResize) =>
 			ImagesToResize = new[]
 			{
 				"China_Defeat.jpg",
@@ -240,6 +250,5 @@ namespace Emperor.non_UI_code
 				"China_Victory.jpg",
 				"scoreb.jpg"
 			};
-		}
 	}
 }

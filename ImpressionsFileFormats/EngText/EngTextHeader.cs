@@ -26,12 +26,12 @@ namespace ImpressionsFileFormats.EngText {
 		public readonly int GroupCount;
 
 		/// <summary>
-		/// Number of individual strings in the file.
+		/// Number of individual strings in the file. Not necessarily accurate but inaccurate values are corrected by my reading code.
 		/// </summary>
 		public int StringCount;
 
 		/// <summary>
-		/// Number of individual words in the file. May be inaccurate according to bvschaik.
+		/// Number of individual words in the file. Not necessarily accurate but inaccurate values are corrected by my reading code.
 		/// </summary>
 		public int WordCount;
 
@@ -69,8 +69,8 @@ namespace ImpressionsFileFormats.EngText {
 			if (GroupCount > 1001)
 			{
 				IsNewFileFormat = false;
-				Messages.Append($"The Eng file's header indicates that it has {GroupCount.ToString()} String Groups present, " +
-				                 "which is more than the permitted count of 1001.");
+				Messages.Append($"The Eng file's header indicates that it has {GroupCount.ToString()} String Groups present, ");
+				Messages.Append("which is more than the permitted count of 1001.");
 				WasSuccessful = false;
 				StringCharEncoding = Encoding.Default;
 				return;
@@ -232,10 +232,13 @@ namespace ImpressionsFileFormats.EngText {
 		/// <summary>
 		/// Common code for creating an error message
 		/// </summary>
-		/// <param name="MessageNumber"></param>
-		/// <param name="Messages"></param>
-		/// <param name="IsNewFileFormatParam"></param>
-		/// <param name="WasSuccessful"></param>
+		/// <param name="MessageNumber">
+		///		Set to 1 to create a message about the File Signature not matching one supported by any of the games.
+		///		Set to 2 to create a message about the File Signature not matching what the current game expects.
+		/// </param>
+		/// <param name="Messages">A StringBuilder that is used to hold all error and warning messages generated.</param>
+		/// <param name="IsNewFileFormatParam">Set the IsNewFileFormat field to False.</param>
+		/// <param name="WasSuccessful">Set the WasSuccessful field to False.</param>
 		private static void fileSignatureErrorMessageCreation(byte MessageNumber, ref StringBuilder Messages, out bool IsNewFileFormatParam, out bool WasSuccessful)
 		{
 			switch (MessageNumber)

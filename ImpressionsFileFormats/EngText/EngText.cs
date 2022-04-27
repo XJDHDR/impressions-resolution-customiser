@@ -81,20 +81,28 @@ namespace ImpressionsFileFormats.EngText
 					}
 
 					// Check if the number of strings read matches the count noted in the Header. Correct if not.
-					if (numStringsRead != FileHeader.StringCount && numStringsRead != DefaultStringCount)
+					if (numStringsRead != FileHeader.StringCount)
 					{
-						messagesSb.Append($"Warning: The EngText Header says that there are {FileHeader.StringCount.ToString()} strings present, ");
-						messagesSb.Append($"but {numStringsRead} were read instead. This discrepancy has been corrected\n\n");
-						messagesSb.Append("This can be caused by modifications to the EngText file.\n\n");
+						// Is the Header's value equal to the default value for the EngText file that comes with the game? If so, don't display a message.
+						if (numStringsRead != DefaultStringCount)
+						{
+							messagesSb.Append($"Warning: The EngText Header says that there are {FileHeader.StringCount.ToString()} strings present, ");
+							messagesSb.Append($"but {numStringsRead} were read instead. This discrepancy has been corrected\n\n");
+							messagesSb.Append("This can be caused by modifications to the EngText file.\n\n");
+						}
 						FileHeader.StringCount = numStringsRead;
 					}
 
 					// Check if the number of words read matches the count noted in the Header. Correct if not.
-					if (numWordsRead != FileHeader.WordCount && numWordsRead != DefaultWordCount)
+					if (numWordsRead != FileHeader.WordCount)
 					{
-						messagesSb.Append($"Warning: The EngText Header says that there are {FileHeader.WordCount.ToString()} strings present, ");
-						messagesSb.Append($"but {numWordsRead} were read instead. This discrepancy has been corrected\n\n");
-						messagesSb.Append("This can be caused by modifications to the EngText file.\n\n");
+						// Is the Header's value equal to the default value for the EngText file that comes with the game? If so, don't display a message.
+						if (numWordsRead != DefaultWordCount)
+						{
+							messagesSb.Append($"Warning: The EngText Header says that there are {FileHeader.WordCount.ToString()} strings present, ");
+							messagesSb.Append($"but {numWordsRead} were read instead. This discrepancy has been corrected\n\n");
+							messagesSb.Append("This can be caused by modifications to the EngText file.\n\n");
+						}
 						FileHeader.WordCount = numWordsRead;
 					}
 

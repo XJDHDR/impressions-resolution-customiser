@@ -17,7 +17,7 @@ namespace Emperor
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class MainWindow
 	{
 		// Because _resHeightMult and _resWidthMult (in the EmperorResolutionEdits class) are 8 bit signed integers, they can't go higher than 127.
 		// The ExeDefinitions class caps these multipliers to a maximum of 127. The following formulae show what
@@ -35,10 +35,8 @@ namespace Emperor
 		private bool exeCreationBusy;
 		private string emperorExePath;
 
-		public MainWindow()
-		{
+		public MainWindow() =>
 			InitializeComponent();
-		}
 
 		/// <summary>
 		/// Code that runs when the "Generate EXE" button is clicked. Checks whether the two inputted resolution values are valid.
@@ -99,7 +97,7 @@ namespace Emperor
 
 		/// <summary>
 		/// Code that runs when the "Select Emperor.exe" button is clicked.
-		/// Opens a file selection dialog to allow the user to select a Emperor.exe to patch.
+		/// Opens a file selection dialog to allow the user to select an Emperor.exe to patch.
 		/// </summary>
 		private void SelectExe_Click(object Sender, RoutedEventArgs EventArgs)
 		{

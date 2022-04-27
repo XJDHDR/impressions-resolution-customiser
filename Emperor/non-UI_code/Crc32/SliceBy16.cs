@@ -22,6 +22,7 @@ namespace Emperor.non_UI_code.Crc32
 	{
 		// ==== Public methods ====
 		// ReSharper disable MemberCanBePrivate.Global
+		// ReSharper disable UnusedMember.Global
 
 		public static uint Crc32(byte[] Data) =>
 			Crc32(0, Data, Data.Length, 0);
@@ -64,6 +65,7 @@ namespace Emperor.non_UI_code.Crc32
 				}
 			}
 		}
+		// ReSharper restore UnusedMember.Global
 		// ReSharper restore MemberCanBePrivate.Global
 
 

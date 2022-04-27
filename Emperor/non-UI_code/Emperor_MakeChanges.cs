@@ -10,7 +10,6 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows;
 
 namespace Emperor.non_UI_code
@@ -24,7 +23,7 @@ namespace Emperor.non_UI_code
 		/// Checks if there is a Emperor.exe selected or available to patch, prepares the "patched_files" folder for the patched files
 		/// then calls the requested patching functions.
 		/// </summary>
-		/// <param name="EmperorExeLocation">Optionally contains the location of the Emperor.exe selected by the UI's file selection dialog.</param>
+		/// <param name="EmperorExeDirectory">Optionally contains the location of the Emperor.exe selected by the UI's file selection dialog.</param>
 		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
 		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
 		/// <param name="FixWindowed">Whether the "Apply Windowed Mode Fixes" checkbox is selected or not.</param>
@@ -32,21 +31,21 @@ namespace Emperor.non_UI_code
 		/// <param name="ResizeImages">Whether the "Resize Images" checkbox is selected or not.</param>
 		/// <param name="StretchImages">Whether the "Stretch menu images to fit window" checkbox is selected or not.</param>
 		/// <param name="IncreaseSpriteLimit">Whether the "Double Sprite Limits" checkbox is selected or not.</param>
-		internal static void _ProcessEmperorExe(string EmperorExeLocation, ushort ResWidth, ushort ResHeight,
+		internal static void _ProcessEmperorExe(string EmperorExeDirectory, ushort ResWidth, ushort ResHeight,
 			bool FixWindowed, bool PatchEngText, bool ResizeImages, bool StretchImages, bool IncreaseSpriteLimit)
 		{
-			if (!File.Exists(EmperorExeLocation + "Emperor.exe"))
+			if (!File.Exists($"{EmperorExeDirectory}Emperor.exe"))
 			{
 				// User didn't select a folder using the selection button.
-				if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "base_files/Emperor.exe"))
+				if (File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}base_files/Emperor.exe"))
 				{
 					// Check if the user has placed the game's data files in the "base_files" folder.
-					EmperorExeLocation = AppDomain.CurrentDomain.BaseDirectory + "base_files";
+					EmperorExeDirectory = $"{AppDomain.CurrentDomain.BaseDirectory}base_files";
 				}
-				else if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Emperor.exe") && (AppDomain.CurrentDomain.FriendlyName != "Emperor.exe"))
+				else if (File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}Emperor.exe") && (AppDomain.CurrentDomain.FriendlyName != "Emperor.exe"))
 				{
 					// As a last resort, check if the game's data files are in the same folder as this program.
-					EmperorExeLocation = AppDomain.CurrentDomain.BaseDirectory;
+					EmperorExeDirectory = AppDomain.CurrentDomain.BaseDirectory;
 				}
 				else
 				{
@@ -96,62 +95,63 @@ namespace Emperor.non_UI_code
 
 			if (shouldRun)
 			{
-				byte[] classQn =
+				unsafe
 				{
-					69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114,
-					99,
-					51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121
-				};
-				byte[] methodQn = {95, 67, 104, 101, 99, 107};
-				Type type = Type.GetType(Encoding.ASCII.GetString(classQn));
-				if (type != null)
-				{
-					try
+					byte* classQn = stackalloc byte[] { 69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99,
+						51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
+					byte* methodQn = stackalloc byte[] { 95, 67, 104, 101, 99, 107 };
+					Type type = Type.GetType(classQn->ToString());
+					if (type != null)
 					{
-						MethodInfo methodInfo = type.GetMethod(Encoding.ASCII.GetString(methodQn),
-							BindingFlags.DeclaredOnly |
-							BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
-						methodInfo.Invoke(null, new object[] { });
+						try
+						{
+							MethodInfo methodInfo = type.GetMethod(methodQn->ToString(), BindingFlags.DeclaredOnly |
+								BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
+							methodInfo.Invoke(null, new object[] { });
+						}
+						catch (Exception)
+						{
+							Application.Current.Shutdown();
+							return;
+						}
 					}
-					catch (Exception)
+					else
 					{
 						Application.Current.Shutdown();
 						return;
 					}
 				}
-				else
-				{
-					Application.Current.Shutdown();
-					return;
-				}
 			}
 
-			if (EmperorExeDefinitions._GetAndCheckExeChecksum(EmperorExeLocation, out byte[] emperorExeData, out ExeAttributes exeAttributes))
+			byte[] emperorExeData = File.ReadAllBytes($"{EmperorExeDirectory}/Emperor.exe");
+			EmperorExeAttributes emperorExeAttributes = new EmperorExeAttributes(emperorExeData, out bool wasSuccessful);
+
+			if (wasSuccessful)
 			{
-				EmperorResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, in exeAttributes, ref emperorExeData,
+				EmperorResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, in emperorExeAttributes, ref emperorExeData,
 					out ushort viewportWidth, out ushort viewportHeight);
 
 				if (FixWindowed)
 				{
-					EmperorWindowFix._hexEditWindowFix(in exeAttributes, ref emperorExeData);
+					EmperorWindowFix._hexEditWindowFix(in emperorExeAttributes, ref emperorExeData);
 				}
 				if (PatchEngText)
 				{
-					EmperorEngTextEdit._EditResolutionString(EmperorExeLocation, patchedFilesFolder, ResWidth, ResHeight,
-						in exeAttributes);
+					EmperorEngTextEdit._EditResolutionString(EmperorExeDirectory, patchedFilesFolder, ResWidth, ResHeight,
+						in emperorExeAttributes);
 				}
 				if (ResizeImages)
 				{
-					EmperorResizeImages._CreateResizedImages(EmperorExeLocation, ResWidth, ResHeight, viewportWidth, viewportHeight,
+					EmperorResizeImages._CreateResizedImages(EmperorExeDirectory, ResWidth, ResHeight, viewportWidth, viewportHeight,
 						StretchImages, patchedFilesFolder);
 				}
 				if (IncreaseSpriteLimit)
 				{
-					EmperorSpriteLimitChanger._MakeChanges(in exeAttributes, ref emperorExeData);
+					EmperorSpriteLimitChanger._MakeChanges(in emperorExeAttributes, ref emperorExeData);
 				}
 
-				File.WriteAllBytes(patchedFilesFolder + "/Emperor.exe", emperorExeData);
-				MessageBox.Show("Your patched Emperor.exe has been successfully created in " + patchedFilesFolder);
+				File.WriteAllBytes($"{patchedFilesFolder}/Emperor.exe", emperorExeData);
+				MessageBox.Show($"Your patched Emperor.exe has been successfully created in {patchedFilesFolder}");
 			}
 		}
 	}
