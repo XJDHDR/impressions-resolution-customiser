@@ -15,11 +15,11 @@ namespace Emperor.non_UI_code
 		/// <summary>
 		/// Used to make the required changes to the EXE.
 		/// </summary>
-		/// <param name="EmperorExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
+		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
 		/// <param name="EmperorExeData">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
-		internal static void _MakeChanges(in EmperorExeAttributes EmperorExeAttributes, ref byte[] EmperorExeData)
+		internal static void _MakeChanges(in EmperorExeAttributes ExeAttributes, ref byte[] EmperorExeData)
 		{
-			LimitOffsets limitOffsets = new LimitOffsets(EmperorExeAttributes, out bool wasSuccessful);
+			LimitOffsets limitOffsets = new LimitOffsets(ExeAttributes, out bool wasSuccessful);
 
 			if (!wasSuccessful)
 				return;
@@ -41,11 +41,11 @@ namespace Emperor.non_UI_code
 			/// <summary>
 			/// Test which version of the game is being patched and set the offset values appropriately.
 			/// </summary>
-			/// <param name="EmperorExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
+			/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
 			/// <param name="WasSuccessful">Set to True if the EXE edition was recognised. False otherwise.</param>
-			internal LimitOffsets(EmperorExeAttributes EmperorExeAttributes, out bool WasSuccessful)
+			internal LimitOffsets(EmperorExeAttributes ExeAttributes, out bool WasSuccessful)
 			{
-				switch (EmperorExeAttributes._SelectedExeLangAndDistrib)
+				switch (ExeAttributes._SelectedExeLangAndDistrib)
 				{
 					case ExeLangAndDistrib.GogEnglish:
 						_LimitOffset1 = 0x2CD20;

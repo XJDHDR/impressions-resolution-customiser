@@ -99,7 +99,7 @@ namespace ImpressionsFileFormats.EngText
 						// Is the Header's value equal to the default value for the EngText file that comes with the game? If so, don't display a message.
 						if (numWordsRead != DefaultWordCount)
 						{
-							messagesSb.Append($"Warning: The EngText Header says that there are {FileHeader.WordCount.ToString()} strings present, ");
+							messagesSb.Append($"Warning: The EngText Header says that there are {FileHeader.WordCount.ToString()} words present, ");
 							messagesSb.Append($"but {numWordsRead} were read instead. This discrepancy has been corrected\n\n");
 							messagesSb.Append("This can be caused by modifications to the EngText file.\n\n");
 						}

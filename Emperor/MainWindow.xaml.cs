@@ -8,6 +8,7 @@
 using Microsoft.Win32;
 using System;
 using System.Globalization;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using Emperor.non_UI_code;
@@ -33,7 +34,7 @@ namespace Emperor
 		private const ulong MAX_RESOLUTION_WIDTH = 20768;
 
 		private bool exeCreationBusy;
-		private string emperorExePath;
+		private string emperorExeDirectory;
 
 		public MainWindow() =>
 			InitializeComponent();
@@ -65,8 +66,8 @@ namespace Emperor
 			}
 			else if (resWidthPreTests > MAX_RESOLUTION_WIDTH)
 			{
-				MessageBox.Show($"The desired Horizontal Resolution is greater than {MAX_RESOLUTION_WIDTH.ToString()}, which is not allowed. Please type in a number " +
-				                $"which is less than {MAX_RESOLUTION_WIDTH.ToString()}.");
+				MessageBox.Show($"The desired Horizontal Resolution is greater than {MAX_RESOLUTION_WIDTH.ToString()}, which is not allowed. " +
+				                $"Please type in a number which is less than {MAX_RESOLUTION_WIDTH.ToString()}.");
 			}
 			else if (resWidthPreTests % 4 != 0)
 			{
@@ -79,8 +80,8 @@ namespace Emperor
 			}
 			else if (resHeightPreTests > MAX_RESOLUTION_HEIGHT)
 			{
-				MessageBox.Show($"The desired Vertical Resolution is greater than {MAX_RESOLUTION_HEIGHT.ToString()}, which is not allowed. Please type in a number " +
-				                $"which is less than {MAX_RESOLUTION_HEIGHT.ToString()}.");
+				MessageBox.Show($"The desired Vertical Resolution is greater than {MAX_RESOLUTION_HEIGHT.ToString()}, which is not allowed. " +
+				                $"Please type in a number which is less than {MAX_RESOLUTION_HEIGHT.ToString()}.");
 			}
 			else
 			{
@@ -89,7 +90,7 @@ namespace Emperor
 				bool resizeImages = ResizeImages.IsChecked ?? false;
 				bool stretchImages = StretchImages.IsChecked ?? false;
 				bool increaseSpriteLimit = IncreaseSpriteLimits.IsChecked ?? false;
-				EmperorMakeChanges._ProcessEmperorExe(emperorExePath, Convert.ToUInt16(resWidthPreTests),
+				EmperorMakeChanges._ProcessEmperorExe(emperorExeDirectory, Convert.ToUInt16(resWidthPreTests),
 					Convert.ToUInt16(resHeightPreTests), fixWindowed, patchEngTxt, resizeImages, stretchImages, increaseSpriteLimit);
 			}
 			exeCreationBusy = false;
@@ -110,7 +111,11 @@ namespace Emperor
 			};
 			if (openFileDialog.ShowDialog() == true)
 			{
-				emperorExePath = openFileDialog.FileName.Replace(openFileDialog.SafeFileName, "");
+				StringBuilder pathStringBuilder = new StringBuilder(openFileDialog.FileName);
+				pathStringBuilder.Replace(@"\\", "/");
+				pathStringBuilder.Replace($"{openFileDialog.SafeFileName}", "");
+				pathStringBuilder.Replace("/", "", pathStringBuilder.Length - 2, 1);
+				emperorExeDirectory = pathStringBuilder.ToString();
 			}
 		}
 
@@ -170,6 +175,7 @@ namespace Emperor
 				"",
 				"Resolution Height: This text box allows you to specify the vertical component of your desired resolution. If your screen is in landscape, " +
 				$"this is the smaller number. Note that this number must be between 600 and {MAX_RESOLUTION_HEIGHT.ToString()}, both inclusive.",
+				"",
 				"",
 				"Select Emperor.exe: This button opens a file picker that lets you specify the location of a Emperor.exe that you want to modify.",
 				"",

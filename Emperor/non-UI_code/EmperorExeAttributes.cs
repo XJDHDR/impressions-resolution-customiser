@@ -49,7 +49,7 @@ namespace Emperor.non_UI_code
 					_IsDiscVersion = false;
 					_CharEncoding = CharEncodingTables.Win1252;
 					_EngTextDefaultStringCount = 7240;
-					_EngTextDefaultWordCount = 33574;
+					_EngTextDefaultWordCount = 33816;
 					WasSuccessful = true;
 					return;
 
@@ -61,7 +61,7 @@ namespace Emperor.non_UI_code
 					_EngTextDefaultStringCount = ??;
 					_EngTextDefaultWordCount = ??;
 					WasSuccessful = true;
-					return;*/ // Comment this out until CD version is working
+					return;*/ // TODO: Comment this out until CD version is working
 
 				// Unrecognised EXE
 				default:

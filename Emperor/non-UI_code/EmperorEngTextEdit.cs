@@ -20,7 +20,7 @@ namespace Emperor.non_UI_code
 	internal static class EmperorEngTextEdit
 	{
 		internal static void _EditResolutionString(string FilePath, string OutputDirectory, ushort ResWidth, ushort ResHeight,
-			in EmperorExeAttributes EmperorExeAttributes)
+			in EmperorExeAttributes ExeAttributes)
 		{
 			try
 			{
@@ -36,8 +36,8 @@ namespace Emperor.non_UI_code
 					bool wasSuccessful;
 					using (FileStream engTextFileStream = new FileStream(engTextPath, FileMode.Open))
 					{
-						engText = new EngText(engTextFileStream, Game.Emperor, EmperorExeAttributes._CharEncoding,
-							EmperorExeAttributes._EngTextDefaultStringCount, EmperorExeAttributes._EngTextDefaultWordCount,
+						engText = new EngText(engTextFileStream, Game.Emperor, ExeAttributes._CharEncoding,
+							ExeAttributes._EngTextDefaultStringCount, ExeAttributes._EngTextDefaultWordCount,
 							out messages, out wasSuccessful);
 					}
 
@@ -66,7 +66,7 @@ namespace Emperor.non_UI_code
 						if (engText.StringGroupIndexes[i].ExcessNullsRead == 0)
 							continue;
 
-						// If there are excess NULLs, adjust the offset of every group in use backwards by the number of NULLs removed.
+						// If there are excess NULLs, adjust the offset of every subsequent group in use backwards by the number of NULLs removed.
 						for (int j = i; j < 1000; ++j)
 						{
 							if (engText.StringGroupIndexes[j].StringCountOrIsGroupUsed == 0)

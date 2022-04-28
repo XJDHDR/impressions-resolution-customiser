@@ -6,6 +6,7 @@
 //
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable HeuristicUnreachableCode
+// ReSharper disable RedundantAssignment
 
 using System;
 using System.IO;
@@ -34,7 +35,7 @@ namespace Emperor.non_UI_code
 		internal static void _ProcessEmperorExe(string EmperorExeDirectory, ushort ResWidth, ushort ResHeight,
 			bool FixWindowed, bool PatchEngText, bool ResizeImages, bool StretchImages, bool IncreaseSpriteLimit)
 		{
-			if (!File.Exists($"{EmperorExeDirectory}Emperor.exe"))
+			if (!File.Exists($"{EmperorExeDirectory}/Emperor.exe"))
 			{
 				// User didn't select a folder using the selection button.
 				if (File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}base_files/Emperor.exe"))
@@ -58,7 +59,7 @@ namespace Emperor.non_UI_code
 				}
 			}
 
-			string patchedFilesFolder = AppDomain.CurrentDomain.BaseDirectory + "patched_files";
+			string patchedFilesFolder = $"{AppDomain.CurrentDomain.BaseDirectory}patched_files";
 			try
 			{
 				if (Directory.Exists(patchedFilesFolder))
@@ -87,7 +88,6 @@ namespace Emperor.non_UI_code
 				return;
 			}
 
-			// ReSharper disable RedundantAssignment
 			bool shouldRun = true;
 			#if DEBUG
 			shouldRun = false;
@@ -142,8 +142,11 @@ namespace Emperor.non_UI_code
 				}
 				if (ResizeImages)
 				{
-					EmperorResizeImages._CreateResizedImages(EmperorExeDirectory, ResWidth, ResHeight, viewportWidth, viewportHeight,
-						StretchImages, patchedFilesFolder);
+					EmperorResizeImages resizeImages = new EmperorResizeImages(ResWidth, ResHeight, viewportWidth,
+						viewportHeight, StretchImages, EmperorExeDirectory, patchedFilesFolder, out bool jpegCodecFound);
+
+					if (jpegCodecFound)
+						resizeImages._CreateResizedImages();
 				}
 				if (IncreaseSpriteLimit)
 				{

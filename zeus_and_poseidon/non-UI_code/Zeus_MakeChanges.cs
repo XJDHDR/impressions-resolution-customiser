@@ -4,6 +4,9 @@
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+// ReSharper disable HeuristicUnreachableCode
+// ReSharper disable RedundantAssignment
 
 using System;
 using System.IO;
@@ -22,39 +25,42 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// Checks if there is a Zeus.exe selected or available to patch, prepares the "patched_files" folder for the patched files
 		/// then calls the requested patching functions.
 		/// </summary>
-		/// <param name="ZeusExeLocation">Optionally contains the location of the Zeus.exe selected by the UI's file selection dialog.</param>
+		/// <param name="ZeusExeDirectory">Optionally contains the location of the Zeus.exe selected by the UI's file selection dialog.</param>
 		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
 		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
 		/// <param name="FixAnimations">Whether the "Apply Animation Fixes" checkbox is selected or not.</param>
 		/// <param name="FixWindowed">Whether the "Apply Windowed Mode Fixes" checkbox is selected or not.</param>
+		/// <param name="PatchEngText">Whether the "Patch EmperorText.eng" checkbox is selected or not.</param>
 		/// <param name="ResizeImages">Whether the "Resize Images" checkbox is selected or not.</param>
 		/// <param name="StretchImages">Whether the "Stretch menu images to fit window" checkbox is selected or not.</param>
-		internal static void _ProcessZeusExe(string ZeusExeLocation, ushort ResWidth, ushort ResHeight,
-			bool FixAnimations, bool FixWindowed, bool ResizeImages, bool StretchImages)
+		internal static void _ProcessZeusExe(string ZeusExeDirectory, ushort ResWidth, ushort ResHeight,
+			bool FixAnimations, bool FixWindowed, bool PatchEngText, bool ResizeImages, bool StretchImages)
 		{
-			if (!File.Exists(ZeusExeLocation))
+			if (!File.Exists($"{ZeusExeDirectory}/Zeus.exe"))
 			{
 				// User didn't select a folder using the selection button.
-				if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"base_files\Zeus.exe"))
+				if (File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}base_files/Zeus.exe"))
 				{
 					// Check if the user has placed the Zeus data files in the "base_files" folder.
-					ZeusExeLocation = AppDomain.CurrentDomain.BaseDirectory + @"base_files\Zeus.exe";
+					ZeusExeDirectory = $"{AppDomain.CurrentDomain.BaseDirectory}base_files";
 				}
-				else if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Zeus.exe") && (AppDomain.CurrentDomain.FriendlyName != "Zeus.exe"))
+				else if (File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}Zeus.exe") && (AppDomain.CurrentDomain.FriendlyName != "Zeus.exe"))
 				{
 					// As a last resort, check if the Zeus data files are in the same folder as this program.
-					ZeusExeLocation = AppDomain.CurrentDomain.BaseDirectory + "Zeus.exe";
+					ZeusExeDirectory = AppDomain.CurrentDomain.BaseDirectory;
 				}
 				else
 				{
-					MessageBox.Show("Zeus.exe does not exist in either the selected location or either of the automatically scanned locations. " +
-						"Please ensure that you have either selected the correct place, placed this program in the correct place or " +
-						"placed the correct files in the \"base_files\" folder.");
+					MessageBox.Show("Zeus.exe does not exist in either the selected location or either of the automatically scanned locations.\n" +
+						"Please ensure that you have done one of the following:\n" +
+						"- Selected the correct location using the \"Select Emperor.exe\" button,\n" +
+						"- Placed this program in the folder you installed Emperor, or\n" +
+						"- Placed the correct files in the \"base_files\" folder.");
 					return;
 				}
 			}
 
-			string patchedFilesFolder = AppDomain.CurrentDomain.BaseDirectory + "patched_files";
+			string patchedFilesFolder = $"{AppDomain.CurrentDomain.BaseDirectory}patched_files";
 			try
 			{
 				if (Directory.Exists(patchedFilesFolder))
@@ -83,34 +89,43 @@ namespace Zeus_and_Poseidon.non_UI_code
 				return;
 			}
 
-#if !DEBUG
-			byte[] classQN = { 90, 101, 117, 115, 95, 97, 110, 100, 95, 80, 111, 115, 101, 105, 100, 111, 110, 46, 110,
-				111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99, 51, 50, 46, 77, 97, 105, 110, 69, 120, 101,
-				73, 110, 116, 101, 103, 114, 105, 116, 121 };
-			byte[] methodQN = { 95, 67, 104, 101, 99, 107 };
-			Type _type_ = Type.GetType(Encoding.ASCII.GetString(classQN));
-			if (_type_ != null)
-			{
-				try
-				{
-					MethodInfo methodInfo = _type_.GetMethod(Encoding.ASCII.GetString(methodQN), BindingFlags.DeclaredOnly |
-						BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
-					methodInfo.Invoke(null, new object[] { });
-				}
-				catch (Exception)
-				{
-					Application.Current.Shutdown();
-					return;
-				}
-			}
-			else
-			{
-				Application.Current.Shutdown();
-				return;
-			}
-#endif
+			bool shouldRun = true;
+			#if DEBUG
+			shouldRun = false;
+			#endif
 
-			if (ZeusExeDefinitions._GetAndCheckExeChecksum(ZeusExeLocation, out byte[] zeusExeData, out ExeAttributes exeAttributes))
+			if (shouldRun)
+			{
+				unsafe
+				{
+					byte* classQn = stackalloc byte[] { 90, 101, 117, 115, 95, 97, 110, 100, 95, 80, 111, 115, 101, 105, 100, 111,
+						110, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99, 51, 50, 46, 77, 97, 105, 110,
+						69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
+					byte* methodQn = stackalloc byte[] { 95, 67, 104, 101, 99, 107 };
+					Type type = Type.GetType(classQn->ToString());
+					if (type != null)
+					{
+						try
+						{
+							MethodInfo methodInfo = type.GetMethod(methodQn->ToString(), BindingFlags.DeclaredOnly |
+								BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
+							methodInfo.Invoke(null, new object[] { });
+						}
+						catch (Exception)
+						{
+							Application.Current.Shutdown();
+							return;
+						}
+					}
+					else
+					{
+						Application.Current.Shutdown();
+						return;
+					}
+				}
+			}
+
+			if (ZeusExeDefinitions._GetAndCheckExeChecksum(ZeusExeDirectory, out byte[] zeusExeData, out ExeAttributes exeAttributes))
 			{
 				ZeusResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, exeAttributes, ref zeusExeData);
 
@@ -124,7 +139,7 @@ namespace Zeus_and_Poseidon.non_UI_code
 				}
 				if (ResizeImages)
 				{
-					ZeusResizeImages._CreateResizedImages(ZeusExeLocation, exeAttributes, ResWidth, ResHeight, StretchImages, patchedFilesFolder);
+					ZeusResizeImages._CreateResizedImages(ZeusExeDirectory, exeAttributes, ResWidth, ResHeight, StretchImages, patchedFilesFolder);
 				}
 
 				File.WriteAllBytes(patchedFilesFolder + "/Zeus.exe", zeusExeData);

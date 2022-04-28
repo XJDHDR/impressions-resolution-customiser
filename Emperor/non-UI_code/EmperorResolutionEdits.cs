@@ -25,11 +25,11 @@ namespace Emperor.non_UI_code
 		/// </summary>
 		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
 		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
-		/// <param name="EmperorExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
+		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
 		/// <param name="EmperorExeData">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
 		/// <param name="ViewportWidth">The width of the city viewport calculated by the resolution editing code.</param>
 		/// <param name="ViewportHeight">The height of the city viewport calculated by the resolution editing code.</param>
-		internal static void _hexEditExeResVals(ushort ResWidth, ushort ResHeight, in EmperorExeAttributes EmperorExeAttributes,
+		internal static void _hexEditExeResVals(ushort ResWidth, ushort ResHeight, in EmperorExeAttributes ExeAttributes,
 			ref byte[] EmperorExeData, out ushort ViewportWidth, out ushort ViewportHeight)
 		{
 			ViewportWidth = 0;
@@ -39,7 +39,7 @@ namespace Emperor.non_UI_code
 			shouldRun = false;
 			#endif
 
-			EmperorResHexOffsetTable emperorResHexOffsetTable = new EmperorResHexOffsetTable(EmperorExeAttributes, out bool wasSuccessful);
+			EmperorResHexOffsetTable resHexOffsetTable = new EmperorResHexOffsetTable(ExeAttributes, out bool wasSuccessful);
 
 			if (!wasSuccessful)
 				return;
@@ -48,10 +48,10 @@ namespace Emperor.non_UI_code
 			byte[] resHeightBytes = BitConverter.GetBytes(ResHeight);
 
 			// These two offsets set the game's resolution to the desired amount
-			EmperorExeData[emperorResHexOffsetTable._ResWidth + 0] = resWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._ResWidth + 1] = resWidthBytes[1];
-			EmperorExeData[emperorResHexOffsetTable._ResHeight + 0] = resHeightBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._ResHeight + 1] = resHeightBytes[1];
+			EmperorExeData[resHexOffsetTable._ResWidth + 0] = resWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._ResWidth + 1] = resWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._ResHeight + 0] = resHeightBytes[0];
+			EmperorExeData[resHexOffsetTable._ResHeight + 1] = resHeightBytes[1];
 
 			// These two offsets correct the game's main menu viewport to use the new resolution values.
 			// Without this fix, the game will not accept main menu images where either dimension is larger
@@ -59,27 +59,27 @@ namespace Emperor.non_UI_code
 			// In turn, any image smaller than those dimensions will be put in the top-left corner and
 			// black bars will fill the remaining space on the bottom and right.
 			// This is all despite the fact that buttons will be in the correct locations.
-			EmperorExeData[emperorResHexOffsetTable._MainMenuViewportWidth + 0] = resWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._MainMenuViewportWidth + 1] = resWidthBytes[1];
-			EmperorExeData[emperorResHexOffsetTable._MainMenuViewportHeight + 0] = resHeightBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._MainMenuViewportHeight + 1] = resHeightBytes[1];
+			EmperorExeData[resHexOffsetTable._MainMenuViewportWidth + 0] = resWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._MainMenuViewportWidth + 1] = resWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._MainMenuViewportHeight + 0] = resHeightBytes[0];
+			EmperorExeData[resHexOffsetTable._MainMenuViewportHeight + 1] = resHeightBytes[1];
 
 			// This offset corrects the position of the money, population and zodiac info in the top menu bar.
 			// Without this patch, that text will be drawn too far to the left.
-			EmperorExeData[emperorResHexOffsetTable._FixMoneyPopDateTextPosWidth + 0] = resWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._FixMoneyPopDateTextPosWidth + 1] = resWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._FixMoneyPopDateTextPosWidth + 0] = resWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._FixMoneyPopDateTextPosWidth + 1] = resWidthBytes[1];
 
 			// This offset corrects the position of the top menu bar containing the above text.
 			// Without this patch, that background will be drawn too far to the left.
-			EmperorExeData[emperorResHexOffsetTable._FixTopMenuBarBackgroundPosWidth + 0] = resWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._FixTopMenuBarBackgroundPosWidth + 1] = resWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._FixTopMenuBarBackgroundPosWidth + 0] = resWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._FixTopMenuBarBackgroundPosWidth + 1] = resWidthBytes[1];
 
 			// Set main game's viewport to the correct width.
 			// This means the width that will be taken by both the city view's "camera" and the right sidebar containing the city's info and
 			// buttons to build and demolish buildings and other functions.
 			// Without this patch, the view of your city will be rendered in a small square placed at the top-left corner of the main viewing area.
-			EmperorExeData[emperorResHexOffsetTable._ViewportWidth + 0] = resWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._ViewportWidth + 1] = resWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._ViewportWidth + 0] = resWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._ViewportWidth + 1] = resWidthBytes[1];
 
 			// These next two offsets are used to determine the size of the city view's "camera".
 			// However, the game doesn't allow specifying a size. Only a multiplier can be used.
@@ -131,33 +131,33 @@ namespace Emperor.non_UI_code
 			{
 				resWidthMult = (byte)Math.Floor((ResWidth - 222 + 2) / 80f); // fs are required. Otherwise, compiler error CS0121 occurs.
 			}
-			EmperorExeData[emperorResHexOffsetTable._ViewportHeightMult] = resHeightMult;
-			EmperorExeData[emperorResHexOffsetTable._ViewportWidthMult]  = resWidthMult;
+			EmperorExeData[resHexOffsetTable._ViewportHeightMult] = resHeightMult;
+			EmperorExeData[resHexOffsetTable._ViewportWidthMult]  = resWidthMult;
 
 			// This offset partially corrects the position of the game's sidebar to align with the new viewport render limit
 			// Without this change, the sidebar is drawn against the left edge of the screen and clips with the city view
-			EmperorExeData[emperorResHexOffsetTable._SidebarRenderLimitWidth + 0] = resWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._SidebarRenderLimitWidth + 1] = resWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._SidebarRenderLimitWidth + 0] = resWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._SidebarRenderLimitWidth + 1] = resWidthBytes[1];
 
 			// This offset corrects the position of the rotate city view button's interaction point
 			// Without this change, the interaction point is placed too high on the sidebar (under the city map in my case).
-			EmperorExeData[emperorResHexOffsetTable._FixSidebarCityMapRotateButton + 0] = resWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._FixSidebarCityMapRotateButton + 1] = resWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._FixSidebarCityMapRotateButton + 0] = resWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._FixSidebarCityMapRotateButton + 1] = resWidthBytes[1];
 
 			// This offset corrects the position of the rotate city view button's icon
 			// Without this change, the icon is drawn too high on the sidebar (under the city map in my case).
-			EmperorExeData[emperorResHexOffsetTable._FixSidebarCityMapRotateIcon + 0] = resWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._FixSidebarCityMapRotateIcon + 1] = resWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._FixSidebarCityMapRotateIcon + 0] = resWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._FixSidebarCityMapRotateIcon + 1] = resWidthBytes[1];
 
 			// This offset corrects the position of the interaction points for the other 4 buttons below the city map
 			// Without this change, the interaction points are placed too high on the sidebar (inside the city map in my case).
-			EmperorExeData[emperorResHexOffsetTable._FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons + 0] = resWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons + 1] = resWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons + 0] = resWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons + 1] = resWidthBytes[1];
 
 			// This offset corrects the position of the icons for the other 4 buttons below the city map
 			// Without this change, the icons are drawn too high on the sidebar (inside the city map in my case).
-			EmperorExeData[emperorResHexOffsetTable._FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons + 0] = resWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons + 1] = resWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons + 0] = resWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons + 1] = resWidthBytes[1];
 
 			// This next offset is used to determine which column of pixels in the game's window will be used as the left edge of the right sidebar.
 			// The original game uses the calculation "ResolutionWidth - 226" to find this column. However, this causes a problem.
@@ -173,16 +173,16 @@ namespace Emperor.non_UI_code
 			// This means that the sidebar will be shifted left to be next to the city view.
 			ViewportWidth = Convert.ToUInt16((resWidthMult * 80) - 2);
 			byte[] viewportWidthBytes = BitConverter.GetBytes(ViewportWidth);
-			EmperorExeData[emperorResHexOffsetTable._SidebarLeftEdgeStartWidth + 0] = viewportWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._SidebarLeftEdgeStartWidth + 1] = viewportWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._SidebarLeftEdgeStartWidth + 0] = viewportWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._SidebarLeftEdgeStartWidth + 1] = viewportWidthBytes[1];
 
 			// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
-			EmperorExeData[emperorResHexOffsetTable._UnknownWidth + 0] = resWidthBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._UnknownWidth + 1] = resWidthBytes[1];
+			EmperorExeData[resHexOffsetTable._UnknownWidth + 0] = resWidthBytes[0];
+			EmperorExeData[resHexOffsetTable._UnknownWidth + 1] = resWidthBytes[1];
 
 			// I don't know what this offset does. JackFuste's patches have it changed but I haven't seen the effect anywhere.
-			EmperorExeData[emperorResHexOffsetTable._UnknownHeight + 0] = resHeightBytes[0];
-			EmperorExeData[emperorResHexOffsetTable._UnknownHeight + 1] = resHeightBytes[1];
+			EmperorExeData[resHexOffsetTable._UnknownHeight + 0] = resHeightBytes[0];
+			EmperorExeData[resHexOffsetTable._UnknownHeight + 1] = resHeightBytes[1];
 
 			// Next, the bar forming the city viewport's bottom border needs to be repositioned at the bottom edge's actual position
 			// as well as extend it to fit the entire length of that edge. To do this, I'm inserting some new assembly code into the
@@ -193,40 +193,40 @@ namespace Emperor.non_UI_code
 			ViewportHeight = Convert.ToUInt16(((resHeightMult -1) * 20) + 40);
 			byte[] viewportHeightBytes = BitConverter.GetBytes(ViewportHeight);
 			// First, insert the new code.
-			for (byte i = 0; i < emperorResHexOffsetTable._FixBottomBarLengthNewCode.Length; i++)
+			for (byte i = 0; i < resHexOffsetTable._FixBottomBarLengthNewCode.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + i] = emperorResHexOffsetTable._FixBottomBarLengthNewCode[i];
+				EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + i] = resHexOffsetTable._FixBottomBarLengthNewCode[i];
 			}
 			// Next, the starting point of the border drawing code needs to be set to the width of the city viewport.
 			for (byte i = 0; i < viewportWidthBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 1 + i] = viewportWidthBytes[i];
+				EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 1 + i] = viewportWidthBytes[i];
 			}
 			// Next, calculate where the bottom edge of the city viewport is and set the bars' vertical position there.
 			for (byte i = 0; i < viewportHeightBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 23 + i] = viewportHeightBytes[i];
+				EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 23 + i] = viewportHeightBytes[i];
 			}
 			// Next, calculate where the first drawing function is relative to the inserted code so that it's address can be set correctly.
-			int firstDrawingFunctionRelativePos = emperorResHexOffsetTable._DrawFunction1Address - (emperorResHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 38);
+			int firstDrawingFunctionRelativePos = resHexOffsetTable._DrawFunction1Address - (resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 38);
 			byte[] firstDrawingFunctionRelativePosBytes = BitConverter.GetBytes(firstDrawingFunctionRelativePos);
 			for (byte i = 0; i < firstDrawingFunctionRelativePosBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 34 + i] = firstDrawingFunctionRelativePosBytes[i];
+				EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 34 + i] = firstDrawingFunctionRelativePosBytes[i];
 			}
 			// Next, do the same for the second drawing function.
-			int secondDrawingFunctionRelativePos = emperorResHexOffsetTable._DrawFunction2Address - (emperorResHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 44);
+			int secondDrawingFunctionRelativePos = resHexOffsetTable._DrawFunction2Address - (resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 44);
 			byte[] secondDrawingFunctionRelativePosBytes = BitConverter.GetBytes(secondDrawingFunctionRelativePos);
 			for (byte i = 0; i < secondDrawingFunctionRelativePosBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 40 + i] = secondDrawingFunctionRelativePosBytes[i];
+				EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 40 + i] = secondDrawingFunctionRelativePosBytes[i];
 			}
 			// Finally, correctly set the final jump's relative position to the place what the original drawing code was originally going
 			// to run after executing.
-			byte finalJumpDestRelPos = Convert.ToByte(emperorResHexOffsetTable._FixBottomBarLengthFinalJumpDest -
-			                                          (emperorResHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint +
-			                                           emperorResHexOffsetTable._FixBottomBarLengthNewCode.Length));
-			EmperorExeData[emperorResHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 58] = finalJumpDestRelPos;
+			byte finalJumpDestRelPos = Convert.ToByte(resHexOffsetTable._FixBottomBarLengthFinalJumpDest -
+			                                          (resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint +
+			                                           resHexOffsetTable._FixBottomBarLengthNewCode.Length));
+			EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 58] = finalJumpDestRelPos;
 
 			if (shouldRun)
 			{
@@ -272,86 +272,86 @@ namespace Emperor.non_UI_code
 			// The bottom border code above already contains the needed jump into this new code.
 			//
 			// First, fill in the correct figure for the jump to where the new UI code is located.
-			int jumpToNewUiCodeLocation = emperorResHexOffsetTable._NewCodeForUiInsertionLocation - (emperorResHexOffsetTable._NewCodeForUiJumpLocation + 5);
+			int jumpToNewUiCodeLocation = resHexOffsetTable._NewCodeForUiInsertionLocation - (resHexOffsetTable._NewCodeForUiJumpLocation + 5);
 			byte[] jumpToNewUiCodeLocationBytes = BitConverter.GetBytes(jumpToNewUiCodeLocation);
-			EmperorExeData[emperorResHexOffsetTable._NewCodeForUiJumpLocation] = 0xE9;
+			EmperorExeData[resHexOffsetTable._NewCodeForUiJumpLocation] = 0xE9;
 			for (byte i = 0; i < jumpToNewUiCodeLocationBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiJumpLocation + 1 + i] = jumpToNewUiCodeLocationBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiJumpLocation + 1 + i] = jumpToNewUiCodeLocationBytes[i];
 			}
-			EmperorExeData[emperorResHexOffsetTable._NewCodeForUiJumpLocation + 5] = 0x90;
+			EmperorExeData[resHexOffsetTable._NewCodeForUiJumpLocation + 5] = 0x90;
 			// Next, insert the new code.
-			for (ushort i = 0; i < emperorResHexOffsetTable._NewCodeForUiBytes.Length; i++)
+			for (ushort i = 0; i < resHexOffsetTable._NewCodeForUiBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i] = emperorResHexOffsetTable._NewCodeForUiBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i] = resHexOffsetTable._NewCodeForUiBytes[i];
 			}
 			// Next, set the initial value for the menubar height counter.
 			byte[] menubarHeightInitialValue = BitConverter.GetBytes(ResHeight - 39);
 			for (byte i = 0; i < menubarHeightInitialValue.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i + 1] = menubarHeightInitialValue[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 1] = menubarHeightInitialValue[i];
 			}
 			// Next, set the initial position for the menubar's left edge for each row.
 			for (byte i = 0; i < viewportWidthBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i + 6] = viewportWidthBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 6] = viewportWidthBytes[i];
 			}
 			// Next, calculate where the first drawing function is relative to the inserted code so that it's address can be set correctly.
-			firstDrawingFunctionRelativePos = emperorResHexOffsetTable._DrawFunction1Address - (emperorResHexOffsetTable._NewCodeForUiInsertionLocation + 44);
+			firstDrawingFunctionRelativePos = resHexOffsetTable._DrawFunction1Address - (resHexOffsetTable._NewCodeForUiInsertionLocation + 44);
 			firstDrawingFunctionRelativePosBytes = BitConverter.GetBytes(firstDrawingFunctionRelativePos);
 			for (byte i = 0; i < firstDrawingFunctionRelativePosBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i + 40] = firstDrawingFunctionRelativePosBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 40] = firstDrawingFunctionRelativePosBytes[i];
 			}
 			// Next, do the same for the second drawing function.
-			secondDrawingFunctionRelativePos = emperorResHexOffsetTable._DrawFunction2Address - (emperorResHexOffsetTable._NewCodeForUiInsertionLocation + 50);
+			secondDrawingFunctionRelativePos = resHexOffsetTable._DrawFunction2Address - (resHexOffsetTable._NewCodeForUiInsertionLocation + 50);
 			secondDrawingFunctionRelativePosBytes = BitConverter.GetBytes(secondDrawingFunctionRelativePos);
 			for (byte i = 0; i < secondDrawingFunctionRelativePosBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i + 46] = secondDrawingFunctionRelativePosBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 46] = secondDrawingFunctionRelativePosBytes[i];
 			}
 			// Next, set the final position for the menubar's top edge for below the city viewport.
 			byte[] viewportBottomForMenubarBytes = BitConverter.GetBytes(ViewportHeight - 39 + 9);
 			for (byte i = 0; i < viewportBottomForMenubarBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i + 59] = viewportBottomForMenubarBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 59] = viewportBottomForMenubarBytes[i];
 			}
 			// Next, set the initial position for the sidebar filler to the right of the city viewport
 			for (byte i = 0; i < viewportWidthBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i + 103] = viewportWidthBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 103] = viewportWidthBytes[i];
 			}
 			// Next, calculate where the first drawing function is relative to the inserted code so that it's address can be set correctly.
-			firstDrawingFunctionRelativePos = emperorResHexOffsetTable._DrawFunction1Address - (emperorResHexOffsetTable._NewCodeForUiInsertionLocation + 140);
+			firstDrawingFunctionRelativePos = resHexOffsetTable._DrawFunction1Address - (resHexOffsetTable._NewCodeForUiInsertionLocation + 140);
 			firstDrawingFunctionRelativePosBytes = BitConverter.GetBytes(firstDrawingFunctionRelativePos);
 			for (byte i = 0; i < firstDrawingFunctionRelativePosBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i + 136] = firstDrawingFunctionRelativePosBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 136] = firstDrawingFunctionRelativePosBytes[i];
 			}
 			// Next, do the same for the second drawing function.
-			secondDrawingFunctionRelativePos = emperorResHexOffsetTable._DrawFunction2Address - (emperorResHexOffsetTable._NewCodeForUiInsertionLocation + 146);
+			secondDrawingFunctionRelativePos = resHexOffsetTable._DrawFunction2Address - (resHexOffsetTable._NewCodeForUiInsertionLocation + 146);
 			secondDrawingFunctionRelativePosBytes = BitConverter.GetBytes(secondDrawingFunctionRelativePos);
 			for (byte i = 0; i < secondDrawingFunctionRelativePosBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i + 142] = secondDrawingFunctionRelativePosBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 142] = secondDrawingFunctionRelativePosBytes[i];
 			}
 			// Next, fill in the final position checker for the sidebar drawing code at the window's right edge.
 			for (byte i = 0; i < resWidthBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i + 156] = resWidthBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 156] = resWidthBytes[i];
 			}
-			// Finally, set the bottom limit for the sidebar drawing code as the window height - UI element's height (310)
+			// Next, set the bottom limit for the sidebar drawing code as the window height - UI element's height (310)
 			byte[] sidebarDrawingBottomLimitBytes = BitConverter.GetBytes(ResWidth - 310);
 			for (byte i = 0; i < sidebarDrawingBottomLimitBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i + 163] = sidebarDrawingBottomLimitBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 163] = sidebarDrawingBottomLimitBytes[i];
 			}
-			// Next, calculate where the final jump must point to move execution to the bottom border drawing code.
-			int jumpToBottomBorderDrawingCode = emperorResHexOffsetTable._NewCodeForUiJumpLocation + 6 - (emperorResHexOffsetTable._NewCodeForUiInsertionLocation + 195);
+			// Finally, calculate where the final jump must point to move execution to the bottom border drawing code.
+			int jumpToBottomBorderDrawingCode = resHexOffsetTable._NewCodeForUiJumpLocation + 6 - (resHexOffsetTable._NewCodeForUiInsertionLocation + 195);
 			byte[] jumpToBottomBorderDrawingCodeBytes = BitConverter.GetBytes(jumpToBottomBorderDrawingCode);
 			for (byte i = 0; i < jumpToBottomBorderDrawingCodeBytes.Length; i++)
 			{
-				EmperorExeData[emperorResHexOffsetTable._NewCodeForUiInsertionLocation + i + 191] = jumpToBottomBorderDrawingCodeBytes[i];
+				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 191] = jumpToBottomBorderDrawingCodeBytes[i];
 			}
 		}
 	}
