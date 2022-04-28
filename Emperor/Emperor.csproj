@@ -79,8 +79,8 @@
     <Compile Include="non-UI_code\EmperorSpriteLimitChanger.cs" />
     <Compile Include="non-UI_code\EmperorEngTextEdit.cs" />
     <Compile Include="non-UI_code\EmperorResHexOffsetTable.cs" />
-    <Compile Include="non-UI_code\Emperor_MakeChanges.cs" />
-    <Compile Include="non-UI_code\Emperor_ResizeImages.cs" />
+    <Compile Include="non-UI_code\EmperorMakeChanges.cs" />
+    <Compile Include="non-UI_code\EmperorResizeImages.cs" />
     <Compile Include="non-UI_code\EmperorResolutionEdits.cs" />
     <Compile Include="non-UI_code\EmperorWindowFix.cs" />
     <Compile Include="non-UI_code\EmperorExeAttributes.cs" />

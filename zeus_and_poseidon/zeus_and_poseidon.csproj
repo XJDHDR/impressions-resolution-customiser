@@ -80,11 +80,11 @@
     <Compile Include="non-UI_code\Crc32\MainExeIntegrity.cs" />
     <Compile Include="non-UI_code\Crc32\SliceBy16.cs" />
     <Compile Include="non-UI_code\Zeus_ExeDefinitions.cs" />
-    <Compile Include="non-UI_code\Zeus_MakeChanges.cs" />
-    <Compile Include="non-UI_code\Zeus_ResizeImages.cs" />
-    <Compile Include="non-UI_code\Zeus_ResolutionEdits.cs" />
-    <Compile Include="non-UI_code\Zeus_SlowAnimFixes.cs" />
-    <Compile Include="non-UI_code\Zeus_WindowFix.cs" />
+    <Compile Include="non-UI_code\ZeusMakeChanges.cs" />
+    <Compile Include="non-UI_code\ZeusResizeImages.cs" />
+    <Compile Include="non-UI_code\ZeusResolutionEdits.cs" />
+    <Compile Include="non-UI_code\ZeusSlowAnimFixes.cs" />
+    <Compile Include="non-UI_code\ZeusWindowFix.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
