@@ -126,36 +126,36 @@ namespace Emperor.non_UI_code
 			byte[] emperorExeData = File.ReadAllBytes($"{EmperorExeDirectory}/Emperor.exe");
 			EmperorExeAttributes emperorExeAttributes = new EmperorExeAttributes(emperorExeData, out bool wasSuccessful);
 
-			if (wasSuccessful)
+			if (!wasSuccessful)
+				return;
+
+			EmperorResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, in emperorExeAttributes, ref emperorExeData,
+				out ushort viewportWidth, out ushort viewportHeight);
+
+			if (FixWindowed)
 			{
-				EmperorResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, in emperorExeAttributes, ref emperorExeData,
-					out ushort viewportWidth, out ushort viewportHeight);
-
-				if (FixWindowed)
-				{
-					EmperorWindowFix._hexEditWindowFix(in emperorExeAttributes, ref emperorExeData);
-				}
-				if (PatchEngText)
-				{
-					EmperorEngTextEdit._EditResolutionString(EmperorExeDirectory, patchedFilesFolder, ResWidth, ResHeight,
-						in emperorExeAttributes);
-				}
-				if (ResizeImages)
-				{
-					EmperorResizeImages resizeImages = new EmperorResizeImages(ResWidth, ResHeight, viewportWidth,
-						viewportHeight, StretchImages, EmperorExeDirectory, patchedFilesFolder, out bool jpegCodecFound);
-
-					if (jpegCodecFound)
-						resizeImages._CreateResizedImages();
-				}
-				if (IncreaseSpriteLimit)
-				{
-					EmperorSpriteLimitChanger._MakeChanges(in emperorExeAttributes, ref emperorExeData);
-				}
-
-				File.WriteAllBytes($"{patchedFilesFolder}/Emperor.exe", emperorExeData);
-				MessageBox.Show($"Your patched Emperor.exe has been successfully created in {patchedFilesFolder}");
+				EmperorWindowFix._hexEditWindowFix(in emperorExeAttributes, ref emperorExeData);
 			}
+			if (PatchEngText)
+			{
+				EmperorEngTextEdit._EditResolutionString(EmperorExeDirectory, patchedFilesFolder, ResWidth, ResHeight,
+					in emperorExeAttributes);
+			}
+			if (ResizeImages)
+			{
+				EmperorResizeImages resizeImages = new EmperorResizeImages(ResWidth, ResHeight, viewportWidth,
+					viewportHeight, StretchImages, EmperorExeDirectory, patchedFilesFolder, out bool jpegCodecFound);
+
+				if (jpegCodecFound)
+					resizeImages._CreateResizedImages();
+			}
+			if (IncreaseSpriteLimit)
+			{
+				EmperorSpriteLimitChanger._MakeChanges(in emperorExeAttributes, ref emperorExeData);
+			}
+
+			File.WriteAllBytes($"{patchedFilesFolder}/Emperor.exe", emperorExeData);
+			MessageBox.Show($"Your patched Emperor.exe has been successfully created in {patchedFilesFolder}");
 		}
 	}
 }

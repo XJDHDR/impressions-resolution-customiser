@@ -24,8 +24,7 @@ namespace Emperor.non_UI_code
 		internal readonly int _EngTextDefaultWordCount;
 
 		/// <summary>
-		/// Copies the contents of Emperor.exe into a byte array for editing then calculates a CRC32 hash for the contents of that array.
-		/// After that, compares that CRC to a list of known CRCs to determine which distribution of this game is being patched.
+		/// Compares the CRC for the game's EXE to a list of known CRCs to determine which distribution of this game is being patched.
 		/// </summary>
 		/// <param name="EmperorExeData">Byte array that holds the binary data contained within the supplied Emperor.exe</param>
 		/// <param name="WasSuccessful">
@@ -37,7 +36,7 @@ namespace Emperor.non_UI_code
 			// First, create a CRC32 Checksum of the EXE's data, excluding the first 4096 bytes.
 			uint gameExeCrc32Checksum = SliceBy16.Crc32(0x1000, EmperorExeData);
 
-			// Please note that as per the software license, you are not permitted to modify this code to add the MD5 hash for any
+			// Please note that as per the software license, you are not permitted to modify this code to add the CRC for any
 			// "cracked" or pirated versions of Emperor. Nor are you permitted to modify this method or any other method for the purpose of
 			// allowing the program to continue the patching process if the "default" case runs or "ExeLangAndDistrib" is set to "NotRecognised".
 			// Nor are you permitted to make any other changes that would allow or cause a pirated version of Emperor to be patched.

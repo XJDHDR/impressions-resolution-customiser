@@ -23,180 +23,77 @@ namespace Zeus_and_Poseidon.non_UI_code
 	/// <summary>
 	/// Code used to resize the background images and maps that the game uses to fit new resolutions.
 	/// </summary>
-	internal static class ZeusResizeImages
+	internal class ZeusResizeImages
 	{
 		/// <summary>
-		/// Root function that calls the other functions in this class.
+		/// Whether the "Stretch menu images to fit window" checkbox is selected or not.
 		/// </summary>
-		/// <param name="ZeusExeLocation">String that contains the location of Zeus.exe</param>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
-		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
-		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
-		/// <param name="StretchImages">Whether the "Stretch menu images to fit window" checkbox is selected or not.</param>
-		/// <param name="PatchedFilesFolder">String which specifies the location of the "patched_files" folder.</param>
-		internal static void _CreateResizedImages(string ZeusExeLocation, ExeAttributes ExeAttributes,
-			ushort ResWidth, ushort ResHeight, bool StretchImages, string PatchedFilesFolder)
-		{
-			string zeusDataFolderLocation = ZeusExeLocation.Remove(ZeusExeLocation.Length - 8) + @"DATA\";
-			_fillImageArrays(ExeAttributes, out string[] imagesToResize);
-			_resizeCentredImages(zeusDataFolderLocation, imagesToResize, ResWidth, ResHeight, StretchImages, PatchedFilesFolder);
-		}
+		private readonly bool stretchImages;
 
 		/// <summary>
-		/// Resizes the maps and other images used by the game to the correct size.
+		/// The width value of the resolution inputted into the UI.
 		/// </summary>
-		/// <param name="ZeusDataFolderLocation">String that contains the location of Zeus' "DATA" folder.</param>
-		/// <param name="CentredImages">String array that contains a list of the images that need to be resized.</param>
-		/// <param name="ResWidth">The width value of the resolution inputted into the UI.</param>
-		/// <param name="ResHeight">The height value of the resolution inputted into the UI.</param>
-		/// <param name="StretchImages">Whether the "Stretch menu images to fit window" checkbox is selected or not.</param>
-		/// <param name="PatchedFilesFolder">String which specifies the location of the "patched_files" folder.</param>
-		private static void _resizeCentredImages(string ZeusDataFolderLocation, string[] CentredImages,
-			ushort ResWidth, ushort ResHeight, bool StretchImages, string PatchedFilesFolder)
-		{
-			ImageCodecInfo jpegCodecInfo = null;
-			ImageCodecInfo[] allImageCodecs = ImageCodecInfo.GetImageEncoders();
-			for (int i = 0; i < allImageCodecs.Length; i++)
-			{
-				if (allImageCodecs[i].MimeType == "image/jpeg")
-				{
-					jpegCodecInfo = allImageCodecs[i];
-					break;
-				}
-			}
-
-			if (jpegCodecInfo != null)
-			{
-				EncoderParameters encoderParameters = new EncoderParameters(1);
-				encoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 85L);
-
-				Directory.CreateDirectory(PatchedFilesFolder + @"\DATA");
-
-#if !DEBUG
-				byte[] classQN = { 90, 101, 117, 115, 95, 97, 110, 100, 95, 80, 111, 115, 101, 105, 100, 111, 110, 46, 110,
-					111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99, 51, 50, 46, 77, 97, 105, 110, 69, 120, 101,
-					73, 110, 116, 101, 103, 114, 105, 116, 121 };
-				byte[] methodQN = { 95, 67, 104, 101, 99, 107 };
-				Type _type_ = Type.GetType(Encoding.ASCII.GetString(classQN));
-				if (_type_ != null)
-				{
-					try
-					{
-						MethodInfo methodInfo = _type_.GetMethod(Encoding.ASCII.GetString(methodQN), BindingFlags.DeclaredOnly |
-							BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
-						methodInfo.Invoke(null, new object[] { });
-					}
-					catch (Exception)
-					{
-						Application.Current.Shutdown();
-						return;
-					}
-				}
-				else
-				{
-					Application.Current.Shutdown();
-					return;
-				}
-#endif
-
-				ConcurrentBag<string> allErrorMessages = new ConcurrentBag<string>();
-				Parallel.For(0, CentredImages.Length, I =>
-				{
-					if (File.Exists(ZeusDataFolderLocation + CentredImages[I]))
-					{
-						using (Bitmap oldImage = new Bitmap(ZeusDataFolderLocation + CentredImages[I]))
-						{
-							bool currentImageIsMap = false;
-							ushort newImageWidth;
-							ushort newImageHeight;
-							if (Regex.IsMatch(CentredImages[I], "_Map(OfGreece)*[0-9][0-9].jpg$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
-							{
-								// Map images need to have the new images sized to fit the game's viewport.
-								currentImageIsMap = true;
-								newImageWidth = (ushort)(ResWidth - 180);
-								newImageHeight = (ushort)(ResHeight - 30);
-							}
-							else
-							{
-								newImageWidth = ResWidth;
-								newImageHeight = ResHeight;
-							}
-
-							using (Bitmap newImage = new Bitmap(newImageWidth, newImageHeight))
-							{
-								using (Graphics newImageGraphics = Graphics.FromImage(newImage))
-								{
-									// Note to self: Don't simplify the DrawImage calls. Specifying the old image's width and height is required
-									// to work around a quirk where the image's DPI is scaled to the screen's before insertion:
-									// https://stackoverflow.com/a/41189062
-									if (currentImageIsMap)
-									{
-										// This file is one of the maps. Must be placed in the top-left corner of the new image.
-										// Also create the background colour that will be used to fill the spaces not taken by the original image.
-										newImageGraphics.Clear(Color.FromArgb(255, 35, 88, 120));
-
-										newImageGraphics.DrawImage(oldImage, 0, 0, oldImage.Width, oldImage.Height);
-									}
-									else
-									{
-										if (!StretchImages)
-										{
-											// A non-map image. Must be placed in the centre of the new image with a black background.
-											newImageGraphics.Clear(Color.Black);
-
-											newImageGraphics.DrawImage(oldImage, (newImageWidth - oldImage.Width) / 2,
-												(newImageHeight - oldImage.Height) / 2, oldImage.Width, oldImage.Height);
-										}
-										else
-										{
-											newImageGraphics.DrawImage(oldImage, 0, 0, newImageWidth, newImageHeight);
-										}
-									}
-
-									newImage.Save(PatchedFilesFolder + @"\DATA\" + CentredImages[I], jpegCodecInfo, encoderParameters);
-								}
-							}
-						}
-					}
-					else
-					{
-						// Drop the missing image's name into a ConcurrentBag to put in an error message later.
-						allErrorMessages.Add(ZeusDataFolderLocation + CentredImages[I] + "\n");
-					}
-				});
-
-				// If the ConcurrentBag has entries in it, create a message listing all of these missing images.
-				if (allErrorMessages.IsEmpty == false)
-				{
-					StringBuilder messageText = new StringBuilder();
-					messageText.Append("Could not find the following images :\n\n");
-
-					while (allErrorMessages.IsEmpty == false)
-					{
-						if (allErrorMessages.TryTake(out string extractedText))
-						{
-							messageText.Append(extractedText);
-						}
-					}
-
-					MessageBox.Show(messageText.ToString());
-				}
-			}
-			else
-			{
-				MessageBox.Show("Could not resize any of the game's images because the program could not find a JPEG Encoder available on your PC. Since Windows comes " +
-					"with such a codec by default, this could indicate a serious problem with your PC that can only be fixed by reinstalling Windows.");
-			}
-		}
+		private readonly ushort resWidth;
 
 		/// <summary>
-		/// Fills a string array with a list of the images that need to be resized.
+		/// The height value of the resolution inputted into the UI.
 		/// </summary>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
-		/// <param name="ImagesToResize">String array that contains a list of the images that need to be resized.</param>
-		private static void _fillImageArrays(ExeAttributes ExeAttributes, out string[] ImagesToResize)
+		private readonly ushort resHeight;
+
+		/// <summary>
+		/// The width of the city viewport calculated by the resolution editing code.
+		/// </summary>
+		private readonly ushort viewportWidth;
+
+		/// <summary>
+		/// The height of the city viewport calculated by the resolution editing code.
+		/// </summary>
+		private readonly ushort viewportHeight;
+
+		/// <summary>
+		/// String that contains the location of Emperor's "DATA" folder.
+		/// </summary>
+		private readonly string zeusDataFolderLocation;
+
+		/// <summary>
+		/// String which specifies the location of the "patched_files" folder.
+		/// </summary>
+		private readonly string patchedImagesFolder;
+
+		/// <summary>
+		/// String array that contains a list of the images that need to be resized.
+		/// </summary>
+		private readonly string[] imagesToResize;
+
+		/// <summary>
+		/// Info about the JPEG codec that will be used to create the new resized images.
+		/// </summary>
+		private readonly ImageCodecInfo jpegCodecInfo;
+
+		/// <summary>
+		/// The parameters that will be used to create the resized images. Set to Quality and 85%.
+		/// </summary>
+		private readonly EncoderParameters encoderParameters;
+
+		/// <summary>
+		/// ConcurrentBag used to hold all of the missing image error messages generated by the threads.
+		/// </summary>
+		private readonly ConcurrentBag<string> allErrorMessages;
+
+
+		internal ZeusResizeImages(ushort ResWidth, ushort ResHeight, ushort ViewportWidth, ushort ViewportHeight,
+			bool StretchImages, string ZeusExeDirectory, string PatchedFilesFolder, in ZeusExeAttributes ExeAttributes,
+			out bool JpegCodecFound)
 		{
-			List<string> imagesToResizeConstruction = new List<string>
+			resWidth = ResWidth;
+			resHeight = ResHeight;
+			viewportWidth = ViewportWidth;
+			viewportHeight = ViewportHeight;
+			stretchImages = StretchImages;
+			zeusDataFolderLocation = $"{ZeusExeDirectory}/DATA";
+			patchedImagesFolder = $"{PatchedFilesFolder}/DATA";
+
+			List<string> imagesToResizeConstruction = new List<string>(40)
 			{
 				"scoreb.jpg",
 				"Zeus_Defeat.jpg",
@@ -226,7 +123,7 @@ namespace Zeus_and_Poseidon.non_UI_code
 
 			if (ExeAttributes._IsPoseidonInstalled)
 			{
-				imagesToResizeConstruction.AddRange(new List<string>
+				imagesToResizeConstruction.AddRange(new[]
 				{
 					"Poseidon_FE_MainMenu.jpg",
 					"Poseidon_FE_Registry.jpg",
@@ -245,7 +142,168 @@ namespace Zeus_and_Poseidon.non_UI_code
 				});
 			}
 
-			ImagesToResize = imagesToResizeConstruction.ToArray();
+			imagesToResize = imagesToResizeConstruction.ToArray();
+
+			jpegCodecInfo = null;
+			ImageCodecInfo[] allImageCodecs = ImageCodecInfo.GetImageEncoders();
+			for (int i = 0; i < allImageCodecs.Length; i++)
+			{
+				if (allImageCodecs[i].MimeType == "image/jpeg")
+				{
+					jpegCodecInfo = allImageCodecs[i];
+					break;
+				}
+			}
+			if (jpegCodecInfo == null)
+			{
+				MessageBox.Show("Could not resize any of the game's images because the program could not find a " +
+				                "JPEG Encoder available on your PC. Since Windows comes with such a codec by default, this " +
+				                "could indicate a serious problem with your PC that can only be fixed by reinstalling Windows.");
+				encoderParameters = null;
+				allErrorMessages = null;
+				JpegCodecFound = false;
+				return;
+			}
+
+			encoderParameters = new EncoderParameters(1);
+			encoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 85L);
+
+			allErrorMessages = new ConcurrentBag<string>();
+
+			JpegCodecFound = true;
+		}
+
+
+		/// <summary>
+		/// Resizes the maps and other images used by the game to the correct size.
+		/// </summary>
+		internal void _CreateResizedImages()
+		{
+			Directory.CreateDirectory(patchedImagesFolder);
+
+			#if !DEBUG
+			unsafe
+			{
+				byte* classQn = stackalloc byte[] { 90, 101, 117, 115, 95, 97, 110, 100, 95, 80, 111, 115, 101, 105, 100, 111, 110, 46, 110,
+				111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99, 51, 50, 46, 77, 97, 105, 110, 69, 120, 101,
+				73, 110, 116, 101, 103, 114, 105, 116, 121 };
+				byte* methodQn = stackalloc byte[] { 95, 67, 104, 101, 99, 107 };
+				Type type = Type.GetType(classQn->ToString());
+				if (type != null)
+				{
+					try
+					{
+						MethodInfo methodInfo = type.GetMethod(methodQn->ToString(), BindingFlags.DeclaredOnly |
+							BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
+						if (methodInfo != null)
+							methodInfo.Invoke(null, new object[] { });
+
+						else
+						{
+							Application.Current.Shutdown();
+							return;
+						}
+					}
+					catch (Exception)
+					{
+						Application.Current.Shutdown();
+						return;
+					}
+				}
+				else
+				{
+					Application.Current.Shutdown();
+					return;
+				}
+			}
+			#endif
+
+			Parallel.For(0, imagesToResize.Length, resizeIndividualImage);
+
+			// If the ConcurrentBag has entries in it, create a message listing all of these missing images.
+			if (allErrorMessages.IsEmpty == false)
+			{
+				StringBuilder messageText = new StringBuilder();
+				messageText.Append("Could not find the following images :\n\n");
+
+				while (allErrorMessages.IsEmpty == false)
+				{
+					if (allErrorMessages.TryTake(out string extractedText))
+					{
+						messageText.Append(extractedText);
+					}
+				}
+
+				MessageBox.Show(messageText.ToString());
+			}
+		}
+
+
+		private void resizeIndividualImage(int I)
+		{
+			string imageToResizeFullPath = $"{zeusDataFolderLocation}/{imagesToResize[I]}";
+			if (File.Exists(imageToResizeFullPath))
+			{
+				using (Bitmap oldImage = new Bitmap(imageToResizeFullPath))
+				{
+					bool currentImageIsMap = false;
+					ushort newImageWidth;
+					ushort newImageHeight;
+					if (Regex.IsMatch(imagesToResize[I], "_Map(OfGreece)*[0-9][0-9].jpg$",
+						    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
+					{
+						// Map images need to have the new images sized to fit the game's viewport.
+						currentImageIsMap = true;
+						newImageWidth = (ushort)(resWidth - 180);
+						newImageHeight = (ushort)(resHeight - 30);
+					}
+					else
+					{
+						newImageWidth = resWidth;
+						newImageHeight = resHeight;
+					}
+
+					using (Bitmap newImage = new Bitmap(newImageWidth, newImageHeight))
+					{
+						using (Graphics newImageGraphics = Graphics.FromImage(newImage))
+						{
+							// Note to self: Don't simplify the DrawImage calls. Specifying the old image's width and height is required
+							// to work around a quirk where the image's DPI is scaled to the screen's before insertion:
+							// https://stackoverflow.com/a/41189062
+							if (currentImageIsMap)
+							{
+								// This file is one of the maps. Must be placed in the top-left corner of the new image.
+								// Also create the background colour that will be used to fill the spaces not taken by the original image.
+								newImageGraphics.Clear(Color.FromArgb(255, 35, 88, 120));
+
+								newImageGraphics.DrawImage(oldImage, 0, 0, oldImage.Width, oldImage.Height);
+							}
+							else
+							{
+								if (!stretchImages)
+								{
+									// A non-map image. Must be placed in the centre of the new image with a black background.
+									newImageGraphics.Clear(Color.Black);
+
+									newImageGraphics.DrawImage(oldImage, (newImageWidth - oldImage.Width) / 2,
+										(newImageHeight - oldImage.Height) / 2, oldImage.Width, oldImage.Height);
+								}
+								else
+								{
+									newImageGraphics.DrawImage(oldImage, 0, 0, newImageWidth, newImageHeight);
+								}
+							}
+
+							newImage.Save($"{patchedImagesFolder}/{imagesToResize[I]}", jpegCodecInfo, encoderParameters);
+						}
+					}
+				}
+			}
+			else
+			{
+				// Drop the missing image's name into a ConcurrentBag to put in an error message later.
+				allErrorMessages.Add($"{imageToResizeFullPath}\n");
+			}
 		}
 	}
 }

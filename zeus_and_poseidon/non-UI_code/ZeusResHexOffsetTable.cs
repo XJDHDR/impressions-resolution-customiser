@@ -15,103 +15,11 @@ using Zeus_and_Poseidon.non_UI_code.Crc32;
 namespace Zeus_and_Poseidon.non_UI_code
 {
 	/// <summary>
-	/// Struct that specifies various details about the Zeus.exe given to the program.
-	/// </summary>
-	internal struct ExeAttributes
-	{
-		internal ExeLangAndDistrib _SelectedExeLangAndDistrib;
-		internal bool _IsDiscVersion;
-		internal bool _IsPoseidonInstalled;
-	}
-
-	/// <summary>
-	/// Used to define the various versions of Zeus.exe that this program recognises and knows what offsets to patch.
-	/// </summary>
-	internal enum ExeLangAndDistrib
-	{
-		NotRecognised = 0,
-		GogAndSteamEnglish = 1
-	}
-
-	/// <summary>
 	/// This class contains all of the code that specifies EXE specific data which varies based on the version of Zeus that is being patched.
 	/// Hypothetically, adding support for additional versions of the game will only require editing this class.
 	/// </summary>
-	internal static class ZeusExeDefinitions
+	internal struct ZeusResHexOffsetTable
 	{
-		/// <summary>
-		/// Copies the contents of Zeus.exe into a byte array for editing then calculates a CRC32 hash for the contents of that array.
-		/// After that, compares that CRC to a list of known CRCs to determine which distribution of this game is being patched.
-		/// </summary>
-		/// <param name="ZeusExeLocation">String that defines the location of Zeus.exe</param>
-		/// <param name="ZeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
-		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
-		/// <returns>
-		/// True if the CRC for the selected Zeus.exe matches one that this program knows about and knows the offsets that need to be patched.
-		/// False if the EXE is not recognised.
-		/// </returns>
-		internal static bool _GetAndCheckExeChecksum(string ZeusExeLocation, out byte[] ZeusExeData, out ExeAttributes ExeAttributes)
-		{
-			string[] hexStringTable = {
-				"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
-				"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
-				"20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f",
-				"30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "3a", "3b", "3c", "3d", "3e", "3f",
-				"40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "4a", "4b", "4c", "4d", "4e", "4f",
-				"50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "5a", "5b", "5c", "5d", "5e", "5f",
-				"60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "6a", "6b", "6c", "6d", "6e", "6f",
-				"70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "7a", "7b", "7c", "7d", "7e", "7f",
-				"80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "8a", "8b", "8c", "8d", "8e", "8f",
-				"90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "9a", "9b", "9c", "9d", "9e", "9f",
-				"a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "aa", "ab", "ac", "ad", "ae", "af",
-				"b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "ba", "bb", "bc", "bd", "be", "bf",
-				"c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "ca", "cb", "cc", "cd", "ce", "cf",
-				"d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "da", "db", "dc", "dd", "de", "df",
-				"e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "ea", "eb", "ec", "ed", "ee", "ef",
-				"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
-			};
-
-			ZeusExeData = File.ReadAllBytes(ZeusExeLocation);
-
-			// First, create a CRC32 Checksum of the EXE's data, excluding the first 4096 bytes.
-			uint gameExeCrc32Checksum = SliceBy16.Crc32(0x1000, ZeusExeData);
-
-			// Please note that as per the software license, you are not permitted to modify this code to add the MD5 hash for any
-			// "cracked" or pirated versions of Zeus. Nor are you permitted to modify this method or any other method for the purpose of
-			// allowing the program to continue the patching process if the "default" case runs or "ExeLangAndDistrib" is set to "NotRecognised".
-			// Nor are you permitted to make any other changes that would allow or cause a pirated version of Zeus to be patched.
-			switch (gameExeCrc32Checksum)
-			{
-				// English GOG and Steam versions
-				case 0xe5e22ec1:
-					ExeAttributes = new ExeAttributes
-					{
-						_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogAndSteamEnglish,
-						_IsDiscVersion = false,
-						_IsPoseidonInstalled = true
-					};
-					return true;
-
-				// Unrecognised EXE
-				default:
-					string[] messageLines = {
-						"Zeus.exe was not recognised.",
-						"",
-						"Only the following unmodified distributions and languages are currently supported:",
-						"- English GOG version with Poseidon expansion",
-						"- English Steam version with Poseidon expansion"
-					};
-					MessageBox.Show(string.Join(Environment.NewLine, messageLines));
-					ExeAttributes = new ExeAttributes
-					{
-						_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised,
-						_IsDiscVersion = false,
-						_IsPoseidonInstalled = false
-					};
-					return false;
-			}
-		}
-
 		/// <summary>
 		/// Supplies a ResHexOffsetTable struct specifying the offsets that need to be patched, based on which version of Zeus.exe was supplied.
 		/// </summary>
@@ -121,7 +29,7 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool _FillResHexOffsetTable(ExeAttributes ExeAttributes, out ResHexOffsetTable ResHexOffsetTable)
+		internal static bool _FillResHexOffsetTable(ZeusExeAttributes ExeAttributes, out ResHexOffsetTable ResHexOffsetTable)
 		{
 			switch ((byte)ExeAttributes._SelectedExeLangAndDistrib)
 			{
@@ -362,7 +270,7 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool _FillAnimHexOffsetTable(ExeAttributes ExeAttributes, out int[] AnimHexOffsetTable)
+		internal static bool _FillAnimHexOffsetTable(ZeusExeAttributes ExeAttributes, out int[] AnimHexOffsetTable)
 		{
 			switch ((byte)ExeAttributes._SelectedExeLangAndDistrib)
 			{
@@ -389,7 +297,7 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// True if "_exeLangAndDistrib" matches one that this program knows about and knows the offsets that need to be patched.
 		/// False if the EXE is not recognised.
 		/// </returns>
-		internal static bool _IdentifyWinFixOffset(ExeAttributes ExeAttributes, out int WinFixOffset)
+		internal static bool _IdentifyWinFixOffset(ZeusExeAttributes ExeAttributes, out int WinFixOffset)
 		{
 			switch ((byte)ExeAttributes._SelectedExeLangAndDistrib)
 			{

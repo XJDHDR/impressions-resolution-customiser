@@ -17,9 +17,9 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// </summary>
 		/// <param name="ExeAttributes">Struct that specifies various details about the detected Zeus.exe</param>
 		/// <param name="ZeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
-		internal static void _hexEditExeAnims(ExeAttributes ExeAttributes, ref byte[] ZeusExeData)
+		internal static void _hexEditExeAnims(ZeusExeAttributes ExeAttributes, ref byte[] ZeusExeData)
 		{
-			if (ZeusExeDefinitions._FillAnimHexOffsetTable(ExeAttributes, out int[] animHexOffsetTable))
+			if (ZeusResHexOffsetTable._FillAnimHexOffsetTable(ExeAttributes, out int[] animHexOffsetTable))
 			{
 				// To explain what this code does, I'll quote what Pecunia (who discovered how to fix these bugs) said to me:
 				// https://www.wsgf.org/phpBB3/viewtopic.php?p=172648#p172648

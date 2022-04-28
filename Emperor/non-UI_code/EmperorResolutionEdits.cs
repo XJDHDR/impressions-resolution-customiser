@@ -28,12 +28,12 @@ namespace Emperor.non_UI_code
 		/// <param name="ExeAttributes">Struct that specifies various details about the detected Emperor.exe</param>
 		/// <param name="EmperorExeData">Byte array that contains the binary data contained within the supplied Emperor.exe</param>
 		/// <param name="ViewportWidth">The width of the city viewport calculated by the resolution editing code.</param>
-		/// <param name="ViewportHeight">The height of the city viewport calculated by the resolution editing code.</param>
+		/// <param name="ViewportAndMenubarHeight">The height of the city viewport and top menubar calculated by the resolution editing code.</param>
 		internal static void _hexEditExeResVals(ushort ResWidth, ushort ResHeight, in EmperorExeAttributes ExeAttributes,
-			ref byte[] EmperorExeData, out ushort ViewportWidth, out ushort ViewportHeight)
+			ref byte[] EmperorExeData, out ushort ViewportWidth, out ushort ViewportAndMenubarHeight)
 		{
 			ViewportWidth = 0;
-			ViewportHeight = 0;
+			ViewportAndMenubarHeight = 0;
 			bool shouldRun = true;
 			#if DEBUG
 			shouldRun = false;
@@ -190,8 +190,8 @@ namespace Emperor.non_UI_code
 			//
 			// That said, this step can be skipped if the viewport's height is equal to the game's resolution,
 			// since there is nothing that needs to be drawn.
-			ViewportHeight = Convert.ToUInt16(((resHeightMult -1) * 20) + 40);
-			byte[] viewportHeightBytes = BitConverter.GetBytes(ViewportHeight);
+			ViewportAndMenubarHeight = Convert.ToUInt16(((resHeightMult -1) * 20) + 40);
+			byte[] viewportHeightBytes = BitConverter.GetBytes(ViewportAndMenubarHeight);
 			// First, insert the new code.
 			for (byte i = 0; i < resHexOffsetTable._FixBottomBarLengthNewCode.Length; i++)
 			{
@@ -311,7 +311,7 @@ namespace Emperor.non_UI_code
 				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 46] = secondDrawingFunctionRelativePosBytes[i];
 			}
 			// Next, set the final position for the menubar's top edge for below the city viewport.
-			byte[] viewportBottomForMenubarBytes = BitConverter.GetBytes(ViewportHeight - 39 + 9);
+			byte[] viewportBottomForMenubarBytes = BitConverter.GetBytes(ViewportAndMenubarHeight - 39 + 9);
 			for (byte i = 0; i < viewportBottomForMenubarBytes.Length; i++)
 			{
 				EmperorExeData[resHexOffsetTable._NewCodeForUiInsertionLocation + i + 59] = viewportBottomForMenubarBytes[i];

@@ -10,7 +10,7 @@ namespace Emperor.non_UI_code
 	/// <summary>
 	/// Struct which describes the offsets that need to be patched to change the game's resolution.
 	/// </summary>
-	internal struct EmperorResHexOffsetTable
+	internal readonly struct EmperorResHexOffsetTable
 	{
 		internal readonly int _ResWidth;
 		internal readonly int _ResHeight;

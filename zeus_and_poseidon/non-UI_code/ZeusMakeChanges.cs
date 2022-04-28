@@ -125,26 +125,34 @@ namespace Zeus_and_Poseidon.non_UI_code
 				}
 			}
 
-			if (ZeusExeDefinitions._GetAndCheckExeChecksum(ZeusExeDirectory, out byte[] zeusExeData, out ExeAttributes exeAttributes))
+			byte[] zeusExeData = File.ReadAllBytes($"{ZeusExeDirectory}/Zeus.exe");
+			ZeusExeAttributes exeAttributes = new ZeusExeAttributes(zeusExeData, out bool wasSuccessful);
+
+			if (!wasSuccessful)
+				return;
+
+			ZeusResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, exeAttributes, ref zeusExeData,
+				out ushort viewportWidth, out ushort viewportHeight);
+
+			if (FixAnimations)
 			{
-				ZeusResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, exeAttributes, ref zeusExeData);
-
-				if (FixAnimations)
-				{
-					ZeusSlowAnimFixes._hexEditExeAnims(exeAttributes, ref zeusExeData);
-				}
-				if (FixWindowed)
-				{
-					ZeusWindowFix._hexEditWindowFix(exeAttributes, ref zeusExeData);
-				}
-				if (ResizeImages)
-				{
-					ZeusResizeImages._CreateResizedImages(ZeusExeDirectory, exeAttributes, ResWidth, ResHeight, StretchImages, patchedFilesFolder);
-				}
-
-				File.WriteAllBytes(patchedFilesFolder + "/Zeus.exe", zeusExeData);
-				MessageBox.Show("Your patched Zeus.exe has been successfully created in " + patchedFilesFolder);
+				ZeusSlowAnimFixes._hexEditExeAnims(exeAttributes, ref zeusExeData);
 			}
+			if (FixWindowed)
+			{
+				ZeusWindowFix._hexEditWindowFix(exeAttributes, ref zeusExeData);
+			}
+			if (ResizeImages)
+			{
+				ZeusResizeImages resizeImages = new ZeusResizeImages(ResWidth, ResHeight, viewportWidth, viewportHeight,
+					StretchImages, ZeusExeDirectory, patchedFilesFolder, in exeAttributes, out bool jpegCodecFound);
+
+				if (jpegCodecFound)
+					resizeImages._CreateResizedImages();
+			}
+
+			File.WriteAllBytes(patchedFilesFolder + "/Zeus.exe", zeusExeData);
+			MessageBox.Show("Your patched Zeus.exe has been successfully created in " + patchedFilesFolder);
 		}
 	}
 }
