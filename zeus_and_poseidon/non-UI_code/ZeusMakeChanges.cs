@@ -11,7 +11,6 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows;
 
 namespace Zeus_and_Poseidon.non_UI_code
@@ -131,17 +130,25 @@ namespace Zeus_and_Poseidon.non_UI_code
 			if (!wasSuccessful)
 				return;
 
-			ZeusResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, exeAttributes, ref zeusExeData,
+			ZeusResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, in exeAttributes, ref zeusExeData,
 				out ushort viewportWidth, out ushort viewportHeight);
 
 			if (FixAnimations)
 			{
-				ZeusSlowAnimFixes._hexEditExeAnims(exeAttributes, ref zeusExeData);
+				ZeusSlowAnimFixes slowAnimFixes = new ZeusSlowAnimFixes(in exeAttributes, out bool slowAnimExeRecognised);
+
+				if (slowAnimExeRecognised)
+					slowAnimFixes._hexEditExeAnims(ref zeusExeData);
 			}
+
 			if (FixWindowed)
 			{
-				ZeusWindowFix._hexEditWindowFix(exeAttributes, ref zeusExeData);
+				ZeusWindowFix windowFixData = new ZeusWindowFix(exeAttributes, out bool windowFixExeRecognised);
+
+				if (windowFixExeRecognised)
+					windowFixData._hexEditWindowFix(ref zeusExeData);
 			}
+
 			if (ResizeImages)
 			{
 				ZeusResizeImages resizeImages = new ZeusResizeImages(ResWidth, ResHeight, viewportWidth, viewportHeight,

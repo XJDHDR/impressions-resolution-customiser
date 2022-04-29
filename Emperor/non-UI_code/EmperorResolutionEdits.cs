@@ -111,26 +111,17 @@ namespace Emperor.non_UI_code
 			//
 			// After that, we also need to round our final figure down to the nearest integer.
 			// Finally, these values are signed 8-bit integers and so, must be capped at 127.
-			byte resHeightMult;
+
 			// 2560 plugged into the formula below is equal to 127. Thus, this and any higher number must use a capped multiplier.
-			if (ResHeight >= 2560)
-			{
-				resHeightMult = 127;
-			}
-			else
-			{
-				resHeightMult = (byte)Math.Floor(((ResHeight - 40) / 20f) + 1); // fs are required. Otherwise, compiler error CS0121 occurs.
-			}
-			byte resWidthMult;
+			byte resHeightMult = ResHeight >= 2560 ?
+				(byte) 127 :
+				(byte) Math.Floor(((ResHeight - 40) / 20f) + 1);
+
 			// 10380 plugged into the formula below is equal to 127. Thus, this and any higher number must use a capped multiplier.
-			if (ResWidth >= 10380)
-			{
-				resWidthMult = 127;
-			}
-			else
-			{
-				resWidthMult = (byte)Math.Floor((ResWidth - 222 + 2) / 80f); // fs are required. Otherwise, compiler error CS0121 occurs.
-			}
+			byte resWidthMult = ResWidth >= 10380 ?
+				(byte) 127 :
+				(byte) Math.Floor((ResWidth - 222 + 2) / 80f);
+
 			EmperorExeData[resHexOffsetTable._ViewportHeightMult] = resHeightMult;
 			EmperorExeData[resHexOffsetTable._ViewportWidthMult]  = resWidthMult;
 

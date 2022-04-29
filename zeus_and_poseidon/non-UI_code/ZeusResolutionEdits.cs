@@ -1,4 +1,7 @@
 ﻿// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// ReSharper disable RedundantAssignment
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+// ReSharper disable HeuristicUnreachableCode
 // https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
@@ -7,9 +10,7 @@
 
 using System;
 using System.Reflection;
-using System.Text;
 using System.Windows;
-using static Zeus_and_Poseidon.non_UI_code.ZeusResHexOffsetTable;
 
 namespace Zeus_and_Poseidon.non_UI_code
 {
@@ -28,13 +29,19 @@ namespace Zeus_and_Poseidon.non_UI_code
 		/// <param name="ZeusExeData">Byte array that contains the binary data contained within the supplied Zeus.exe</param>
 		/// <param name="ViewportWidth">The width of the city viewport calculated by the resolution editing code.</param>
 		/// <param name="ViewportAndMenubarHeight">The height of the city viewport and top menubar calculated by the resolution editing code.</param>
-		internal static void _hexEditExeResVals(ushort ResWidth, ushort ResHeight, ZeusExeAttributes ExeAttributes, ref byte[] ZeusExeData,
-			out ushort ViewportWidth, out ushort ViewportAndMenubarHeight)
+		internal static void _hexEditExeResVals(ushort ResWidth, ushort ResHeight, in ZeusExeAttributes ExeAttributes,
+			ref byte[] ZeusExeData, out ushort ViewportWidth, out ushort ViewportAndMenubarHeight)
 		{
 			ViewportWidth = 0;
 			ViewportAndMenubarHeight = 0;
+			bool shouldRun = true;
+			#if DEBUG
+			shouldRun = false;
+			#endif
 
-			if (!_FillResHexOffsetTable(ExeAttributes, out ResHexOffsetTable resHexOffsetTable))
+			ZeusResHexOffsetTable resHexOffsetTable = new ZeusResHexOffsetTable(ExeAttributes, out bool wasSuccessful);
+
+			if (!wasSuccessful)
 				return;
 
 			byte[] resWidthBytes = BitConverter.GetBytes(ResWidth);
@@ -120,55 +127,57 @@ namespace Zeus_and_Poseidon.non_UI_code
 			//         off the screen without any problem. Thus, I'll use this fact to get a little bit more space for the city view.
 			//
 			// Finally, we also need to round our final figure down to the nearest integer.
-			byte resHeightMult;
+
 			// 1920 plugged into the formula below is equal to 127. Thus, this and any higher number must use a capped multiplier.
-			if (ResHeight >= 1920)
-			{
-				resHeightMult = 127;
-			}
-			else
-			{
-				resHeightMult = (byte)Math.Floor(((ResHeight - 30) / 15f) + 1); // fs are required. Otherwise, compiler error CS0121 occurs.
-			}
-			byte resWidthMult;
+			byte resHeightMult = ResHeight >= 1920 ?
+				(byte) 127 :
+				(byte) Math.Floor(((ResHeight - 30) / 15f) + 1);
+
 			// 7800 plugged into the formula below is equal to 127. Thus, this and any higher number must use a capped multiplier.
-			if (ResWidth >= 7800)
-			{
-				resWidthMult = 127;
-			}
-			else
-			{
-				resWidthMult = (byte)Math.Floor((ResWidth - 182 + 2) / 60f); // fs are required. Otherwise, compiler error CS0121 occurs.
-			}
+			byte resWidthMult = ResWidth >= 7800 ?
+				(byte) 127 :
+				(byte) Math.Floor((ResWidth - 182 + 2) / 60f);
+
 			ZeusExeData[resHexOffsetTable._ViewportHeightMult] = resHeightMult;
 			ZeusExeData[resHexOffsetTable._ViewportWidthMult] = resWidthMult;
 
-#if !DEBUG
-				byte[] classQN = { 90, 101, 117, 115, 95, 97, 110, 100, 95, 80, 111, 115, 101, 105, 100, 111, 110, 46, 110,
-					111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99, 51, 50, 46, 77, 97, 105, 110, 69, 120, 101,
-					73, 110, 116, 101, 103, 114, 105, 116, 121 };
-				byte[] methodQN = { 95, 67, 104, 101, 99, 107 };
-				Type _type_ = Type.GetType(Encoding.ASCII.GetString(classQN));
-				if (_type_ != null)
+			if (shouldRun)
+			{
+				unsafe
 				{
-					try
+					byte* classQn = stackalloc byte[] { 90, 101, 117, 115, 95, 97, 110, 100, 95, 80, 111, 115, 101, 105, 100, 111, 110, 46, 110,
+						111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99, 51, 50, 46, 77, 97, 105, 110, 69, 120, 101,
+						73, 110, 116, 101, 103, 114, 105, 116, 121 };
+					byte* methodQn = stackalloc byte[] { 95, 67, 104, 101, 99, 107 };
+					Type type = Type.GetType(classQn->ToString());
+					if (type != null)
 					{
-						MethodInfo methodInfo = _type_.GetMethod(Encoding.ASCII.GetString(methodQN), BindingFlags.DeclaredOnly |
-							BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
-						methodInfo.Invoke(null, new object[] { });
+						try
+						{
+							MethodInfo methodInfo = type.GetMethod(methodQn->ToString(), BindingFlags.DeclaredOnly |
+								BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
+							if (methodInfo != null)
+								methodInfo.Invoke(null, new object[] { });
+
+							else
+							{
+								Application.Current.Shutdown();
+								return;
+							}
+						}
+						catch (Exception)
+						{
+							Application.Current.Shutdown();
+							return;
+						}
 					}
-					catch (Exception)
+					else
 					{
 						Application.Current.Shutdown();
 						return;
 					}
 				}
-				else
-				{
-					Application.Current.Shutdown();
-					return;
-				}
-#endif
+			}
 
 			// Due to the nature of how the city view is created using a multiplier, some resolutions where the height is not a multiple of 15 will have
 			// a gap at the bottom of the screen where the last background image can be seen. Even the original game with it's vertical resolution
@@ -237,15 +246,10 @@ namespace Zeus_and_Poseidon.non_UI_code
 			}
 			// Next, we need to edit part of the injected code to take the new city viewport height into account.
 			ViewportAndMenubarHeight = (ushort)(((resHeightMult - 1) * 15) + 30);
-			byte[] initialRedBarTopLeftCornerYPos;
-			if (ResHeight <= 768)
-			{
-				initialRedBarTopLeftCornerYPos = new byte[] { 0x00, 0x00 };
-			}
-			else
-			{
-				initialRedBarTopLeftCornerYPos = BitConverter.GetBytes((ushort)(ViewportAndMenubarHeight - 768));
-			}
+			byte[] initialRedBarTopLeftCornerYPos = ResHeight <= 768 ?
+				new byte[] { 0x00, 0x00 } :
+				BitConverter.GetBytes((ushort)(ViewportAndMenubarHeight - 768));
+
 			resHexOffsetTable._ExtendSidebarRedStripeNewCodeData[1] = initialRedBarTopLeftCornerYPos[0];
 			resHexOffsetTable._ExtendSidebarRedStripeNewCodeData[2] = initialRedBarTopLeftCornerYPos[1];
 			// Finally, insert our new code into an empty portion of the EXE

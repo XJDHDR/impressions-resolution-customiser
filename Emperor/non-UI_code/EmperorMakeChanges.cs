@@ -124,23 +124,28 @@ namespace Emperor.non_UI_code
 			}
 
 			byte[] emperorExeData = File.ReadAllBytes($"{EmperorExeDirectory}/Emperor.exe");
-			EmperorExeAttributes emperorExeAttributes = new EmperorExeAttributes(emperorExeData, out bool wasSuccessful);
+			EmperorExeAttributes exeAttributes = new EmperorExeAttributes(emperorExeData, out bool wasSuccessful);
 
 			if (!wasSuccessful)
 				return;
 
-			EmperorResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, in emperorExeAttributes, ref emperorExeData,
+			EmperorResolutionEdits._hexEditExeResVals(ResWidth, ResHeight, in exeAttributes, ref emperorExeData,
 				out ushort viewportWidth, out ushort viewportHeight);
 
 			if (FixWindowed)
 			{
-				EmperorWindowFix._hexEditWindowFix(in emperorExeAttributes, ref emperorExeData);
+				EmperorWindowFix windowFixData = new EmperorWindowFix(exeAttributes, out bool windowFixExeRecognised);
+
+				if (windowFixExeRecognised)
+					windowFixData._hexEditWindowFix(ref emperorExeData);
 			}
+
 			if (PatchEngText)
 			{
 				EmperorEngTextEdit._EditResolutionString(EmperorExeDirectory, patchedFilesFolder, ResWidth, ResHeight,
-					in emperorExeAttributes);
+					in exeAttributes);
 			}
+
 			if (ResizeImages)
 			{
 				EmperorResizeImages resizeImages = new EmperorResizeImages(ResWidth, ResHeight, viewportWidth,
@@ -149,9 +154,10 @@ namespace Emperor.non_UI_code
 				if (jpegCodecFound)
 					resizeImages._CreateResizedImages();
 			}
+
 			if (IncreaseSpriteLimit)
 			{
-				EmperorSpriteLimitChanger._MakeChanges(in emperorExeAttributes, ref emperorExeData);
+				EmperorSpriteLimitChanger._MakeChanges(in exeAttributes, ref emperorExeData);
 			}
 
 			File.WriteAllBytes($"{patchedFilesFolder}/Emperor.exe", emperorExeData);

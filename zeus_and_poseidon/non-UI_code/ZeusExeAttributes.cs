@@ -7,6 +7,7 @@
 
 using System;
 using System.Windows;
+using ImpressionsFileFormats.EngText;
 using Zeus_and_Poseidon.non_UI_code.Crc32;
 
 namespace Zeus_and_Poseidon.non_UI_code
@@ -19,6 +20,9 @@ namespace Zeus_and_Poseidon.non_UI_code
 		internal readonly ExeLangAndDistrib _SelectedExeLangAndDistrib;
 		internal readonly bool _IsDiscVersion;
 		internal readonly bool _IsPoseidonInstalled;
+		internal readonly CharEncodingTables _CharEncoding;
+		internal readonly int _EngTextDefaultStringCount;
+		internal readonly int _EngTextDefaultWordCount;
 
 		/// <summary>
 		/// Compares the CRC for the game's EXE to a list of known CRCs to determine which distribution of this game is being patched.
@@ -44,6 +48,9 @@ namespace Zeus_and_Poseidon.non_UI_code
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogAndSteamEnglish;
 					_IsDiscVersion = false;
 					_IsPoseidonInstalled = true;
+					_CharEncoding = CharEncodingTables.Win1252;
+					_EngTextDefaultStringCount = 0;
+					_EngTextDefaultWordCount = 0;
 					WasSuccessful = true;
 					return;
 
@@ -63,6 +70,9 @@ namespace Zeus_and_Poseidon.non_UI_code
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
 					_IsDiscVersion = false;
 					_IsPoseidonInstalled = false;
+					_CharEncoding = CharEncodingTables.Win1252;
+					_EngTextDefaultStringCount = 0;
+					_EngTextDefaultWordCount = 0;
 					WasSuccessful = false;
 					return;
 			}

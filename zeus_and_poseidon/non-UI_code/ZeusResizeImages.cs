@@ -1,4 +1,5 @@
 ﻿// This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// ReSharper disable RedundantUsingDirective
 // https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
@@ -242,67 +243,67 @@ namespace Zeus_and_Poseidon.non_UI_code
 		private void resizeIndividualImage(int I)
 		{
 			string imageToResizeFullPath = $"{zeusDataFolderLocation}/{imagesToResize[I]}";
-			if (File.Exists(imageToResizeFullPath))
-			{
-				using (Bitmap oldImage = new Bitmap(imageToResizeFullPath))
-				{
-					bool currentImageIsMap = false;
-					ushort newImageWidth;
-					ushort newImageHeight;
-					if (Regex.IsMatch(imagesToResize[I], "_Map(OfGreece)*[0-9][0-9].jpg$",
-						    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
-					{
-						// Map images need to have the new images sized to fit the game's viewport.
-						currentImageIsMap = true;
-						newImageWidth = (ushort)(resWidth - 180);
-						newImageHeight = (ushort)(resHeight - 30);
-					}
-					else
-					{
-						newImageWidth = resWidth;
-						newImageHeight = resHeight;
-					}
-
-					using (Bitmap newImage = new Bitmap(newImageWidth, newImageHeight))
-					{
-						using (Graphics newImageGraphics = Graphics.FromImage(newImage))
-						{
-							// Note to self: Don't simplify the DrawImage calls. Specifying the old image's width and height is required
-							// to work around a quirk where the image's DPI is scaled to the screen's before insertion:
-							// https://stackoverflow.com/a/41189062
-							if (currentImageIsMap)
-							{
-								// This file is one of the maps. Must be placed in the top-left corner of the new image.
-								// Also create the background colour that will be used to fill the spaces not taken by the original image.
-								newImageGraphics.Clear(Color.FromArgb(255, 35, 88, 120));
-
-								newImageGraphics.DrawImage(oldImage, 0, 0, oldImage.Width, oldImage.Height);
-							}
-							else
-							{
-								if (!stretchImages)
-								{
-									// A non-map image. Must be placed in the centre of the new image with a black background.
-									newImageGraphics.Clear(Color.Black);
-
-									newImageGraphics.DrawImage(oldImage, (newImageWidth - oldImage.Width) / 2,
-										(newImageHeight - oldImage.Height) / 2, oldImage.Width, oldImage.Height);
-								}
-								else
-								{
-									newImageGraphics.DrawImage(oldImage, 0, 0, newImageWidth, newImageHeight);
-								}
-							}
-
-							newImage.Save($"{patchedImagesFolder}/{imagesToResize[I]}", jpegCodecInfo, encoderParameters);
-						}
-					}
-				}
-			}
-			else
+			if (!File.Exists(imageToResizeFullPath))
 			{
 				// Drop the missing image's name into a ConcurrentBag to put in an error message later.
 				allErrorMessages.Add($"{imageToResizeFullPath}\n");
+				return;
+			}
+
+			using (Bitmap oldImage = new Bitmap(imageToResizeFullPath))
+			{
+				bool currentImageIsMap = false;
+				ushort newImageWidth;
+				ushort newImageHeight;
+				if (Regex.IsMatch(imagesToResize[I], "_Map(OfGreece)*[0-9][0-9].jpg$",
+					    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
+				{
+					// Map images need to have the new images sized to fit the game's viewport.
+					currentImageIsMap = true;
+					newImageWidth = viewportWidth;
+					newImageHeight = viewportHeight;
+				}
+				else
+				{
+					newImageWidth = resWidth;
+					newImageHeight = resHeight;
+				}
+
+				using (Bitmap newImage = new Bitmap(newImageWidth, newImageHeight))
+				{
+					using (Graphics newImageGraphics = Graphics.FromImage(newImage))
+					{
+						// Note to self: Don't simplify the DrawImage calls. Specifying the old image's width and height is required
+						// to work around a quirk where the image's DPI is scaled to the screen's before insertion:
+						// https://stackoverflow.com/a/41189062
+						if (currentImageIsMap)
+						{
+							// This file is one of the maps. Must be placed in the top-left corner of the new image.
+							// Also create the background colour that will be used to fill the spaces not taken by the original image.
+							newImageGraphics.Clear(Color.FromArgb(255, 35, 88, 120));
+
+							newImageGraphics.DrawImage(oldImage, 0, 0, oldImage.Width, oldImage.Height);
+						}
+						else
+						{
+							if (!stretchImages)
+							{
+								// A non-map image. Must be placed in the centre of the new image with a black background.
+								newImageGraphics.Clear(Color.Black);
+
+								newImageGraphics.DrawImage(oldImage, (newImageWidth - oldImage.Width) / 2,
+									(newImageHeight - oldImage.Height) / 2, oldImage.Width, oldImage.Height);
+							}
+							else
+							{
+								// A non-map image. Stretch it to fit the new window's dimensions.
+								newImageGraphics.DrawImage(oldImage, 0, 0, newImageWidth, newImageHeight);
+							}
+						}
+
+						newImage.Save($"{patchedImagesFolder}/{imagesToResize[I]}", jpegCodecInfo, encoderParameters);
+					}
+				}
 			}
 		}
 	}

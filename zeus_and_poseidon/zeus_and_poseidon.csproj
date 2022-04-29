@@ -116,5 +116,11 @@
   <ItemGroup>
     <Resource Include="Zeus.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ImpressionsFileFormats\ImpressionsFileFormats.csproj">
+      <Project>{71a34440-1163-46ef-aeaf-06acb63baf2a}</Project>
+      <Name>ImpressionsFileFormats</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
