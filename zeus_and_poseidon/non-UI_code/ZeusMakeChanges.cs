@@ -149,6 +149,12 @@ namespace Zeus_and_Poseidon.non_UI_code
 					windowFixData._hexEditWindowFix(ref zeusExeData);
 			}
 
+			if (PatchEngText)
+			{
+				ZeusEngTextEdit._EditResolutionString(ZeusExeDirectory, patchedFilesFolder,
+					ResWidth, ResHeight, in exeAttributes);
+			}
+
 			if (ResizeImages)
 			{
 				ZeusResizeImages resizeImages = new ZeusResizeImages(ResWidth, ResHeight, viewportWidth, viewportHeight,

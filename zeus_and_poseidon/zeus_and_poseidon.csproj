@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="non-UI_code\Crc32\MainExeIntegrity.cs" />
     <Compile Include="non-UI_code\Crc32\SliceBy16.cs" />
+    <Compile Include="non-UI_code\ZeusEngTextEdit.cs" />
     <Compile Include="non-UI_code\ZeusExeAttributes.cs" />
     <Compile Include="non-UI_code\ZeusResHexOffsetTable.cs" />
     <Compile Include="non-UI_code\ZeusMakeChanges.cs" />

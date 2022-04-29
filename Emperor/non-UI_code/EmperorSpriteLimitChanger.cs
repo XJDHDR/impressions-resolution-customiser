@@ -54,8 +54,8 @@ namespace Emperor.non_UI_code
 						return;
 
 					case ExeLangAndDistrib.CdEnglish:
-						_LimitOffset1 = 0;
-						_LimitOffset2 = 0;
+						_LimitOffset1 = 0x2D920;
+						_LimitOffset2 = 0x2D964;
 						WasSuccessful = true;
 						return;
 

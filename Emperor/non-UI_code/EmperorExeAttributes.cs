@@ -18,7 +18,6 @@ namespace Emperor.non_UI_code
 	internal readonly struct EmperorExeAttributes
 	{
 		internal readonly ExeLangAndDistrib _SelectedExeLangAndDistrib;
-		internal readonly bool _IsDiscVersion;
 		internal readonly CharEncodingTables _CharEncoding;
 		internal readonly int _EngTextDefaultStringCount;
 		internal readonly int _EngTextDefaultWordCount;
@@ -45,22 +44,20 @@ namespace Emperor.non_UI_code
 				// English GOG version
 				case 0x8bc98c83:
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogEnglish;
-					_IsDiscVersion = false;
 					_CharEncoding = CharEncodingTables.Win1252;
 					_EngTextDefaultStringCount = 7240;
 					_EngTextDefaultWordCount = 33816;
 					WasSuccessful = true;
 					return;
 
-				/*// English CD version
-				case 0xA8A1AE71:
-					_SelectedExeLangAndDistrib = ExeLangAndDistrib.CD_English;
-					_IsDiscVersion = true;
+				// English CD version
+				case 0x71af4e0e:
+					_SelectedExeLangAndDistrib = ExeLangAndDistrib.CdEnglish;
 					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = ??;
-					_EngTextDefaultWordCount = ??;
+					_EngTextDefaultStringCount = 7240;
+					_EngTextDefaultWordCount = 33816;
 					WasSuccessful = true;
-					return;*/ // TODO: Comment this out until CD version is working
+					return;
 
 				// Unrecognised EXE
 				default:
@@ -68,14 +65,13 @@ namespace Emperor.non_UI_code
 					{
 						"Emperor.exe was not recognised. Only the following unmodified distributions and languages are currently supported:",
 						"- English GOG version",
-						//,"- English CD version",	// TODO: Comment this out until CD version works
+						"- English CD (Sierra and Sold Out versions)",
 						"",
 						"If you are using one of the listed versions, please ensure that the EXE has not been modified.",
 						"If you are not, please do request that support be added, especially if you can provide info on how I can get a copy of your version."
 					};
 					MessageBox.Show(string.Join(Environment.NewLine, messageLines));
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
-					_IsDiscVersion = false;
 					_CharEncoding = CharEncodingTables.Win1252;
 					_EngTextDefaultStringCount = 0;
 					_EngTextDefaultWordCount = 0;

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Emperor"
         mc:Ignorable="d"
-        Title="Emperor Resolution Customiser" Height="430" Width="530" Icon="Exe_Resources\Emperor.ico" Background="#E0E0E0"
+        Title="Emperor Resolution Customiser" Height="430" Width="530" Icon="Exe_Resources\Emperor.ico" Background="#AF7B46"
         WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -39,35 +39,35 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Border BorderBrush="Black" BorderThickness="2" Grid.Column="2" Grid.ColumnSpan="5" Grid.Row="2" Grid.RowSpan="12"/>
+        <Border BorderBrush="#3D2906" BorderThickness="2" Grid.Column="2" Grid.ColumnSpan="5" Grid.Row="2" Grid.RowSpan="12"/>
 
         <Grid Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="3">
-	        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="2">
+	        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#3D2906" BorderThickness="2">
 		        <TextBlock TextAlignment="Left" TextWrapping="Wrap" Text="Resolution Width:" FontSize="32" Padding="3,0,0,0"/>
 	        </Border>
-	        <Border HorizontalAlignment="Right" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="2" Width="120">
-		        <TextBox x:Name="ResWidth" TextAlignment="Right" TextWrapping="Wrap" Text="1024" FontSize="32"
+	        <Border HorizontalAlignment="Right" VerticalAlignment="Stretch" BorderBrush="#3D2906" BorderThickness="2" Width="120">
+		        <TextBox x:Name="ResWidth" TextAlignment="Right" TextWrapping="Wrap" Text="1024" FontSize="32" Background="#906840" BorderBrush="#684828"
 		                 GotFocus="AllTextBoxes_GotFocus" Padding="0,0,2,0"/>
 	        </Border>
         </Grid>
 
         <Grid Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="4">
-	        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="2">
+	        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#3D2906" BorderThickness="2">
 	            <TextBlock TextAlignment="Left" TextWrapping="Wrap" Text="Resolution Height:" FontSize="32" Padding="3,0,0,0"/>
 	        </Border>
-	        <Border HorizontalAlignment="Right" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="2" Width="120">
-	            <TextBox x:Name="ResHeight" TextAlignment="Right" TextWrapping="Wrap" Text="768" FontSize="32"
+	        <Border HorizontalAlignment="Right" VerticalAlignment="Stretch" BorderBrush="#3D2906" BorderThickness="2" Width="120">
+	            <TextBox x:Name="ResHeight" TextAlignment="Right" TextWrapping="Wrap" Text="768" FontSize="32" Background="#906840" BorderBrush="#684828"
 	                     GotFocus="AllTextBoxes_GotFocus" Padding="0,0,2,0"/>
 	        </Border>
         </Grid>
 
         <Button Click="ApplyWindowFix_Help_Click" Grid.Column="3" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#C0C0C0">
+                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#906840" BorderBrush="#684828">
 	        <Button.RenderTransform>
 		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
 	        </Button.RenderTransform>
         </Button>
-        <CheckBox x:Name="ApplyWindowFix" Content="Apply Windowed Mode Fixes" IsChecked="True"
+        <CheckBox x:Name="ApplyWindowFix" Content="Apply Windowed Mode Fixes" IsChecked="True" Background="#906840" BorderBrush="#684828"
             Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="6" VerticalAlignment="Center">
             <CheckBox.RenderTransform>
                 <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
@@ -75,12 +75,12 @@
         </CheckBox>
 
         <Button Click="PatchEngText_Help_Click" Grid.Column="3" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#C0C0C0">
+                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#906840" BorderBrush="#684828">
 	        <Button.RenderTransform>
 		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
 	        </Button.RenderTransform>
         </Button>
-        <CheckBox x:Name="PatchEngText" Content="Patch EmperorText.eng" IsChecked="True"
+        <CheckBox x:Name="PatchEngText" Content="Patch EmperorText.eng" IsChecked="True" Background="#906840" BorderBrush="#684828"
                   Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="7" VerticalAlignment="Center">
 	        <CheckBox.RenderTransform>
 		        <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
@@ -88,12 +88,12 @@
         </CheckBox>
 
         <Button Click="ResizeImages_Help_Click" Grid.Column="3" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#C0C0C0">
+                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#906840" BorderBrush="#684828">
 	        <Button.RenderTransform>
 		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
 	        </Button.RenderTransform>
         </Button>
-        <CheckBox x:Name="ResizeImages" Content="Resize Images" IsChecked="True"
+        <CheckBox x:Name="ResizeImages" Content="Resize Images" IsChecked="True" Background="#906840" BorderBrush="#684828"
                   Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="8" VerticalAlignment="Center"
                   Checked="ResizeImages_Checked" Unchecked="ResizeImages_Unchecked">
             <CheckBox.RenderTransform>
@@ -102,12 +102,12 @@
         </CheckBox>
 
         <Button Click="StretchImages_Help_Click" Grid.Column="3" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#C0C0C0">
+                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#906840" BorderBrush="#684828">
 	        <Button.RenderTransform>
 		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
 	        </Button.RenderTransform>
         </Button>
-        <CheckBox x:Name="StretchImages" Content="Stretch menu images to fit window" IsChecked="False"
+        <CheckBox x:Name="StretchImages" Content="Stretch menu images to fit window" IsChecked="False" Background="#906840" BorderBrush="#684828"
                   Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="9" VerticalAlignment="Center"
                   Margin="16,0,0,0">
 	        <CheckBox.RenderTransform>
@@ -116,12 +116,12 @@
         </CheckBox>
 
         <Button Click="IncreaseSpriteLimits_Help_Click" Grid.Column="3" Grid.Row="10" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#C0C0C0">
+                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#906840" BorderBrush="#684828">
 	        <Button.RenderTransform>
 		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
 	        </Button.RenderTransform>
         </Button>
-        <CheckBox x:Name="IncreaseSpriteLimits" Content="Double Sprite Limits (warning: see ?)" IsChecked="False"
+        <CheckBox x:Name="IncreaseSpriteLimits" Content="Double Sprite Limits (warning: see ?)" IsChecked="False" Background="#906840" BorderBrush="#684828"
                   Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="10" VerticalAlignment="Center">
 	        <CheckBox.RenderTransform>
 		        <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
@@ -130,19 +130,19 @@
 
         <Grid Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="12">
 	        <Button x:Name="SelectExe" Content="Select Emperor.exe"
-	                HorizontalAlignment="Left" VerticalAlignment="Center" Click="SelectExe_Click" Background="#C0C0C0">
+	                HorizontalAlignment="Left" VerticalAlignment="Center" Click="SelectExe_Click" Background="#906840" BorderBrush="#684828">
 	            <Button.RenderTransform>
 	                <ScaleTransform CenterY="10" ScaleX="2" ScaleY="2" />
 	            </Button.RenderTransform>
 	        </Button>
 	        <Button x:Name="HelpMe" Content="?" Width="20" FontSize="12" FontWeight="Bold"
-	                HorizontalAlignment="Center" VerticalAlignment="Center" Click="HelpMe_Click" Background="#C0C0C0">
+	                HorizontalAlignment="Center" VerticalAlignment="Center" Click="HelpMe_Click" Background="#906840" BorderBrush="#684828">
 	            <Button.RenderTransform>
 	                <ScaleTransform CenterX="-9" CenterY="10" ScaleX="2" ScaleY="2" />
 	            </Button.RenderTransform>
 	        </Button>
 	        <Button x:Name="GenerateExe" Content="Generate EXE"
-	                HorizontalAlignment="Right" VerticalAlignment="Center" Click="GenerateExe_Click" Background="#C0C0C0">
+	                HorizontalAlignment="Right" VerticalAlignment="Center" Click="GenerateExe_Click" Background="#906840" BorderBrush="#684828">
 	            <Button.RenderTransform>
 	                <ScaleTransform CenterX="75" CenterY="10" ScaleX="2" ScaleY="2" />
 	            </Button.RenderTransform>

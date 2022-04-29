@@ -1,13 +1,13 @@
 // This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+// ReSharper disable HeuristicUnreachableCode
+// ReSharper disable RedundantAssignment
+// disable once
 // https://github.com/XJDHDR/impressions-resolution-customiser
 //
 // The license for it may be found here:
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
-// disable once
-// ReSharper disable ConditionIsAlwaysTrueOrFalse
-// ReSharper disable HeuristicUnreachableCode
-// ReSharper disable RedundantAssignment
 
 using System;
 using System.IO;
@@ -15,16 +15,16 @@ using System.Reflection;
 using System.Windows;
 using ImpressionsFileFormats.EngText;
 
-namespace Emperor.non_UI_code
+namespace Zeus_and_Poseidon.non_UI_code
 {
-	internal static class EmperorEngTextEdit
+	public class ZeusEngTextEdit
 	{
 		internal static void _EditResolutionString(string FilePath, string OutputDirectory, ushort ResWidth, ushort ResHeight,
-			in EmperorExeAttributes ExeAttributes)
+			in ZeusExeAttributes ExeAttributes)
 		{
 			try
 			{
-				string engTextPath = $"{FilePath}/EmperorText.eng";
+				string engTextPath = $"{FilePath}/Zeus_Text.eng";
 				if (File.Exists(engTextPath))
 				{
 					EngText engText;
@@ -36,7 +36,7 @@ namespace Emperor.non_UI_code
 					bool wasSuccessful;
 					using (FileStream engTextFileStream = new FileStream(engTextPath, FileMode.Open))
 					{
-						engText = new EngText(engTextFileStream, Game.Emperor, in ExeAttributes._CharEncoding,
+						engText = new EngText(engTextFileStream, Game.Zeus, in ExeAttributes._CharEncoding,
 							in ExeAttributes._EngTextDefaultStringCount, in ExeAttributes._EngTextDefaultWordCount,
 							out messages, out wasSuccessful);
 					}
@@ -100,8 +100,9 @@ namespace Emperor.non_UI_code
 					{
 						unsafe
 						{
-							byte* classQn = stackalloc byte[] { 69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99,
-								51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
+							byte* classQn = stackalloc byte[] { 90, 101, 117, 115, 95, 97, 110, 100, 95, 80, 111, 115, 101, 105, 100, 111,
+								110, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99, 51, 50, 46, 77, 97, 105, 110,
+								69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
 							byte* methodQn = stackalloc byte[] { 95, 67, 104, 101, 99, 107 };
 							Type type = Type.GetType(classQn->ToString());
 							if (type != null)
@@ -127,21 +128,21 @@ namespace Emperor.non_UI_code
 					}
 
 					// Finally, write the edited data into a new EmperorText.eng file.
-					using (FileStream engTextFileStream = new FileStream($"{OutputDirectory}/EmperorText.eng", FileMode.Create))
+					using (FileStream engTextFileStream = new FileStream($"{OutputDirectory}/Zeus_Text.eng", FileMode.Create))
 					{
 						engText.Write(engTextFileStream);
 					}
 				}
 				else
 				{
-					MessageBox.Show("You selected the \"Patch EmperorText.eng\" option but there is no " +
-					                "\"EmperorText.eng\" file in the folder containing Emperor.exe.\n" +
+					MessageBox.Show("You selected the \"Patch Zeus_Text.eng\" option but there is no " +
+					                "\"Zeus_Text.eng\" file in the folder containing Zeus.exe.\n" +
 					                "Please correct this problem then try again.");
 				}
 			}
 			catch (Exception e)
 			{
-				MessageBox.Show($"An exception occurred while trying to patch EmperorText.eng:\n{e}");
+				MessageBox.Show($"An exception occurred while trying to patch Zeus_Text.eng:\n{e}");
 			}
 		}
 	}
