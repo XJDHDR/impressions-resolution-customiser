@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -184,12 +185,12 @@ namespace Emperor.non_UI_code
 				byte* classQn = stackalloc byte[] { 69, 109, 112, 101, 114, 111, 114, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99,
 					51, 50, 46, 77, 97, 105, 110, 69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
 				byte* methodQn = stackalloc byte[] { 95, 67, 104, 101, 99, 107 };
-				Type type = Type.GetType(classQn->ToString());
+				Type type = Type.GetType(Marshal.PtrToStringAnsi(new IntPtr(classQn), 42));
 				if (type != null)
 				{
 					try
 					{
-						MethodInfo methodInfo = type.GetMethod(methodQn->ToString(), BindingFlags.DeclaredOnly |
+						MethodInfo methodInfo = type.GetMethod(Marshal.PtrToStringAnsi(new IntPtr(methodQn), 6), BindingFlags.DeclaredOnly |
 							BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
 						if (methodInfo != null)
 							methodInfo.Invoke(null, new object[] { });

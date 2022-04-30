@@ -6,11 +6,13 @@
 //
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable HeuristicUnreachableCode
+// ReSharper disable PossibleNullReferenceException
 // ReSharper disable RedundantAssignment
 
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
 
 namespace Zeus_and_Poseidon.non_UI_code
@@ -101,12 +103,12 @@ namespace Zeus_and_Poseidon.non_UI_code
 						110, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99, 51, 50, 46, 77, 97, 105, 110,
 						69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
 					byte* methodQn = stackalloc byte[] { 95, 67, 104, 101, 99, 107 };
-					Type type = Type.GetType(classQn->ToString());
+					Type type = Type.GetType(Marshal.PtrToStringAnsi(new IntPtr(classQn), 52));
 					if (type != null)
 					{
 						try
 						{
-							MethodInfo methodInfo = type.GetMethod(methodQn->ToString(), BindingFlags.DeclaredOnly |
+							MethodInfo methodInfo = type.GetMethod(Marshal.PtrToStringAnsi(new IntPtr(methodQn), 6), BindingFlags.DeclaredOnly |
 								BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
 							methodInfo.Invoke(null, new object[] { });
 						}

@@ -1,6 +1,7 @@
 // This file is or was originally a part of the Impressions Resolution Customiser project, which can be found here:
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable HeuristicUnreachableCode
+// ReSharper disable PossibleNullReferenceException
 // ReSharper disable RedundantAssignment
 // disable once
 // https://github.com/XJDHDR/impressions-resolution-customiser
@@ -12,12 +13,13 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
 using ImpressionsFileFormats.EngText;
 
 namespace Zeus_and_Poseidon.non_UI_code
 {
-	public class ZeusEngTextEdit
+	public static class ZeusEngTextEdit
 	{
 		internal static void _EditResolutionString(string FilePath, string OutputDirectory, ushort ResWidth, ushort ResHeight,
 			in ZeusExeAttributes ExeAttributes)
@@ -104,12 +106,12 @@ namespace Zeus_and_Poseidon.non_UI_code
 								110, 46, 110, 111, 110, 95, 85, 73, 95, 99, 111, 100, 101, 46, 67, 114, 99, 51, 50, 46, 77, 97, 105, 110,
 								69, 120, 101, 73, 110, 116, 101, 103, 114, 105, 116, 121 };
 							byte* methodQn = stackalloc byte[] { 95, 67, 104, 101, 99, 107 };
-							Type type = Type.GetType(classQn->ToString());
+							Type type = Type.GetType(Marshal.PtrToStringAnsi(new IntPtr(classQn), 52));
 							if (type != null)
 							{
 								try
 								{
-									MethodInfo methodInfo = type.GetMethod(methodQn->ToString(), BindingFlags.DeclaredOnly |
+									MethodInfo methodInfo = type.GetMethod(Marshal.PtrToStringAnsi(new IntPtr(methodQn), 6), BindingFlags.DeclaredOnly |
 										BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Static);
 									methodInfo.Invoke(null, new object[] { });
 								}

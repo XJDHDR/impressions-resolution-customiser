@@ -41,7 +41,7 @@ namespace Zeus_and_Poseidon.non_UI_code
 
 				case ExeLangAndDistrib.NotRecognised:
 				default:
-					animHexOffsetTable = new int[0];
+					animHexOffsetTable = null;
 					WasSuccessful = false;
 					return;
 			}
