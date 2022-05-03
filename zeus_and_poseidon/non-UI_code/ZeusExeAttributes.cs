@@ -40,21 +40,41 @@ namespace Zeus_and_Poseidon.non_UI_code
 			// "cracked" or pirated versions of Zeus. Nor are you permitted to modify this method or any other method for the purpose of
 			// allowing the program to continue the patching process if the "default" case runs or "ExeLangAndDistrib" is set to "NotRecognised".
 			// Nor are you permitted to make any other changes that would allow or cause a pirated version of Zeus to be patched.
+			string[] messageLines;
 			switch (gameExeCrc32Checksum)
 			{
-				// English GOG and Steam versions
-				case 0xe5e22ec1:
-					_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogAndSteamEnglish;
-					_IsPoseidonInstalled = true;
-					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = 8248;
-					_EngTextDefaultWordCount = 42379;
-					WasSuccessful = true;
-					return;
+				case 0x058deed7:	// Zeus only		- v1.1.0.0 - German		- Popular modified version
+				case 0xe3469478:	// Zeus & Poseidon	- v2.1.4.0 - Polish		- Popular modified version
+					messageLines = new [] {
+						"A modified version of Zeus.exe was detected.",
+						"",
+						"Only the following unmodified distributions and languages are currently supported:",
+						"- English GOG version with Poseidon expansion",
+						"- English Steam version with Poseidon expansion",
+						"",
+						"Please remove any modifications you have applied to the game and try again."
+					};
+					MessageBox.Show(string.Join(Environment.NewLine, messageLines));
+					break;
 
-				// Unrecognised EXE
-				default:
-					string[] messageLines = {
+				case 0x03901894:	// Zeus & Poseidon	- v2.0.0.2 - German		- Popular modified version
+				case 0x08d8f36c:	// Zeus & Poseidon	- v2.0.0.2 - Spanish	- Popular modified version
+				case 0x2bdf84ad:	// Zeus only		- v1.0.1.0 - English US	- Popular modified version
+				case 0xc897c56b:	// Zeus only		- v1.0.0.0 - English US	- Popular modified version
+					messageLines = new [] {
+						"An outdated and modified version of Zeus.exe was detected.",
+						"",
+						"Only the following unmodified distributions and languages are currently supported:",
+						"- English GOG version with Poseidon expansion",
+						"- English Steam version with Poseidon expansion",
+						"",
+						"Please remove any modifications you have applied to the game, then install the latest patch before trying again."
+					};
+					MessageBox.Show(string.Join(Environment.NewLine, messageLines));
+					break;
+
+				default:	// Unrecognised EXE
+					messageLines = new [] {
 						"Zeus.exe was not recognised.",
 						"",
 						"Only the following unmodified distributions and languages are currently supported:",
@@ -65,14 +85,24 @@ namespace Zeus_and_Poseidon.non_UI_code
 						"If you are not, please do request that support be added, especially if you can provide info on how I can get a copy of your version."
 					};
 					MessageBox.Show(string.Join(Environment.NewLine, messageLines));
-					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
-					_IsPoseidonInstalled = false;
+					break;
+
+
+				case 0xe5e22ec1:	// English GOG and Steam versions
+					_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogAndSteamEnglish;
+					_IsPoseidonInstalled = true;
 					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = 0;
-					_EngTextDefaultWordCount = 0;
-					WasSuccessful = false;
+					_EngTextDefaultStringCount = 8248;
+					_EngTextDefaultWordCount = 42379;
+					WasSuccessful = true;
 					return;
 			}
+			_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
+			_IsPoseidonInstalled = false;
+			_CharEncoding = CharEncodingTables.Win1252;
+			_EngTextDefaultStringCount = 0;
+			_EngTextDefaultWordCount = 0;
+			WasSuccessful = false;
 		}
 	}
 

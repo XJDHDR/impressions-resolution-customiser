@@ -65,7 +65,7 @@ namespace Emperor.non_UI_code
 					{
 						"Emperor.exe was not recognised. Only the following unmodified distributions and languages are currently supported:",
 						"- English GOG version",
-						"- English CD (Sierra and Sold Out versions)",
+						"- English CD (Sierra and Sold Out versions) with the v1.1 patch installed",
 						"",
 						"If you are using one of the listed versions, please ensure that the EXE has not been modified.",
 						"If you are not, please do request that support be added, especially if you can provide info on how I can get a copy of your version."
