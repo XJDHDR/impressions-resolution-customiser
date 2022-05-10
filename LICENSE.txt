@@ -8,20 +8,20 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-1.	Redistributions in binary or source form must not (partially or wholly) be
+1.	Redistributions in binary or source form must not (partially or wholly): be
 	distributed with, be statically linked (to or by), be dynamically linked (to or by),
-	execute or be executed by, read into or be read by, be used in conjunction with or
-	be modified to: facilitate, promote, allow or tolerate using redistributions in
-	binary or source form with pirated intellectual property or software that does not
+	execute or be executed by, read from or be read by, be used in conjunction with, and/or
+	be modified to operate with; anything that: facilitates, promotes, allows and/or tolerates using redistributions in
+	binary or source form with pirated intellectual property, or software that does not
 	take reasonable measures to ensure that the intellectual property in question is not pirated.
 
-2.	You are not permitted to remove, bypass, override, tamper with or reduce
-	the effectiveness of any binary or source which is for the purpose of testing that
-	intellectual property distributed with, statically linked to or by, dynamically
-	linked to or by, read into or by, executing or executed by, or used in conjunction with
+2.	You are not permitted to remove, bypass, override, tamper with, and/or reduce
+	the effectiveness of any part of the binary or source which is for the purpose of testing that
+	intellectual property which is: distributed with, statically linked to or by, dynamically
+	linked to or by, read into or by, executes or is executed by, and/or used in conjunction with:
 	the binary or source is not pirated. The only exception to this is where
 	the binary or source is not and will not be used with the intellectual property that
-	the tester binary or source checks at all.
+	the testing portion of the binary or source checks at all.
 
 3.	Redistributions of source code must retain the above copyright notice, this
 	list of conditions and the following disclaimer.
