@@ -46,15 +46,16 @@ namespace Zeus_and_Poseidon.non_UI_code
 				case 0x058deed7:	// Zeus only		- v1.1.0.0 - German		- Popular modified version
 				case 0xe3469478:	// Zeus & Poseidon	- v2.1.4.0 - Polish		- Popular modified version
 					messageLines = new [] {
-						"A modified version of Zeus.exe was detected.",
+						"The code for determining Zeus' version and language detected that you are using a copy of the game " +
+						"that is known to have been modified. Modified copies of the game are not supported.",
 						"",
 						"Only the following unmodified distributions and languages are currently supported:",
-						"- English GOG version with Poseidon expansion",
-						"- English Steam version with Poseidon expansion",
+						"- English GOG version with Poseidon expansion (Zeus.exe CRC: 0x90b9cf84)",
+						"- English Steam version with Poseidon expansion (Zeus.exe CRC: 0x90b9cf84)",
 						"",
 						"Please remove any modifications you have applied to the game and try again."
 					};
-					MessageBox.Show(string.Join(Environment.NewLine, messageLines));
+					MessageBox.Show(string.Join(Environment.NewLine, messageLines), "Modified version of Zeus.exe detected");
 					break;
 
 				case 0x03901894:	// Zeus & Poseidon	- v2.0.0.2 - German		- Popular modified version
@@ -62,29 +63,30 @@ namespace Zeus_and_Poseidon.non_UI_code
 				case 0x2bdf84ad:	// Zeus only		- v1.0.1.0 - English US	- Popular modified version
 				case 0xc897c56b:	// Zeus only		- v1.0.0.0 - English US	- Popular modified version
 					messageLines = new [] {
-						"An outdated and modified version of Zeus.exe was detected.",
+						"The code for determining Zeus' version and language detected that you are using a copy of the game " +
+						"that is both outdated and known to have been modified. Both of those are not supported.",
 						"",
 						"Only the following unmodified distributions and languages are currently supported:",
-						"- English GOG version with Poseidon expansion",
-						"- English Steam version with Poseidon expansion",
+						"- English GOG version with Poseidon expansion (Zeus.exe CRC: 0x90b9cf84)",
+						"- English Steam version with Poseidon expansion (Zeus.exe CRC: 0x90b9cf84)",
 						"",
 						"Please remove any modifications you have applied to the game, then install the latest patch before trying again."
 					};
-					MessageBox.Show(string.Join(Environment.NewLine, messageLines));
+					MessageBox.Show(string.Join(Environment.NewLine, messageLines), "Modified and outdated version of Zeus.exe detected");
 					break;
 
 				default:	// Unrecognised EXE
 					messageLines = new [] {
-						"Zeus.exe was not recognised.",
+						"The code for determining Zeus' version and language could not work out what edition of the game you are using.",
 						"",
 						"Only the following unmodified distributions and languages are currently supported:",
-						"- English GOG version with Poseidon expansion",
-						"- English Steam version with Poseidon expansion",
+						"- English GOG version with Poseidon expansion (Zeus.exe CRC: 0x90b9cf84)",
+						"- English Steam version with Poseidon expansion (Zeus.exe CRC: 0x90b9cf84)",
 						"",
 						"If you are using one of the listed versions, please ensure that the EXE has not been modified.",
 						"If you are not, please do request that support be added, especially if you can provide info on how I can get a copy of your version."
 					};
-					MessageBox.Show(string.Join(Environment.NewLine, messageLines));
+					MessageBox.Show(string.Join(Environment.NewLine, messageLines), "Unrecognised Zeus.exe detected");
 					break;
 
 

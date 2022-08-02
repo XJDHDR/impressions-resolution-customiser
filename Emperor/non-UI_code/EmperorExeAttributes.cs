@@ -41,8 +41,58 @@ namespace Emperor.non_UI_code
 			// Nor are you permitted to make any other changes that would allow or cause a pirated version of Emperor to be patched.
 			switch (gameExeCrc32Checksum)
 			{
+				// Exes known to be modified
+				case 0x26791e30:	// v1.0.1.0 - German CD		0x39343561 - EmperorEdit
+				case 0xcf46e4b6:	// v1.0.1.0 - English CD	0xbb21655b - EmperorEdit
+				case 0xfb4b0a0c:	// v1.0.1.0 - French CD		0x5bbe23db - EmperorEdit
+					MessageBox.Show(string.Join(Environment.NewLine, StringsDatabase._EmperorExeAttributesExeKnownModified),
+						StringsDatabase._EmperorExeAttributesExeKnownModifiedMessageTitle);
+					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
+					_CharEncoding = CharEncodingTables.Win1252;
+					_EngTextDefaultStringCount = 0;
+					_EngTextDefaultWordCount = 0;
+					WasSuccessful = false;
+					break;
+
+				// Exes known to be both outdated and modified
+				case 0x2c2d13b9:	// v1.0.0.0 - English CD	0xa6b8e461 - EmperorEdit
+				case 0x62effc86:	// v1.0.0.0 - English CD	0x68ccef0b - EmperorEdit
+					MessageBox.Show(string.Join(Environment.NewLine, StringsDatabase._EmperorExeAttributesExeKnownModifiedAndOutdated),
+						StringsDatabase._EmperorExeAttributesExeKnownModifiedAndOutdatedMessageTitle);
+					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
+					_CharEncoding = CharEncodingTables.Win1252;
+					_EngTextDefaultStringCount = 0;
+					_EngTextDefaultWordCount = 0;
+					WasSuccessful = false;
+					break;
+
+				// Exes known to be outdated
+				case 0x15f426a8:	// v1.0.0.0 - English CD	0xf6ff4c3a - EmperorEdit
+				case 0x4ca5afc6:	// v1.0.0.0 - French CD		0xba901a82 - EmperorEdit
+				case 0xafa41a01:	// v1.0.0.0 - Italian CD	0xba901a82 - EmperorEdit
+					MessageBox.Show(string.Join(Environment.NewLine, StringsDatabase._EmperorExeAttributesExeKnownOutdated),
+						StringsDatabase._EmperorExeAttributesExeKnownOutdatedMessageTitle);
+					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
+					_CharEncoding = CharEncodingTables.Win1252;
+					_EngTextDefaultStringCount = 0;
+					_EngTextDefaultWordCount = 0;
+					WasSuccessful = false;
+					break;
+
+				// Unrecognised EXE
+				default:
+					MessageBox.Show(string.Join(Environment.NewLine, StringsDatabase._EmperorExeAttributesExeNotRecognised),
+						StringsDatabase._EmperorExeAttributesExeNotRecognisedMessageTitle);
+					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
+					_CharEncoding = CharEncodingTables.Win1252;
+					_EngTextDefaultStringCount = 0;
+					_EngTextDefaultWordCount = 0;
+					WasSuccessful = false;
+					return;
+
+
 				// English GOG version
-				case 0x8bc98c83:
+				case 0x8bc98c83:	// 0x9430833c - EmperorEdit
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogEnglish;
 					_CharEncoding = CharEncodingTables.Win1252;
 					_EngTextDefaultStringCount = 7240;
@@ -50,8 +100,8 @@ namespace Emperor.non_UI_code
 					WasSuccessful = true;
 					return;
 
-				// English CD version
-				case 0x71af4e0e:
+				// English CD version with 1.1 patch
+				case 0x71af4e0e:	// 0xe814ff39 - EmperorEdit
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.CdEnglish;
 					_CharEncoding = CharEncodingTables.Win1252;
 					_EngTextDefaultStringCount = 7240;
@@ -59,24 +109,23 @@ namespace Emperor.non_UI_code
 					WasSuccessful = true;
 					return;
 
-				// Unrecognised EXE
-				default:
-					string[] messageLines =
-					{
-						"Emperor.exe was not recognised. Only the following unmodified distributions and languages are currently supported:",
-						"- English GOG version",
-						"- English CD (Sierra and Sold Out versions) with the v1.1 patch installed",
-						"",
-						"If you are using one of the listed versions, please ensure that the EXE has not been modified.",
-						"If you are not, please do request that support be added, especially if you can provide info on how I can get a copy of your version."
-					};
-					MessageBox.Show(string.Join(Environment.NewLine, messageLines));
-					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
+				// French CD version with 1.1 patch
+				case 0xdbaf4fad:	// 0xa7ee624a - EmperorEdit
+					_SelectedExeLangAndDistrib = ExeLangAndDistrib.CdFrench;
 					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = 0;
-					_EngTextDefaultWordCount = 0;
-					WasSuccessful = false;
+					_EngTextDefaultStringCount = 7199;
+					_EngTextDefaultWordCount = 36227;
+					WasSuccessful = true;
 					return;
+
+				// Italian CD version with 1.1 patch
+				case 0x725e219a:	// 0xf6df98e1 - EmperorEdit
+					_SelectedExeLangAndDistrib = ExeLangAndDistrib.CdItalian;
+					_CharEncoding = CharEncodingTables.Win1252;
+					_EngTextDefaultStringCount = 0;//TODO
+					_EngTextDefaultWordCount = 0;
+					WasSuccessful = true;
+					break;
 			}
 		}
 	}
@@ -88,6 +137,8 @@ namespace Emperor.non_UI_code
 	{
 		NotRecognised = 0,
 		GogEnglish = 1,
-		CdEnglish = 3
+		CdEnglish = 3,
+		CdFrench = 4,
+		CdItalian = 5
 	}
 }

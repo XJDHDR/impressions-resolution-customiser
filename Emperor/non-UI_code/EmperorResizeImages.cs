@@ -112,9 +112,7 @@ namespace Emperor.non_UI_code
 			emperorMapTemplateImageLocation = $"{AppDomain.CurrentDomain.BaseDirectory}ocean_pattern/ocean_pattern.png";
 			if (!File.Exists(emperorMapTemplateImageLocation))
 			{
-				MessageBox.Show("Could not find \"ocean_pattern\\ocean_pattern.png\". A fallback colour will " +
-				                "be used to create the maps instead. Please check if the ocean_pattern image was successfully " +
-				                "extracted from this program's downloaded archive and is in the correct place.");
+				MessageBox.Show(StringsDatabase._EmperorResizeImagesOceanPatternNotFound);
 			}
 
 			imagesToResize = new[]
@@ -154,9 +152,7 @@ namespace Emperor.non_UI_code
 			}
 			if (jpegCodecInfo == null)
 			{
-				MessageBox.Show("Could not resize any of the game's images because the program could not find a " +
-				                "JPEG Encoder available on your PC. Since Windows comes with such a codec by default, this " +
-				                "could indicate a serious problem with your PC that can only be fixed by reinstalling Windows.");
+				MessageBox.Show(StringsDatabase._EmperorResizeImagesJpegEncoderNotFound);
 				encoderParameters = null;
 				allErrorMessages = null;
 				JpegCodecFound = false;
@@ -221,7 +217,7 @@ namespace Emperor.non_UI_code
 			if (allErrorMessages.IsEmpty == false)
 			{
 				StringBuilder messageText = new StringBuilder();
-				messageText.Append("Could not find the following images :\n\n");
+				messageText.Append($"{StringsDatabase._EmperorResizeImagesCouldNotFindImageMessageStart}:\n\n");
 
 				while (allErrorMessages.IsEmpty == false)
 				{

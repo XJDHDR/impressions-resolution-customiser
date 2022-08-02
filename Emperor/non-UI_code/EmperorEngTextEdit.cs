@@ -36,7 +36,7 @@ namespace Emperor.non_UI_code
 					#endif
 					string messages;
 					bool wasSuccessful;
-					using (FileStream engTextFileStream = new FileStream(engTextPath, FileMode.Open))
+					using (FileStream engTextFileStream = new FileStream(engTextPath, FileMode.Open, FileAccess.Read, FileShare.Read))
 					{
 						engText = new EngText(engTextFileStream, Game.Emperor, in ExeAttributes._CharEncoding,
 							in ExeAttributes._EngTextDefaultStringCount, in ExeAttributes._EngTextDefaultWordCount,
@@ -86,7 +86,25 @@ namespace Emperor.non_UI_code
 
 					// Replace the resolution option's string with the new resolution values, and note the difference in lengths.
 					int oldStringLength = engText.AllStringsByGroup[42].StringsInGroup[4].Length;
-					engText.AllStringsByGroup[42].StringsInGroup[4] = $"{ResWidth.ToString()} x {ResHeight.ToString()} resolution";
+
+					switch (engText.AllStringsByGroup[1].StringsInGroup[0])
+					{
+						case "Fichier":
+							// French language.
+							engText.AllStringsByGroup[42].StringsInGroup[4] = $"Résolution {ResWidth.ToString()} x {ResHeight.ToString()}";
+							break;
+
+						case "File":
+							// English language.
+							engText.AllStringsByGroup[42].StringsInGroup[4] = $"{ResWidth.ToString()} x {ResHeight.ToString()} resolution";
+							break;
+
+						default:
+							// Unknown language, so just default to English.
+							engText.AllStringsByGroup[42].StringsInGroup[4] = $"{ResWidth.ToString()} x {ResHeight.ToString()} resolution";
+							break;
+					}
+
 					int stringLengthChange = engText.AllStringsByGroup[42].StringsInGroup[4].Length - oldStringLength;
 
 					// Adjust the offset for every string group to accomodate the new length of the resolution string
@@ -136,14 +154,12 @@ namespace Emperor.non_UI_code
 				}
 				else
 				{
-					MessageBox.Show("You selected the \"Patch EmperorText.eng\" option but there is no " +
-					                "\"EmperorText.eng\" file in the folder containing Emperor.exe.\n" +
-					                "Please correct this problem then try again.");
+					MessageBox.Show(StringsDatabase._EmperorEngTextEditFileNotFound);
 				}
 			}
 			catch (Exception e)
 			{
-				MessageBox.Show($"An exception occurred while trying to patch EmperorText.eng:\n{e}");
+				MessageBox.Show($"{StringsDatabase._EmperorEngTextEditExceptionOccurred}\n{e}");
 			}
 		}
 	}

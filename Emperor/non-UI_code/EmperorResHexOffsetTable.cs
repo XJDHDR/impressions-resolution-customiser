@@ -81,11 +81,27 @@ namespace Emperor.non_UI_code
 
 					_FixBottomBarLengthNewCodeInsertPoint = 0x1BDF9C;
 					_FixBottomBarLengthNewCode = defineFixBottomBarLengthNewCode();
+					// There is one line (mov ecx, <constant>) that is different for each language.
+					// For English, it needs to be: 0x1C42130
+					_FixBottomBarLengthNewCode[12] = 0x30;
+					_FixBottomBarLengthNewCode[13] = 0x21;
+					_FixBottomBarLengthNewCode[14] = 0xC4;
+					_FixBottomBarLengthNewCode[15] = 0x01;
 					_FixBottomBarLengthFinalJumpDest = 0x1BE038;
 
 					_NewCodeForUiJumpLocation = 0x13A7E3;
 					_NewCodeForUiInsertionLocation = 0x3A8060;
 					_NewCodeForUiBytes = defineNewCodeForUiBytes();
+					// There are two lines (mov ecx, <constant>) here.
+					// Same as before, for English, it needs to be: 0x1C42130
+					_NewCodeForUiBytes[22] = 0x30;
+					_NewCodeForUiBytes[23] = 0x21;
+					_NewCodeForUiBytes[24] = 0xC4;
+					_NewCodeForUiBytes[25] = 0x01;
+					_NewCodeForUiBytes[118] = 0x30;
+					_NewCodeForUiBytes[119] = 0x21;
+					_NewCodeForUiBytes[120] = 0xC4;
+					_NewCodeForUiBytes[121] = 0x01;
 					WasSuccessful = true;
 					return;
 
@@ -112,11 +128,74 @@ namespace Emperor.non_UI_code
 
 					_FixBottomBarLengthNewCodeInsertPoint = 0x1BEB9C;
 					_FixBottomBarLengthNewCode = defineFixBottomBarLengthNewCode();
+					// There is one line (mov ecx, <constant>) that is different for each language.
+					// For English, it needs to be: 0x1C42130
+					_FixBottomBarLengthNewCode[12] = 0x30;
+					_FixBottomBarLengthNewCode[13] = 0x21;
+					_FixBottomBarLengthNewCode[14] = 0xC4;
+					_FixBottomBarLengthNewCode[15] = 0x01;
 					_FixBottomBarLengthFinalJumpDest = 0x1BEC38;
 
 					_NewCodeForUiJumpLocation = 0x13B3E3;
 					_NewCodeForUiInsertionLocation = 0x3A8C60;
 					_NewCodeForUiBytes = defineNewCodeForUiBytes();
+					// There are two lines (mov ecx, <constant>) here.
+					// Same as before, for English, it needs to be: 0x1C42130
+					_NewCodeForUiBytes[22] = 0x30;
+					_NewCodeForUiBytes[23] = 0x21;
+					_NewCodeForUiBytes[24] = 0xC4;
+					_NewCodeForUiBytes[25] = 0x01;
+					_NewCodeForUiBytes[118] = 0x30;
+					_NewCodeForUiBytes[119] = 0x21;
+					_NewCodeForUiBytes[120] = 0xC4;
+					_NewCodeForUiBytes[121] = 0x01;
+					WasSuccessful = true;
+					return ;
+
+				case ExeLangAndDistrib.CdFrench:
+					_ResWidth = 0x12B40D;
+					_ResHeight = 0x12B412;
+					_MainMenuViewportWidth = 0x125B9A;
+					_MainMenuViewportHeight = 0x125BB2;
+					_FixMoneyPopDateTextPosWidth = 0x1B6E9A;
+					_FixTopMenuBarBackgroundPosWidth = 0x1BF1C0;
+					_ViewportWidth = 0x13C80D;
+					_ViewportHeightMult = 0x13C818;
+					_ViewportWidthMult = 0x13C81A;
+					_SidebarRenderLimitWidth = 0x1B6052;
+					_FixSidebarCityMapRotateButton = 0x13AF7A;
+					_FixSidebarCityMapRotateIcon = 0x13B06A;
+					_FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons = 0x13B3AA;
+					_FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons = 0x13B3DA;
+					_SidebarLeftEdgeStartWidth = 0x1B605E;
+					_UnknownWidth = 0x12B6F3;
+					_UnknownHeight = 0x12B6FD;
+					_DrawFunction1Address = 0x8170;
+					_DrawFunction2Address = 0x13A50;
+
+					_FixBottomBarLengthNewCodeInsertPoint = 0x1BF1EC;
+					_FixBottomBarLengthNewCode = defineFixBottomBarLengthNewCode();
+					// There is one line (mov ecx, <constant>) that is different for each language.
+					// For French, it needs to be: 0x1C43960
+					_FixBottomBarLengthNewCode[12] = 0x60;
+					_FixBottomBarLengthNewCode[13] = 0x39;
+					_FixBottomBarLengthNewCode[14] = 0xC4;
+					_FixBottomBarLengthNewCode[15] = 0x01;
+					_FixBottomBarLengthFinalJumpDest = 0x1BF288;
+
+					_NewCodeForUiJumpLocation = 0x13B183;
+					_NewCodeForUiInsertionLocation = 0x3A9800;
+					_NewCodeForUiBytes = defineNewCodeForUiBytes();
+					// There are two lines (mov ecx, <constant>) here.
+					// Same as before, for French, it needs to be: 0x1C43960
+					_NewCodeForUiBytes[22] = 0x60;
+					_NewCodeForUiBytes[23] = 0x39;
+					_NewCodeForUiBytes[24] = 0xC4;
+					_NewCodeForUiBytes[25] = 0x01;
+					_NewCodeForUiBytes[118] = 0x60;
+					_NewCodeForUiBytes[119] = 0x39;
+					_NewCodeForUiBytes[120] = 0xC4;
+					_NewCodeForUiBytes[121] = 0x01;
 					WasSuccessful = true;
 					return ;
 
@@ -162,7 +241,7 @@ namespace Emperor.non_UI_code
 				0xBB, 0x00, 0x00, 0x00, 0x00,		// mov ebx, 0x00	index 1-4	- Set left edge position to <city viewport width> - Set at runtime
 				0x81, 0xEB, 0x1E, 0x03, 0x00, 0x00,	// sub ebx, 0x31E				- Subtract 798 (bottom bar's length) from left edge position.
 
-				0xB9, 0x30, 0x21, 0xC4, 0x01,		// mov ecx, 0x1C42130
+				0xB9, 0x00, 0x00, 0x00, 0x00,		// mov ecx, 0x00	index 12-15	- Constant used for unknown purposes - Set in Constructor
 				0x6A, 0x00,							// push 0						- Seems to move the texture inside the element horizontally.
 				0x6A, 0x00,							//								- Unknown: Didn't see anything change after editing.
 				0x6A, 0x00,							//								- Unknown: Didn't see anything change after editing.
@@ -194,7 +273,7 @@ namespace Emperor.non_UI_code
 				0xA3, 0xB0, 0x8C, 0x3F, 0x01,		// mov seg:off_0x013F8CB0, eax	- Copy EAX to backup memory address as draw func overwrites register.
 
 				// Draw a menubar
-				0xB9, 0x30, 0x21, 0xC4, 0x01,		// mov ecx, 0x1C42130
+				0xB9, 0x00, 0x00, 0x00, 0x00,		// mov ecx, 0x00	index 22-25	- Constant used for unknown purposes - Set in Constructor
 				0x6A, 0x00,							// push 0						- Seems to move the texture inside the element horizontally.
 				0x6A, 0x00,							//								- Unknown: Didn't see anything change after editing.
 				0x6A, 0x00,							//								- Unknown: Didn't see anything change after editing.
@@ -235,7 +314,7 @@ namespace Emperor.non_UI_code
 				0xA3, 0xB0, 0x8C, 0x3F, 0x01,		// mov seg:off_0x013F8CB0, eax	- Copy EAX to backup memory address as draw func overwrites register.
 
 				// Draw a sidebar graphic.
-				0xB9, 0x30, 0x21, 0xC4, 0x01,		// mov ecx, 0x1C42130
+				0xB9, 0x00, 0x00, 0x00, 0x00,		// mov ecx, 0x00  index 118-121	- Constant used for unknown purposes - Set in Constructor
 				0x6A, 0x00,							// push 0						- Seems to move the texture inside the element horizontally.
 				0x6A, 0x00,							//								- Unknown: Didn't see anything change after editing.
 				0x6A, 0x00,							//								- Unknown: Didn't see anything change after editing.

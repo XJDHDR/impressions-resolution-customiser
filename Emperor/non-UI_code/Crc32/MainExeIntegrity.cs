@@ -36,8 +36,7 @@ namespace Emperor.non_UI_code.Crc32
 				}
 				else
 				{
-					MessageBox.Show("Could not find the location of the Resolution Customiser EXE. " +
-						"This is required to perform integrity testing on the EXE. The program will now exit.");
+					MessageBox.Show(StringsDatabase._MainExeIntegrityCouldNotFindExe);
 					Application.Current.Shutdown();
 				}
 			}
@@ -48,8 +47,7 @@ namespace Emperor.non_UI_code.Crc32
 				return;
 			}
 
-			MessageBox.Show("Data corruption has been detected in the Resolution Customiser EXE. " +
-			                "The program will now exit. Please re-download a fresh copy.");
+			MessageBox.Show(StringsDatabase._MainExeIntegrityDataCorruptionDetected);
 			Application.Current.Shutdown();
 		}
 	}
