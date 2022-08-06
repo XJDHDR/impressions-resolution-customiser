@@ -102,6 +102,12 @@ namespace Emperor.non_UI_code
 					_NewCodeForUiBytes[119] = 0x21;
 					_NewCodeForUiBytes[120] = 0xC4;
 					_NewCodeForUiBytes[121] = 0x01;
+					// Finally, the command overwritten by the jump into new code pushes a constant into the ECX register.
+					// This constant is different for each language. For English, the command is: mov ecx, 0x13F8E0C
+					_NewCodeForUiBytes[186] = 0x0C;
+					_NewCodeForUiBytes[187] = 0x8E;
+					_NewCodeForUiBytes[188] = 0x3F;
+					_NewCodeForUiBytes[189] = 0x01;
 					WasSuccessful = true;
 					return;
 
@@ -149,6 +155,12 @@ namespace Emperor.non_UI_code
 					_NewCodeForUiBytes[119] = 0x21;
 					_NewCodeForUiBytes[120] = 0xC4;
 					_NewCodeForUiBytes[121] = 0x01;
+					// Finally, the command overwritten by the jump into new code pushes a constant into the ECX register.
+					// This constant is different for each language. For English, the command is: mov ecx, 0x13F8E0C
+					_NewCodeForUiBytes[186] = 0x0C;
+					_NewCodeForUiBytes[187] = 0x8E;
+					_NewCodeForUiBytes[188] = 0x3F;
+					_NewCodeForUiBytes[189] = 0x01;
 					WasSuccessful = true;
 					return ;
 
@@ -196,8 +208,67 @@ namespace Emperor.non_UI_code
 					_NewCodeForUiBytes[119] = 0x39;
 					_NewCodeForUiBytes[120] = 0xC4;
 					_NewCodeForUiBytes[121] = 0x01;
+					// Finally, the command overwritten by the jump into new code pushes a constant into the ECX register.
+					// This constant is different for each language. For French, the command is: mov ecx, 0x13FA63C
+					_NewCodeForUiBytes[186] = 0x3C;
+					_NewCodeForUiBytes[187] = 0xA6;
+					_NewCodeForUiBytes[188] = 0x3F;
+					_NewCodeForUiBytes[189] = 0x01;
 					WasSuccessful = true;
 					return ;
+
+				case ExeLangAndDistrib.CdItalian:
+					_ResWidth = 0x12B6DD;		//0x12B40D	+2D0
+					_ResHeight = 0x12B6E2;		//0x12B412	+2D0
+					_MainMenuViewportWidth = 0x125E7A;		// 0x125B9A	+2E0
+					_MainMenuViewportHeight = 0x125E92;		// 0x125BB2	+2E0
+					_FixMoneyPopDateTextPosWidth = 0x1B6FBA;	// 0x1B6E9A	+120
+					_FixTopMenuBarBackgroundPosWidth = 0x1BF2D0;	// 0x1BF1C0	+110
+					_ViewportWidth = 0x13CADD;		// 0x13C80D	+2D0
+					_ViewportHeightMult = 0x13CAE8;	// 0x13C818	+2D0
+					_ViewportWidthMult = 0x13CAEA;	// 0x13C81A	+2D0
+					_SidebarRenderLimitWidth = 0x1B6172;	// 0x1B6052	+120
+					_FixSidebarCityMapRotateButton = 0x13B24A;	// 0x13AF7A	+2D0
+					_FixSidebarCityMapRotateIcon = 0x13B33A;	// 0x13B06A	+2D0
+					_FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons = 0x13B67A;	// 0x13B3AA	+2D0
+					_FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons = 0x13B6AA;	// 0x13B3DA	+2D0
+					_SidebarLeftEdgeStartWidth = 0x1B617E;	// 0x1B605E	+120
+					_UnknownWidth = 0x12B9C3;	// 0x12B6F3	+2D0
+					_UnknownHeight = 0x12B9CD;	// 0x12B6FD
+					_DrawFunction1Address = 0x8190;	// 0x8170
+					_DrawFunction2Address = 0x139E0;// 0x13A50
+
+					_FixBottomBarLengthNewCodeInsertPoint = 0x1BF2FC;	// 0x1BF1EC	+110
+					_FixBottomBarLengthNewCode = defineFixBottomBarLengthNewCode();
+					// There is one line (mov ecx, <constant>) that is different for each language.
+					// For Italian, it needs to be: 0x1C43920
+					_FixBottomBarLengthNewCode[12] = 0x20;
+					_FixBottomBarLengthNewCode[13] = 0x39;
+					_FixBottomBarLengthNewCode[14] = 0xC4;
+					_FixBottomBarLengthNewCode[15] = 0x01;
+					_FixBottomBarLengthFinalJumpDest = 0x1BF398;
+
+					_NewCodeForUiJumpLocation = 0x13B453;	// 0x13B183	+2D0
+					_NewCodeForUiInsertionLocation = 0x3A96B0;	// 0x3A9800
+					_NewCodeForUiBytes = defineNewCodeForUiBytes();
+					// There are two lines (mov ecx, <constant>) here.
+					// Same as before, for Italian, it needs to be: 0x1C43920
+					_NewCodeForUiBytes[22] = 0x20;
+					_NewCodeForUiBytes[23] = 0x39;
+					_NewCodeForUiBytes[24] = 0xC4;
+					_NewCodeForUiBytes[25] = 0x01;
+					_NewCodeForUiBytes[118] = 0x20;
+					_NewCodeForUiBytes[119] = 0x39;
+					_NewCodeForUiBytes[120] = 0xC4;
+					_NewCodeForUiBytes[121] = 0x01;
+					// Finally, the command overwritten by the jump into new code pushes a constant into the ECX register.
+					// This constant is different for each language. For Italian, the command is: mov ecx, 0x13FA5FC
+					_NewCodeForUiBytes[186] = 0xFC;
+					_NewCodeForUiBytes[187] = 0xA5;
+					_NewCodeForUiBytes[188] = 0x3F;
+					_NewCodeForUiBytes[189] = 0x01;
+					WasSuccessful = true;
+					return;
 
 				// Unrecognised EXE
 				case ExeLangAndDistrib.NotRecognised:
@@ -339,7 +410,7 @@ namespace Emperor.non_UI_code
 
 				// Cleanup and jump back into the original code.
 				0x33, 0xDB,							// xor ebx, ebx					- Set EBX register back to it's initial value (0).
-				0x8B, 0x0D, 0x0C, 0x8E, 0x3F, 0x01,	// mov ecx, 0x13F8E0C			- Run the command that the jump into this code overwrote.
+				0x8B, 0x0D, 0x00, 0x00, 0x00, 0x00,	// mov ecx, 0x00  index 186-189 - Run the command that the jump into this code overwrote - Set in Constructor
 				0xE9, 0x00, 0x00, 0x00, 0x00		// jmp 0x00		  index 191-194	- Jump back into the original code - Set at runtime
 			};
 	}

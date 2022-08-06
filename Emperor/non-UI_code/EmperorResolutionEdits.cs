@@ -186,16 +186,18 @@ namespace Emperor.non_UI_code
 			int secondDrawingFunctionRelativePos;
 			byte[] secondDrawingFunctionRelativePosBytes;
 
+			ViewportAndMenubarHeight = Convert.ToUInt16(((resHeightMult - 1) * 20) + 40);
+			byte[] viewportHeightBytes = BitConverter.GetBytes(ViewportAndMenubarHeight);
+
 			if (ENABLE_BOTTOM_BAR_PATCHER)
 			{
-				// Next, the bar forming the city viewport's bottom border needs to be repositioned at the bottom edge's actual position
-				// as well as extend it to fit the entire length of that edge. To do this, I'm inserting some new assembly code into the
+				// Next, the bar forming the city viewport's bottom border needs to be extended it to fit the entire length
+				// of the viewport's bottom edge. To do this, I'm inserting some new assembly code into the
 				// EXE that overwrites the code currently in place.
 				//
 				// That said, this step can be skipped if the viewport's height is equal to the game's resolution,
 				// since there is nothing that needs to be drawn.
-				ViewportAndMenubarHeight = Convert.ToUInt16(((resHeightMult - 1) * 20) + 40);
-				byte[] viewportHeightBytes = BitConverter.GetBytes(ViewportAndMenubarHeight);
+
 				// First, insert the new code.
 				for (byte i = 0; i < resHexOffsetTable._FixBottomBarLengthNewCode.Length; i++)
 				{
@@ -208,13 +210,6 @@ namespace Emperor.non_UI_code
 				{
 					EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 1 + i] =
 						viewportWidthBytes[i];
-				}
-
-				// Next, calculate where the bottom edge of the city viewport is and set the bars' vertical position there.
-				for (byte i = 0; i < viewportHeightBytes.Length; i++)
-				{
-					EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 23 + i] =
-						viewportHeightBytes[i];
 				}
 
 				// Next, calculate where the first drawing function is relative to the inserted code so that it's address can be set correctly.
@@ -243,6 +238,13 @@ namespace Emperor.non_UI_code
 				                                          (resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint +
 				                                           resHexOffsetTable._FixBottomBarLengthNewCode.Length));
 				EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 58] = finalJumpDestRelPos;
+			}
+
+			// Calculate where the bottom edge of the city viewport is and set the bottom border bars' vertical position there.
+			for (byte i = 0; i < viewportHeightBytes.Length; i++)
+			{
+				EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 23 + i] =
+					viewportHeightBytes[i];
 			}
 
 			if (shouldRun)

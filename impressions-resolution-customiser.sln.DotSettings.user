@@ -1,3 +1,8 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DF158309_002D3DFF_002D45E8_002D96CF_002D0EC21D5E3A8F_002Fd_003Anon_002DUI_005Fcode_002Ff_003AEmperorExeAttributes_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DF158309_002D3DFF_002D45E8_002D96CF_002D0EC21D5E3A8F_002Fd_003Anon_002DUI_005Fcode_002Ff_003AEmperorMakeChanges_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DF158309_002D3DFF_002D45E8_002D96CF_002D0EC21D5E3A8F_002Fd_003Anon_002DUI_005Fcode_002Ff_003AEmperorResHexOffsetTable_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DF158309_002D3DFF_002D45E8_002D96CF_002D0EC21D5E3A8F_002Fd_003Anon_002DUI_005Fcode_002Ff_003AEmperorResolutionEdits_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DF158309_002D3DFF_002D45E8_002D96CF_002D0EC21D5E3A8F_002Ff_003AStringsDatabase_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Emperor_002FProperties_002FResources/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/Initialized/@EntryValue">True</s:Boolean></wpf:ResourceDictionary>

@@ -19,8 +19,6 @@ namespace Emperor.non_UI_code
 	{
 		internal readonly ExeLangAndDistrib _SelectedExeLangAndDistrib;
 		internal readonly CharEncodingTables _CharEncoding;
-		internal readonly int _EngTextDefaultStringCount;
-		internal readonly int _EngTextDefaultWordCount;
 
 		/// <summary>
 		/// Compares the CRC for the game's EXE to a list of known CRCs to determine which distribution of this game is being patched.
@@ -36,8 +34,9 @@ namespace Emperor.non_UI_code
 			uint gameExeCrc32Checksum = SliceBy16.Crc32(0x1000, EmperorExeData);
 
 			// Please note that as per the software license, you are not permitted to modify this code to add the CRC for any
-			// "cracked" or pirated versions of Emperor. Nor are you permitted to modify this method or any other method for the purpose of
-			// allowing the program to continue the patching process if the "default" case runs or "ExeLangAndDistrib" is set to "NotRecognised".
+			// "cracked" or pirated versions of Emperor to the code paths that successfully patch the EXE.
+			// Nor are you permitted to modify this method or any other method for the purpose of allowing the program to continue
+			// the patching process if the "default" case runs or "ExeLangAndDistrib" is set to "NotRecognised".
 			// Nor are you permitted to make any other changes that would allow or cause a pirated version of Emperor to be patched.
 			switch (gameExeCrc32Checksum)
 			{
@@ -49,20 +48,17 @@ namespace Emperor.non_UI_code
 						StringsDatabase._EmperorExeAttributesExeKnownModifiedMessageTitle);
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
 					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = 0;
-					_EngTextDefaultWordCount = 0;
 					WasSuccessful = false;
 					break;
 
 				// Exes known to be both outdated and modified
 				case 0x2c2d13b9:	// v1.0.0.0 - English CD	0xa6b8e461 - EmperorEdit
 				case 0x62effc86:	// v1.0.0.0 - English CD	0x68ccef0b - EmperorEdit
+				case 0x90ce1021:	// v1.0.0.0 - Italian CD	0x1587ddc8 - EmperorEdit
 					MessageBox.Show(string.Join(Environment.NewLine, StringsDatabase._EmperorExeAttributesExeKnownModifiedAndOutdated),
 						StringsDatabase._EmperorExeAttributesExeKnownModifiedAndOutdatedMessageTitle);
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
 					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = 0;
-					_EngTextDefaultWordCount = 0;
 					WasSuccessful = false;
 					break;
 
@@ -74,8 +70,6 @@ namespace Emperor.non_UI_code
 						StringsDatabase._EmperorExeAttributesExeKnownOutdatedMessageTitle);
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
 					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = 0;
-					_EngTextDefaultWordCount = 0;
 					WasSuccessful = false;
 					break;
 
@@ -85,8 +79,6 @@ namespace Emperor.non_UI_code
 						StringsDatabase._EmperorExeAttributesExeNotRecognisedMessageTitle);
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
 					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = 0;
-					_EngTextDefaultWordCount = 0;
 					WasSuccessful = false;
 					return;
 
@@ -95,8 +87,6 @@ namespace Emperor.non_UI_code
 				case 0x8bc98c83:	// 0x9430833c - EmperorEdit
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.GogEnglish;
 					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = 7240;
-					_EngTextDefaultWordCount = 33816;
 					WasSuccessful = true;
 					return;
 
@@ -104,8 +94,6 @@ namespace Emperor.non_UI_code
 				case 0x71af4e0e:	// 0xe814ff39 - EmperorEdit
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.CdEnglish;
 					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = 7240;
-					_EngTextDefaultWordCount = 33816;
 					WasSuccessful = true;
 					return;
 
@@ -113,8 +101,6 @@ namespace Emperor.non_UI_code
 				case 0xdbaf4fad:	// 0xa7ee624a - EmperorEdit
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.CdFrench;
 					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = 7199;
-					_EngTextDefaultWordCount = 36227;
 					WasSuccessful = true;
 					return;
 
@@ -122,8 +108,6 @@ namespace Emperor.non_UI_code
 				case 0x725e219a:	// 0xf6df98e1 - EmperorEdit
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.CdItalian;
 					_CharEncoding = CharEncodingTables.Win1252;
-					_EngTextDefaultStringCount = 0;//TODO
-					_EngTextDefaultWordCount = 0;
 					WasSuccessful = true;
 					break;
 			}

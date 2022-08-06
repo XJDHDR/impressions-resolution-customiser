@@ -38,9 +38,8 @@ namespace Zeus_and_Poseidon.non_UI_code
 					bool wasSuccessful;
 					using (FileStream engTextFileStream = new FileStream(engTextPath, FileMode.Open, FileAccess.Read, FileShare.Read))
 					{
-						engText = new EngText(engTextFileStream, Game.Zeus, in ExeAttributes._CharEncoding,
-							in ExeAttributes._EngTextDefaultStringCount, in ExeAttributes._EngTextDefaultWordCount,
-							out messages, out wasSuccessful);
+						engText = new EngText(engTextFileStream, Game.Zeus, ExeAttributes._EngTextDefaultStringCount, ExeAttributes._EngTextDefaultWordCount,
+							in ExeAttributes._CharEncoding, out messages, out wasSuccessful);
 					}
 
 					if (messages.Length != 0)
