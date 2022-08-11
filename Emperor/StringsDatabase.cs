@@ -6,14 +6,14 @@
 //
 
 using System.Globalization;
+using Emperor.Models;
+using Emperor.ViewModels;
 
 namespace Emperor
 {
 	internal static class StringsDatabase
 	{
 		// ==== Properties ====
-		internal static SupportedLanguages _UiLanguage { get; private set; }
-
 		internal static string _GenerateExeClickWidthTryParseFailed { get; private set; }
 		internal static string _GenerateExeClickHeightTryParseFailed { get; private set; }
 		internal static string _GenerateExeClickWidthLessThanMinimum { get; private set; }
@@ -64,53 +64,40 @@ namespace Emperor
 		internal static string _EmperorResizeImagesCouldNotFindImageMessageStart { get; private set; }
 
 
-		// ==== Constructors ====
-		static StringsDatabase()
+		// ==== Constructor ====
+		static StringsDatabase() =>
+			changeLanguage(CultureInfo.CurrentUICulture.ThreeLetterISOLanguageName);
+
+
+		// ==== Public methods ====
+		[ExecuteFromViewModelConstructor]
+		// ReSharper disable once UnusedMember.Local
+		private static void registerForChangeLanguageEvent() =>
+			MainWindowVm.Instance.LanguageChangedEventHandler += changeLanguage;
+
+
+		// ==== Private methods ====
+		private static void changeLanguage(string ThreeLetterIsoLanguageCode)
 		{
-			// On first run, set program's language to the OS's UI language.
-			switch (CultureInfo.CurrentUICulture.ThreeLetterISOLanguageName)
+			switch (ThreeLetterIsoLanguageCode)
 			{
 				case "eng":
 					// English
-					_UiLanguage = SupportedLanguages.English;
+					setLanguageStringsToEnglishText();
 					break;
 
-				case "fra":
+			/*	case "fra":
 					// French
-					_UiLanguage = SupportedLanguages.French;
+					uiLanguage = SupportedLanguages.French;
 					break;
 
 				case "ita":
 					// Italian
-					_UiLanguage = SupportedLanguages.Italian;
+					uiLanguage = SupportedLanguages.Italian;
 					break;
-
+*/
 				default:
 					// Unknown language. Default to English.
-					_UiLanguage = SupportedLanguages.English;
-					break;
-			}
-
-			setLanguageStrings();
-		}
-
-
-		// ==== Internal methods ====
-		internal static void _ChangeLanguage(SupportedLanguages NewLanguage)
-		{
-			_UiLanguage = NewLanguage;
-			setLanguageStrings();
-		}
-
-
-		// ==== Private methods ====
-		private static void setLanguageStrings()
-		{
-			switch (_UiLanguage)
-			{
-				default:
-					// Unknown or untranslated language. Default to English.
-				case SupportedLanguages.English:
 					setLanguageStringsToEnglishText();
 					break;
 			}
@@ -126,10 +113,10 @@ namespace Emperor
 			                                        "the game's window can be. Please type in a number which is at least 800.";
 			_GenerateExeClickHeightLessThanMinimum = "The desired Vertical Resolution is less than 600, which is the absolute minimum height " +
 			                                         "the game's window can be. Please type in a number which is at least 600.";
-			_GenerateExeClickWidthMoreThanMaximum = $"The desired Horizontal Resolution is greater than {MainWindow.MAX_RESOLUTION_WIDTH.ToString()}, " +
-			                                        $"which is not allowed. Please type in a number which is less than {MainWindow.MAX_RESOLUTION_WIDTH.ToString()}.";
-			_GenerateExeClickHeightMoreThanMaximum = $"The desired Vertical Resolution is greater than {MainWindow.MAX_RESOLUTION_HEIGHT.ToString()}, " +
-			                                         $"which is not allowed. Please type in a number which is less than {MainWindow.MAX_RESOLUTION_HEIGHT.ToString()}.";
+			_GenerateExeClickWidthMoreThanMaximum = $"The desired Horizontal Resolution is greater than {CentralManager.MAX_RESOLUTION_WIDTH.ToString()}, " +
+			                                        $"which is not allowed. Please type in a number which is less than {CentralManager.MAX_RESOLUTION_WIDTH.ToString()}.";
+			_GenerateExeClickHeightMoreThanMaximum = $"The desired Vertical Resolution is greater than {CentralManager.MAX_RESOLUTION_HEIGHT.ToString()}, " +
+			                                         $"which is not allowed. Please type in a number which is less than {CentralManager.MAX_RESOLUTION_HEIGHT.ToString()}.";
 			_GenerateExeClickWidthNotDivisibleBy4 = "The desired Horizontal Resolution is not divisible by 4. Please type in a number which is.";
 
 			_SelectExeClickTitle = "Please select the Emperor.exe you want to patch.";
@@ -148,10 +135,10 @@ namespace Emperor
 				"",
 				"",
 				"Resolution Width: This text box allows you to specify the horizontal component of your desired resolution. If your screen is in landscape, " +
-				$"this is the bigger number. Note that this number must be divisible by 4 as well as between 800 and {MainWindow.MAX_RESOLUTION_WIDTH.ToString()}, both inclusive.",
+				$"this is the bigger number. Note that this number must be divisible by 4 as well as between 800 and {CentralManager.MAX_RESOLUTION_WIDTH.ToString()}, both inclusive.",
 				"",
 				"Resolution Height: This text box allows you to specify the vertical component of your desired resolution. If your screen is in landscape, " +
-				$"this is the smaller number. Note that this number must be between 600 and {MainWindow.MAX_RESOLUTION_HEIGHT.ToString()}, both inclusive.",
+				$"this is the smaller number. Note that this number must be between 600 and {CentralManager.MAX_RESOLUTION_HEIGHT.ToString()}, both inclusive.",
 				"",
 				"",
 				"Select Emperor.exe: This button opens a file picker that lets you specify the location of a Emperor.exe that you want to modify.",
@@ -219,6 +206,8 @@ namespace Emperor
 				"Only the following unmodified distributions and languages are currently supported:",
 				"- English GOG version (Emperor.exe CRC: 0xfd9cf46f)",
 				"- English CD (Sierra and Sold Out versions) with the v1.1 patch installed (Emperor.exe CRC: 0xa8a1ae71)",
+				"- French CD version with the v1.1 patch installed (Emperor.exe CRC: 0x46119d54)",
+				"- Italian CD version with the v1.1 patch installed (Emperor.exe CRC: 0xbbf34fc6)",
 				"",
 				"Please remove any modifications you have applied to the game and try again."
 			};
@@ -230,6 +219,8 @@ namespace Emperor
 				"Only the following unmodified distributions and languages are currently supported:",
 				"- English GOG version (Emperor.exe CRC: 0xfd9cf46f)",
 				"- English CD (Sierra and Sold Out versions) with the v1.1 patch installed (Emperor.exe CRC: 0xa8a1ae71)",
+				"- French CD version with the v1.1 patch installed (Emperor.exe CRC: 0x46119d54)",
+				"- Italian CD version with the v1.1 patch installed (Emperor.exe CRC: 0xbbf34fc6)",
 				"",
 				"Please remove any modifications you have applied to the game, then install the latest patch before trying again."
 			};
@@ -241,6 +232,8 @@ namespace Emperor
 				"Only the following unmodified distributions and languages are currently supported:",
 				"- English GOG version (Emperor.exe CRC: 0xfd9cf46f)",
 				"- English CD (Sierra and Sold Out versions) with the v1.1 patch installed (Emperor.exe CRC: 0xa8a1ae71)",
+				"- French CD version with the v1.1 patch installed (Emperor.exe CRC: 0x46119d54)",
+				"- Italian CD version with the v1.1 patch installed (Emperor.exe CRC: 0xbbf34fc6)",
 				"",
 				"Please update the game to the latest patch before trying again."
 			};
@@ -251,6 +244,8 @@ namespace Emperor
 				"Only the following unmodified distributions and languages are currently supported:",
 				"- English GOG version (Emperor.exe CRC: 0xfd9cf46f)",
 				"- English CD (Sierra and Sold Out versions) with the v1.1 patch installed (Emperor.exe CRC: 0xa8a1ae71)",
+				"- French CD version with the v1.1 patch installed (Emperor.exe CRC: 0x46119d54)",
+				"- Italian CD version with the v1.1 patch installed (Emperor.exe CRC: 0xbbf34fc6)",
 				"",
 				"If you are using one of the listed versions, please ensure that the EXE has not been modified.",
 				"If you are not, please do request that support be added, especially if you can provide info on how I can get a copy of your version."
@@ -280,14 +275,6 @@ namespace Emperor
 			                                          "JPEG Encoder available on your PC. Since Windows comes with such a codec by default, this " +
 			                                          "could indicate a serious problem with your PC that can only be fixed by reinstalling Windows.";
 			_EmperorResizeImagesCouldNotFindImageMessageStart = "Could not find the following images";
-		}
-
-		internal enum SupportedLanguages
-		{
-			Unknown = 0,
-			English = 1,
-			French  = 2,
-			Italian = 3
 		}
 	}
 }

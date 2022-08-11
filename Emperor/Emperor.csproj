@@ -60,7 +60,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\CentralManager.cs" />
     <Compile Include="StringsDatabase.cs" />
+    <Compile Include="ViewModels\ExecuteFromViewModelConstructor.cs" />
+    <Compile Include="ViewModels\MainWindowVm.cs" />
+    <Compile Include="ViewModels\RelayCommand.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
