@@ -4,149 +4,117 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Zeus_and_Poseidon"
+        xmlns:viewModels="clr-namespace:Zeus_and_Poseidon.ViewModels"
+        DataContext="{DynamicResource MainWindowVm}"
         mc:Ignorable="d"
-        Title="Zeus &amp; Poseidon Resolution Customiser" Height="430" Width="530" Icon="Zeus.ico" Background="#93D9FF"
-        WindowStartupLocation="CenterScreen">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="8"/>
-            <ColumnDefinition Width="30"/>
-            <ColumnDefinition Width="330"/>
-            <ColumnDefinition Width="120"/>
-            <ColumnDefinition Width="8"/>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        Title="{Binding WindowTitle}" Icon="Zeus.ico" Background="#93D9FF"
+        SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
 
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="8"/>
-            <RowDefinition Height="52"/>
-            <RowDefinition Height="52"/>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="8"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+		<Window.Resources>
+		<viewModels:MainWindowVm x:Key="MainWindowVm" />
+	</Window.Resources>
 
-        <Border BorderBrush="#A02F24" BorderThickness="2" Grid.Column="2" Grid.ColumnSpan="5" Grid.Row="2" Grid.RowSpan="12"/>
+    <Border BorderBrush="#A02F24" BorderThickness="2" Margin="10" Padding="8">
+	    <StackPanel Name="ParentContainer">
+	        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#A02F24" BorderThickness="2">
+                    <TextBlock TextAlignment="Left" TextWrapping="Wrap" Text="{Binding ResolutionWidthText}" FontSize="32"
+                               Padding="3,0,0,0" Width="300"/>
+                </Border>
+                <Border HorizontalAlignment="Right" VerticalAlignment="Stretch" BorderBrush="#A02F24" BorderThickness="2" Width="120">
+                    <TextBox x:Name="ResWidth" TextAlignment="Right" TextWrapping="Wrap" Text="{Binding ResolutionWidth}" FontSize="32"
+                             Background="#48A0D0" BorderBrush="#2888C0" GotFocus="AllTextBoxes_GotFocus" Padding="0,0,2,0"/>
+                </Border>
+	        </StackPanel>
 
-        <Grid Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="3">
-	        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#A02F24" BorderThickness="2">
-		        <TextBlock TextAlignment="Left" TextWrapping="Wrap" Text="Resolution Width:" FontSize="32" Padding="3,0,0,0"/>
-	        </Border>
-	        <Border HorizontalAlignment="Right" VerticalAlignment="Stretch" BorderBrush="#A02F24" BorderThickness="2" Width="120">
-		        <TextBox x:Name="ResWidth" TextAlignment="Right" TextWrapping="Wrap" Text="1024" FontSize="32" Background="#48A0D0" BorderBrush="#2888C0"
-		                 GotFocus="AllTextBoxes_GotFocus" Padding="0,0,2,0"/>
-	        </Border>
-        </Grid>
+		    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+			    <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#A02F24" BorderThickness="2">
+				    <TextBlock TextAlignment="Left" TextWrapping="Wrap" Text="{Binding ResolutionHeightText}" FontSize="32"
+				               Padding="3,0,0,0" Width="300"/>
+			    </Border>
+			    <Border HorizontalAlignment="Right" VerticalAlignment="Stretch" BorderBrush="#A02F24" BorderThickness="2" Width="120">
+				    <TextBox x:Name="ResHeight" TextAlignment="Right" TextWrapping="Wrap" Text="{Binding ResolutionHeight}" FontSize="32"
+				             Background="#48A0D0" BorderBrush="#2888C0" GotFocus="AllTextBoxes_GotFocus" Padding="0,0,2,0"/>
+			    </Border>
+		    </StackPanel>
 
-        <Grid Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="4">
-	        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#A02F24" BorderThickness="2">
-		        <TextBlock TextAlignment="Left" TextWrapping="Wrap" Text="Resolution Height:" FontSize="32" Padding="3,0,0,0"/>
-	        </Border>
-	        <Border HorizontalAlignment="Right" VerticalAlignment="Stretch" BorderBrush="#A02F24" BorderThickness="2" Width="120">
-		        <TextBox x:Name="ResHeight" TextAlignment="Right" TextWrapping="Wrap" Text="768" FontSize="32" Background="#48A0D0" BorderBrush="#2888C0"
-		                 GotFocus="AllTextBoxes_GotFocus" Padding="0,0,2,0"/>
-	        </Border>
-        </Grid>
+		    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+			    <Button Command="{Binding ApplyAnimationFixHelpEvent}" Height="28" Width="28" FontSize="18" FontWeight="Bold" Padding="0,0,0,0"
+			            Content="?" Background="#48A0D0" BorderBrush="#2888C0" BorderThickness="2" Margin="0,0,0,0">
+			    </Button>
+			    <StackPanel Name="ApplyAnimationFixCheckBoxPanel" Orientation="Horizontal" Height="32">
+				    <Viewbox Height="{Binding Path=ActualHeight, ElementName=ApplyAnimationFixCheckBoxPanel}">
+					    <CheckBox x:Name="ApplyAnimationFix" IsChecked="{Binding ApplyAnimationFixIsChecked}" Background="#48A0D0" BorderBrush="#2888C0"/>
+				    </Viewbox>
+				    <TextBlock FontSize="21" Margin="4,0,0,0" Text="{Binding ApplyAnimationFixCheckboxText}" />
+			    </StackPanel>
+		    </StackPanel>
 
-        <Button Click="ApplyAnimationFix_Help_Click" Grid.Column="3" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#48A0D0" BorderBrush="#2888C0">
-	        <Button.RenderTransform>
-		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
-	        </Button.RenderTransform>
-        </Button>
-        <CheckBox x:Name="ApplyAnimationFix" Content="Apply Animation Fixes" IsChecked="True" Background="#48A0D0" BorderBrush="#2888C0"
-                  Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="6" VerticalAlignment="Center">
-	        <CheckBox.RenderTransform>
-		        <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
-	        </CheckBox.RenderTransform>
-        </CheckBox>
+		    <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+			    <Button Command="{Binding ApplyWindowFixHelpEvent}" Height="28" Width="28" FontSize="18" FontWeight="Bold" Padding="0,0,0,0"
+			            Content="?" Background="#48A0D0" BorderBrush="#2888C0" BorderThickness="2" Margin="0,0,0,0">
+			    </Button>
+			    <StackPanel Name="ApplyWindowFixCheckBoxPanel" Orientation="Horizontal" Height="32">
+				    <Viewbox Height="{Binding Path=ActualHeight, ElementName=ApplyWindowFixCheckBoxPanel}">
+					    <CheckBox x:Name="ApplyWindowFix" IsChecked="{Binding ApplyWindowModeFixesIsChecked}" Background="#48A0D0" BorderBrush="#2888C0"/>
+				    </Viewbox>
+				    <TextBlock FontSize="21" Margin="4,0,0,0" Text="{Binding ApplyWindowModeFixesCheckboxText}" />
+			    </StackPanel>
+		    </StackPanel>
 
-        <Button Click="ApplyWindowFix_Help_Click" Grid.Column="3" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#48A0D0" BorderBrush="#2888C0">
-	        <Button.RenderTransform>
-		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
-	        </Button.RenderTransform>
-        </Button>
-        <CheckBox x:Name="ApplyWindowFix" Content="Apply Windowed Mode Fixes" IsChecked="True" Background="#48A0D0" BorderBrush="#2888C0"
-                  Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="7" VerticalAlignment="Center">
-	        <CheckBox.RenderTransform>
-		        <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
-	        </CheckBox.RenderTransform>
-        </CheckBox>
+		    <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+			    <Button Command="{Binding PatchEngTextHelpEvent}" Height="28" Width="28" FontSize="18" FontWeight="Bold" Padding="0,0,0,0"
+			            Content="?" Background="#48A0D0" BorderBrush="#2888C0" BorderThickness="2" Margin="0,0,0,0">
+			    </Button>
+			    <StackPanel Name="PatchEngTextCheckBoxPanel" Orientation="Horizontal" Height="32">
+				    <Viewbox Height="{Binding Path=ActualHeight, ElementName=PatchEngTextCheckBoxPanel}">
+					    <CheckBox x:Name="PatchEngText" IsChecked="{Binding PatchEngTextIsChecked}" Background="#48A0D0" BorderBrush="#2888C0"/>
+				    </Viewbox>
+				    <TextBlock FontSize="21" Margin="4,0,0,0" Text="{Binding PatchEngTextCheckboxText}" />
+			    </StackPanel>
+		    </StackPanel>
 
-        <Button Click="PatchEngText_Help_Click" Grid.Column="3" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#48A0D0" BorderBrush="#2888C0">
-	        <Button.RenderTransform>
-		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
-	        </Button.RenderTransform>
-        </Button>
-        <CheckBox x:Name="PatchEngText" Content="_Patch Zeus_Text.eng" IsChecked="True" Background="#48A0D0" BorderBrush="#2888C0"
-                  Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="8" VerticalAlignment="Center">
-	        <CheckBox.RenderTransform>
-		        <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
-	        </CheckBox.RenderTransform>
-        </CheckBox>
+		    <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+			    <Button Command="{Binding ResizeImagesHelpEvent}" Height="28" Width="28" FontSize="18" FontWeight="Bold" Padding="0,0,0,0"
+			            Content="?" Background="#48A0D0" BorderBrush="#2888C0" BorderThickness="2" Margin="0,0,0,0">
+			    </Button>
+			    <StackPanel Name="ResizeImagesCheckBoxPanel" Orientation="Horizontal" Height="32">
+				    <Viewbox Height="{Binding Path=ActualHeight, ElementName=ResizeImagesCheckBoxPanel}">
+					    <CheckBox x:Name="ResizeImages" IsChecked="{Binding ResizeImagesIsChecked}" Background="#48A0D0" BorderBrush="#2888C0"/>
+				    </Viewbox>
+				    <TextBlock FontSize="21" Margin="4,0,0,0" Text="{Binding ResizeImagesCheckboxText}" />
+			    </StackPanel>
+		    </StackPanel>
 
-        <Button Click="ResizeImages_Help_Click" Grid.Column="3" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#48A0D0" BorderBrush="#2888C0">
-	        <Button.RenderTransform>
-		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
-	        </Button.RenderTransform>
-        </Button>
-        <CheckBox x:Name="ResizeImages" Content="Resize Images" IsChecked="True" Background="#48A0D0" BorderBrush="#2888C0"
-                  Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="9" VerticalAlignment="Center"
-                  Checked="ResizeImages_Checked" Unchecked="ResizeImages_Unchecked">
-	        <CheckBox.RenderTransform>
-		        <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
-	        </CheckBox.RenderTransform>
-        </CheckBox>
+		    <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+			    <Button Command="{Binding StretchImagesHelpEvent}" Height="28" Width="28" FontSize="18" FontWeight="Bold" Padding="0,0,0,0"
+			            Content="?" Background="#48A0D0" BorderBrush="#2888C0" BorderThickness="2" Margin="0,0,0,0">
+			    </Button>
+			    <StackPanel Name="StretchImagesCheckBoxPanel" Orientation="Horizontal" Height="32">
+				    <Viewbox Height="{Binding Path=ActualHeight, ElementName=StretchImagesCheckBoxPanel}">
+					    <CheckBox x:Name="StretchImages" IsChecked="{Binding StretchImagesIsChecked}"
+					              IsEnabled="{Binding StretchImagesIsEnabled}" Background="#48A0D0" BorderBrush="#2888C0"/>
+				    </Viewbox>
+				    <TextBlock FontSize="21" Margin="4,0,0,0" Text="{Binding StretchImagesCheckboxText}" />
+			    </StackPanel>
+		    </StackPanel>
 
-        <Button Click="StretchImages_Help_Click" Grid.Column="3" Grid.Row="10" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="12" Width="12" FontSize="8" FontWeight="Bold" Padding="0,0,0,0" Content="?" Background="#48A0D0" BorderBrush="#2888C0">
-	        <Button.RenderTransform>
-		        <ScaleTransform CenterY="6.5" ScaleX="2.25" ScaleY="2.25" />
-	        </Button.RenderTransform>
-        </Button>
-        <CheckBox x:Name="StretchImages" Content="Stretch menu images to fit window" IsChecked="False" BorderBrush="#2888C0" Background="#48A0D0"
-                  Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="10" VerticalAlignment="Center"
-                  Margin="16,0,0,0">
-	        <CheckBox.RenderTransform>
-		        <ScaleTransform CenterY="8" ScaleX="2" ScaleY="2" />
-	        </CheckBox.RenderTransform>
-        </CheckBox>
+		    <Grid Margin="0,10,0,10">
+			    <Button x:Name="SelectExe" Content="{Binding SelectExeButtonText}" Height="36" FontSize="20" Padding="6,0,6,0"
+			            HorizontalAlignment="Left" VerticalAlignment="Center" Command="{Binding SelectExeEvent}" Background="#48A0D0" BorderBrush="#2888C0" BorderThickness="2">
+			    </Button>
+			    <Button x:Name="HelpMe" Content="?" Height="36" Width="36" FontSize="22" FontWeight="Bold"
+			            HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding HelpMeEvent}" Background="#48A0D0" BorderBrush="#2888C0" BorderThickness="2">
+			    </Button>
+			    <Button x:Name="GenerateExe" Content="{Binding GenerateExeButtonText}" Height="36" FontSize="20" Padding="6,0,6,0"
+			            HorizontalAlignment="Right" VerticalAlignment="Center" Command="{Binding GenerateExeEvent}" Background="#48A0D0" BorderBrush="#2888C0">
+			    </Button>
+		    </Grid>
 
-        <Grid Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="12">
-	        <Button x:Name="SelectExe" Content="Select Zeus.exe"
-	                HorizontalAlignment="Left" VerticalAlignment="Center" Click="SelectExe_Click" Background="#48A0D0" BorderBrush="#2888C0">
-		        <Button.RenderTransform>
-			        <ScaleTransform CenterY="10" ScaleX="2" ScaleY="2" />
-		        </Button.RenderTransform>
-	        </Button>
-	        <Button x:Name="HelpMe" Content="?" Width="20" FontSize="12" FontWeight="Bold"
-	                HorizontalAlignment="Center" VerticalAlignment="Center" Click="HelpMe_Click" Background="#48A0D0" BorderBrush="#2888C0">
-		        <Button.RenderTransform>
-			        <ScaleTransform CenterX="-9" CenterY="10" ScaleX="2" ScaleY="2" />
-		        </Button.RenderTransform>
-	        </Button>
-	        <Button x:Name="GenerateExe" Content="Generate EXE"
-	                HorizontalAlignment="Right" VerticalAlignment="Center" Click="GenerateExe_Click" Background="#48A0D0" BorderBrush="#2888C0">
-		        <Button.RenderTransform>
-			        <ScaleTransform CenterX="75" CenterY="10" ScaleX="2" ScaleY="2" />
-		        </Button.RenderTransform>
-	        </Button>
-        </Grid>
-    </Grid>
+		    <StackPanel HorizontalAlignment="Center">
+			    <Button Content="Eng" Height="28" FontSize="14" Background="#48A0D0" BorderBrush="#2888C0" BorderThickness="2" Padding="2"
+			            Command="{Binding SwitchLanguageToEnglishEvent}" />
+		    </StackPanel>
+	    </StackPanel>
+    </Border>
 </Window>

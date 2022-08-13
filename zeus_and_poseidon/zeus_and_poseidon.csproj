@@ -63,6 +63,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="StringsDatabase.cs" />
+    <Compile Include="ViewModels\ExecuteFromViewModelConstructor.cs" />
+    <Compile Include="ViewModels\MainWindowVm.cs" />
+    <Compile Include="ViewModels\RelayCommand.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -77,6 +81,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\CentralManager.cs" />
     <Compile Include="non-UI_code\Crc32\MainExeIntegrity.cs" />
     <Compile Include="non-UI_code\Crc32\SliceBy16.cs" />
     <Compile Include="non-UI_code\ZeusEngTextEdit.cs" />

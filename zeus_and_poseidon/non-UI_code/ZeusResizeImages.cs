@@ -158,9 +158,7 @@ namespace Zeus_and_Poseidon.non_UI_code
 			}
 			if (jpegCodecInfo == null)
 			{
-				MessageBox.Show("Could not resize any of the game's images because the program could not find a " +
-				                "JPEG Encoder available on your PC. Since Windows comes with such a codec by default, this " +
-				                "could indicate a serious problem with your PC that can only be fixed by reinstalling Windows.");
+				MessageBox.Show(StringsDatabase._ZeusResizeImagesJpegEncoderNotFound);
 				encoderParameters = null;
 				allErrorMessages = null;
 				JpegCodecFound = false;
@@ -226,7 +224,7 @@ namespace Zeus_and_Poseidon.non_UI_code
 			if (allErrorMessages.IsEmpty == false)
 			{
 				StringBuilder messageText = new StringBuilder();
-				messageText.Append("Could not find the following images :\n\n");
+				messageText.Append($"{StringsDatabase._ZeusResizeImagesCouldNotFindImageMessageStart}:\n\n");
 
 				while (allErrorMessages.IsEmpty == false)
 				{
