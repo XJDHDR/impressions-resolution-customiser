@@ -182,7 +182,7 @@ namespace Emperor.ViewModels
 					{
 						// If the current method does not have the ExecuteFromViewModelConstructor attribute attached, skip to the next one.
 						MethodInfo method = allMethodsInType[k];
-						object[] isAttributeOnMethod = method.GetCustomAttributes(typeof(ExecuteFromViewModelConstructor), false);
+						object[] isAttributeOnMethod = method.GetCustomAttributes(typeof(ExecuteFromViewModelConstructorAttribute), false);
 						if (isAttributeOnMethod.Length == 0)
 							continue;
 

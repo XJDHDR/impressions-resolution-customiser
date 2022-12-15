@@ -35,7 +35,6 @@ namespace Emperor.Models
 
 		// ==== Private methods ====
 		[ExecuteFromViewModelConstructor]
-		// ReSharper disable once UnusedMember.Local
 		private static void registerForChangeLanguageEvent()
 		{
 			MainWindowVm.Instance.GenerateExeButtonClickedEventHandler += generateExeButtonClicked;
@@ -75,7 +74,7 @@ namespace Emperor.Models
 			{
 				MessageBox.Show(StringsDatabase._GenerateExeClickWidthNotDivisibleBy4);
 			}
-			else if (resHeightPreTests < 600)
+			else if (resHeightPreTests < 762)
 			{
 				MessageBox.Show(StringsDatabase._GenerateExeClickHeightLessThanMinimum);
 			}

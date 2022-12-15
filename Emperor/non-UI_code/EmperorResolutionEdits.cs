@@ -8,6 +8,10 @@
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
 
+// These can be used to disable the UI insertion assembly code for debugging reasons.
+#define ENABLE_BOTTOM_BAR_PATCHER
+#define ENABLE_SIDEBAR_PATCHER
+
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -20,10 +24,6 @@ namespace Emperor.non_UI_code
 	/// </summary>
 	internal static class EmperorResolutionEdits
 	{
-		// These can be used to disable the UI insertion assembly code for debugging reasons.
-		private const bool ENABLE_BOTTOM_BAR_PATCHER = true;
-		private const bool ENABLE_SIDEBAR_PATCHER = true;
-
 		/// <summary>
 		/// Patches the various offsets in Emperor.exe to run at the desired resolution and scale various UI elements
 		/// to fit the new resolution.
@@ -189,7 +189,7 @@ namespace Emperor.non_UI_code
 			ViewportAndMenubarHeight = Convert.ToUInt16(((resHeightMult - 1) * 20) + 40);
 			byte[] viewportHeightBytes = BitConverter.GetBytes(ViewportAndMenubarHeight);
 
-			if (ENABLE_BOTTOM_BAR_PATCHER)
+			#if ENABLE_BOTTOM_BAR_PATCHER
 			{
 				// Next, the bar forming the city viewport's bottom border needs to be extended it to fit the entire length
 				// of the viewport's bottom edge. To do this, I'm inserting some new assembly code into the
@@ -238,14 +238,24 @@ namespace Emperor.non_UI_code
 				                                          (resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint +
 				                                           resHexOffsetTable._FixBottomBarLengthNewCode.Length));
 				EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 58] = finalJumpDestRelPos;
-			}
 
-			// Calculate where the bottom edge of the city viewport is and set the bottom border bars' vertical position there.
-			for (byte i = 0; i < viewportHeightBytes.Length; i++)
-			{
-				EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 23 + i] =
-					viewportHeightBytes[i];
+				// Calculate where the bottom edge of the city viewport is and set the bottom border bars' vertical position there.
+				for (byte i = 0; i < viewportHeightBytes.Length; i++)
+				{
+					EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 23 + i] =
+						viewportHeightBytes[i];
+				}
 			}
+			#else
+			{
+				// Calculate where the bottom edge of the city viewport is and set the bottom border bars' vertical position there.
+				for (byte i = 0; i < viewportHeightBytes.Length; i++)
+				{
+					EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 12 + i] = viewportHeightBytes[i];
+					EmperorExeData[resHexOffsetTable._FixBottomBarLengthNewCodeInsertPoint + 64 + i] = viewportHeightBytes[i];
+				}
+			}
+			#endif
 
 			if (shouldRun)
 			{
@@ -267,24 +277,21 @@ namespace Emperor.non_UI_code
 							else
 							{
 								Application.Current.Shutdown();
-								return;
 							}
 						}
 						catch (Exception)
 						{
 							Application.Current.Shutdown();
-							return;
 						}
 					}
 					else
 					{
 						Application.Current.Shutdown();
-						return;
 					}
 				}
 			}
 
-			if (ENABLE_SIDEBAR_PATCHER)
+			#if ENABLE_SIDEBAR_PATCHER
 			{
 				// Finally, some code is needed to fill in gaps in the UI caused by changing the resolution. This is a gap in the
 				// menubar between the right edge of the original extent of it and the sidebar's left edge.
@@ -403,6 +410,7 @@ namespace Emperor.non_UI_code
 						jumpToBottomBorderDrawingCodeBytes[i];
 				}
 			}
+			#endif
 		}
 	}
 }

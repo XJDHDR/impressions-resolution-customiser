@@ -40,6 +40,9 @@
     <ApplicationIcon>Exe_Resources\Emperor.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.Annotations, Version=4242.42.42.42, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.Annotations.2022.1.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -62,7 +65,7 @@
     </ApplicationDefinition>
     <Compile Include="Models\CentralManager.cs" />
     <Compile Include="StringsDatabase.cs" />
-    <Compile Include="ViewModels\ExecuteFromViewModelConstructor.cs" />
+    <Compile Include="ViewModels\ExecuteFromViewModelConstructorAttribute.cs" />
     <Compile Include="ViewModels\MainWindowVm.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Page Include="MainWindow.xaml">

@@ -71,7 +71,6 @@ namespace Emperor
 
 		// ==== Public methods ====
 		[ExecuteFromViewModelConstructor]
-		// ReSharper disable once UnusedMember.Local
 		private static void registerForChangeLanguageEvent() =>
 			MainWindowVm.Instance.LanguageChangedEventHandler += changeLanguage;
 

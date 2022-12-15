@@ -41,9 +41,9 @@ namespace Emperor.non_UI_code
 			switch (gameExeCrc32Checksum)
 			{
 				// Exes known to be modified
-				case 0x26791e30:	// v1.0.1.0 - German CD		0x39343561 - EmperorEdit
-				case 0xcf46e4b6:	// v1.0.1.0 - English CD	0xbb21655b - EmperorEdit
-				case 0xfb4b0a0c:	// v1.0.1.0 - French CD		0x5bbe23db - EmperorEdit
+				case 0x26791e30:	// v1.0.1.0 - German & Spanish CD		0x39343561 - EmperorEdit
+				case 0xcf46e4b6:	// v1.0.1.0 - English CD				0xbb21655b - EmperorEdit
+				case 0xfb4b0a0c:	// v1.0.1.0 - French CD					0x5bbe23db - EmperorEdit
 					MessageBox.Show(string.Join(Environment.NewLine, StringsDatabase._EmperorExeAttributesExeKnownModified),
 						StringsDatabase._EmperorExeAttributesExeKnownModifiedMessageTitle);
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
@@ -52,9 +52,10 @@ namespace Emperor.non_UI_code
 					break;
 
 				// Exes known to be both outdated and modified
-				case 0x2c2d13b9:	// v1.0.0.0 - English CD	0xa6b8e461 - EmperorEdit
-				case 0x62effc86:	// v1.0.0.0 - English CD	0x68ccef0b - EmperorEdit
-				case 0x90ce1021:	// v1.0.0.0 - Italian CD	0x1587ddc8 - EmperorEdit
+				case 0x2c2d13b9:	// v1.0.0.0 - English CD				0xa6b8e461 - EmperorEdit
+				case 0x62effc86:	// v1.0.0.0 - English CD				0x68ccef0b - EmperorEdit
+				case 0x90ce1021:	// v1.0.0.0 - English or Italian CD		0x1587ddc8 - EmperorEdit
+				case 0xa666e0b2:	// v1.0.0.0 - Spanish CD				0x99fdb392 - EmperorEdit
 					MessageBox.Show(string.Join(Environment.NewLine, StringsDatabase._EmperorExeAttributesExeKnownModifiedAndOutdated),
 						StringsDatabase._EmperorExeAttributesExeKnownModifiedAndOutdatedMessageTitle);
 					_SelectedExeLangAndDistrib = ExeLangAndDistrib.NotRecognised;
@@ -65,6 +66,7 @@ namespace Emperor.non_UI_code
 				// Exes known to be outdated
 				case 0x15f426a8:	// v1.0.0.0 - English CD	0xf6ff4c3a - EmperorEdit
 				case 0x4ca5afc6:	// v1.0.0.0 - French CD		0xba901a82 - EmperorEdit
+				case 0xa2539999:	// v1.0.0.0 - Spanish CD	0xba901a82 - EmperorEdit
 				case 0xafa41a01:	// v1.0.0.0 - Italian CD	0xba901a82 - EmperorEdit
 					MessageBox.Show(string.Join(Environment.NewLine, StringsDatabase._EmperorExeAttributesExeKnownOutdated),
 						StringsDatabase._EmperorExeAttributesExeKnownOutdatedMessageTitle);
@@ -110,6 +112,14 @@ namespace Emperor.non_UI_code
 					_CharEncoding = CharEncodingTables.Win1252;
 					WasSuccessful = true;
 					break;
+
+				// Spanish CD version with 1.1 patch
+				case 0x76d2185f:	// 0xa42e2399 - EmperorEdit
+					_SelectedExeLangAndDistrib = ExeLangAndDistrib.CdSpanish;
+					_CharEncoding = CharEncodingTables.Win1252;
+					WasSuccessful = true;
+					return;
+
 			}
 		}
 	}
@@ -123,6 +133,7 @@ namespace Emperor.non_UI_code
 		GogEnglish = 1,
 		CdEnglish = 3,
 		CdFrench = 4,
-		CdItalian = 5
+		CdItalian = 5,
+		CdSpanish = 6
 	}
 }

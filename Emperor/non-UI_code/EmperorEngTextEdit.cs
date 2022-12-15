@@ -59,6 +59,12 @@ namespace Emperor.non_UI_code
 						engTextDefaultWordCount = 34644;
 						break;
 
+					case 0x8f72edc3:
+						// Default shipped with Spanish v1.1 copy of game
+						engTextDefaultStringCount = 7240;
+						engTextDefaultWordCount = 36523;
+						break;
+
 					default:
 						// Unknown language or modded
 						engTextDefaultStringCount = 0;
@@ -127,6 +133,7 @@ namespace Emperor.non_UI_code
 				// To figure out which language the EngText file uses, what does the "New Game" menu option string say?
 				switch (engText.AllStringsByGroup[1].StringsInGroup[1])
 				{
+					// ReSharper disable StringLiteralTypo
 					case "New game":
 						// English.
 						engText.AllStringsByGroup[42].StringsInGroup[4] = $"{ResWidth.ToString()} x {ResHeight.ToString()} resolution";
@@ -142,10 +149,16 @@ namespace Emperor.non_UI_code
 						engText.AllStringsByGroup[42].StringsInGroup[4] = $"Risoluzione {ResWidth.ToString()}x{ResHeight.ToString()}";
 						break;
 
+					case "Nueva partida":
+						// Spanish
+						engText.AllStringsByGroup[42].StringsInGroup[4] = $"Resolución {ResWidth.ToString()}x{ResHeight.ToString()}";
+						break;
+
 					default:
 						// Unknown language, so just default to English.
 						engText.AllStringsByGroup[42].StringsInGroup[4] = $"{ResWidth.ToString()} x {ResHeight.ToString()} resolution";
 						break;
+					// ReSharper restore StringLiteralTypo
 				}
 
 				int stringLengthChange = engText.AllStringsByGroup[42].StringsInGroup[4].Length - oldStringLength;

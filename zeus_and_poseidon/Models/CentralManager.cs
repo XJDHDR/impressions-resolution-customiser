@@ -35,7 +35,6 @@ namespace Zeus_and_Poseidon.Models
 
 		// ==== Private methods ====
 		[ExecuteFromViewModelConstructor]
-		// ReSharper disable once UnusedMember.Local
 		private static void registerForChangeLanguageEvent()
 		{
 			MainWindowVm.Instance.GenerateExeButtonClickedEventHandler += generateExeButtonClicked;

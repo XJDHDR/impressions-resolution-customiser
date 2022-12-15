@@ -270,6 +270,59 @@ namespace Emperor.non_UI_code
 					WasSuccessful = true;
 					return;
 
+				case ExeLangAndDistrib.CdSpanish:
+					_ResWidth = 0x12B79D;//		0x12B40D - forward 0x390
+					_ResHeight = 0x12B7A2;//	0x12B412 - forward 0x390
+					_MainMenuViewportWidth = 0x125E9A;//	0x125B9A - forward 0x300
+					_MainMenuViewportHeight = 0x125EB2;//	0x125BB2 - forward 0x300
+					_FixMoneyPopDateTextPosWidth = 0x1B706A;//	0x1B6E9A - forward 0x1D0
+					_FixTopMenuBarBackgroundPosWidth = 0x1BF380;//	0x1BF1C0 - forward 0x1C0
+					_ViewportWidth = 0x13CB9D;//	0x13C80D - forward 0x390
+					_ViewportHeightMult = 0x13CBA8;//	0x13C818 - forward 0x390
+					_ViewportWidthMult = 0x13CBAA;//	0x13C81A - forward 0x390
+					_SidebarRenderLimitWidth = 0x1B6222;//	0x1B6052 - forward 0x1D0
+					_FixSidebarCityMapRotateButton = 0x13B30A;//	0x13AF7A - forward 0x390
+					_FixSidebarCityMapRotateIcon = 0x13B3FA;//	0x13B06A - forward 0x390
+					_FixSidebarCityMapGoalsOverviewWorldMapMessagesIcons = 0x13B73A;//	0x13B3AA - forward 0x390
+					_FixSidebarCityMapGoalsOverviewWorldMapMessagesButtons = 0x13B76A;//	0x13B3DA - forward 0x390
+					_SidebarLeftEdgeStartWidth = 0x1B622E;//	0x1B605E - forward 0x1D0
+					_UnknownWidth = 0x12BA83;//		0x12B6F3 - forward 0x390
+					_UnknownHeight = 0x12BA8D;//		0x12B6FD - forward 0x390
+					_DrawFunction1Address = 0x8190;//		0x8170 - forward 0x20
+					_DrawFunction2Address = 0x139F0;//		0x13A50 - back 0x60
+
+					_FixBottomBarLengthNewCodeInsertPoint = 0x1BF3AC;//		0x1BF1EC - forward 0x1C0
+					_FixBottomBarLengthNewCode = defineFixBottomBarLengthNewCode();
+					// There is one line (mov ecx, <constant>) that is different for each language.
+					// For Spanish, it needs to be: 0x1C43900
+					_FixBottomBarLengthNewCode[12] = 0x00;
+					_FixBottomBarLengthNewCode[13] = 0x39;
+					_FixBottomBarLengthNewCode[14] = 0xC4;
+					_FixBottomBarLengthNewCode[15] = 0x01;
+					_FixBottomBarLengthFinalJumpDest = 0x1BF448;//		0x1BF288 - forward 0x1C0
+
+					_NewCodeForUiJumpLocation = 0x13B513;//		0x13B183 - forward 0x390
+					_NewCodeForUiInsertionLocation = 0x3A9740;
+					_NewCodeForUiBytes = defineNewCodeForUiBytes();
+					// There are two lines (mov ecx, <constant>) here.
+					// Same as before, for Spanish, it needs to be: 0x1C43900
+					_NewCodeForUiBytes[22] = 0x00;
+					_NewCodeForUiBytes[23] = 0x39;
+					_NewCodeForUiBytes[24] = 0xC4;
+					_NewCodeForUiBytes[25] = 0x01;
+					_NewCodeForUiBytes[118] = 0x60;
+					_NewCodeForUiBytes[119] = 0x39;
+					_NewCodeForUiBytes[120] = 0xC4;
+					_NewCodeForUiBytes[121] = 0x01;
+					// Finally, the command overwritten by the jump into new code pushes a constant into the ECX register.
+					// This constant is different for each language. For Spanish, the command is: mov ecx, 0x13FA5DC
+					_NewCodeForUiBytes[186] = 0xDC;
+					_NewCodeForUiBytes[187] = 0xA5;
+					_NewCodeForUiBytes[188] = 0x3F;
+					_NewCodeForUiBytes[189] = 0x01;
+					WasSuccessful = true;
+					return ;
+
 				// Unrecognised EXE
 				case ExeLangAndDistrib.NotRecognised:
 				default:

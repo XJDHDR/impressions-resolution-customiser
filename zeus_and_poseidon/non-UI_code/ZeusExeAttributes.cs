@@ -46,6 +46,21 @@ namespace Zeus_and_Poseidon.non_UI_code
 				// Exes known to be modified
 				case 0x058deed7:	// Zeus only		- v1.1.0.0 - German
 				case 0xe3469478:	// Zeus & Poseidon	- v2.1.4.0 - Polish
+
+				case 0x4105ea46:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 1280x720
+				case 0x1b1023a2:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 1280x800
+
+				case 0x656aac92:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 1280x1024
+				case 0xdd51f341:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 1360x768 - Version 1
+				case 0xef0c6085:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 1360x768 - Version 2
+				case 0xb7a75356:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 1440x900
+				case 0x2c80382c:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 1600x900
+				case 0xddeca321:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 1680x1050
+				case 0x7ab8500b:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 1920x1080
+				case 0x7d5e284d:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 1920x1200
+				case 0x2a140b8e:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 2048x1152
+				case 0xf726eaeb:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 2560x1440
+				case 0x430d7923:	// Zeus & Poseidon	- v2.1.4.0 - English - JackFuste widescreen patch - 2560x1600
 					MessageBox.Show(string.Join(Environment.NewLine, StringsDatabase._ZeusExeAttributesExeKnownModified),
 						StringsDatabase._ZeusExeAttributesExeKnownModifiedMessageTitle);
 					break;
@@ -60,11 +75,11 @@ namespace Zeus_and_Poseidon.non_UI_code
 					break;
 
 				// Exes known to be outdated
-				case 0x00000000:	// Zeus only ??		- v1.0.0.0 - ??
+			/*	case 0x00000000:	// Zeus only ??		- v1.0.0.0 - ??
 					MessageBox.Show(string.Join(Environment.NewLine, StringsDatabase._ZeusExeAttributesExeKnownOutdated),
 						StringsDatabase._ZeusExeAttributesExeKnownOutdatedMessageTitle);
 					break;
-
+*/
 				default:	// Unrecognised EXE
 					MessageBox.Show(string.Join(Environment.NewLine, StringsDatabase._ZeusExeAttributesExeNotRecognised),
 						StringsDatabase._ZeusExeAttributesExeNotRecognisedMessageTitle);

@@ -5,6 +5,7 @@
 // https://github.com/XJDHDR/impressions-resolution-customiser/blob/main/LICENSE
 //
 
+using JetBrains.Annotations;
 using System;
 
 namespace Emperor.ViewModels
@@ -14,6 +15,8 @@ namespace Emperor.ViewModels
 	/// without creating a dependency in the ViewModel. Note that only methods that are designated as both
 	/// non-Public and Static will be invoked. Any that don't meet both conditions will be ignored.
 	/// </summary>
-	public class ExecuteFromViewModelConstructor : Attribute
+	[AttributeUsage(AttributeTargets.Method)]
+	[MeansImplicitUse]
+	public class ExecuteFromViewModelConstructorAttribute : Attribute
 	{}
 }
